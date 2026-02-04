@@ -1,0 +1,156 @@
+{
+	"totalSize": 10,
+	"done": true,
+	"records": [
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8YKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBuKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBuKAI"
+				},
+				"MasterLabel": "Service - Sunny Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8TKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBvKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBvKAI"
+				},
+				"MasterLabel": "SFS - Rider"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8WKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBwKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBwKAI"
+				},
+				"MasterLabel": "B2B Commerce - Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8XKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBwKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBwKAI"
+				},
+				"MasterLabel": "B2B Commerce - Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8VKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBxKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBxKAI"
+				},
+				"MasterLabel": "Luna Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8aKAE"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nByKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nByKAI"
+				},
+				"MasterLabel": "Buyer Assistant Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8ZKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nBzKAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nBzKAI"
+				},
+				"MasterLabel": "Tracker"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016E8UKAU"
+			},
+			"Status": "Inactive",
+			"BotDefinitionId": "0XxKa0000007nC0KAI",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007nC0KAI"
+				},
+				"MasterLabel": "B2B Commerce - Enhanced Bot"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016ILtKAM"
+			},
+			"Status": "Active",
+			"BotDefinitionId": "0XxKa0000007qqrKAA",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007qqrKAA"
+				},
+				"MasterLabel": "Agentforce (Default)"
+			}
+		},
+		{
+			"attributes": {
+				"type": "BotVersion",
+				"url": "/services/data/v65.0/sobjects/BotVersion/0X9Ka0000016IUKKA2"
+			},
+			"Status": "Active",
+			"BotDefinitionId": "0XxKa0000007qzVKAQ",
+			"BotDefinition": {
+				"attributes": {
+					"type": "BotDefinition",
+					"url": "/services/data/v65.0/sobjects/BotDefinition/0XxKa0000007qzVKAQ"
+				},
+				"MasterLabel": "Agentforce Employee Agent(Default)"
+			}
+		}
+	]
+}

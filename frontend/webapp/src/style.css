@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mulesoft-cyan: #00A0DF;
+  --color-mulesoft-cyan-dark: #0085C3;
+  --color-mulesoft-cyan-light: #33B3E5;
+  --color-mulesoft-dark: #2D2D2D;
+  --color-mulesoft-gray: #64748B;
+}
+
+/* Prevent browser navigation gestures (swipe to go back/forward) */
+html, body {
+  overscroll-behavior-x: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Allow normal text selection in inputs and textareas */
+input, textarea, [contenteditable] {
+  touch-action: manipulation;
+}
+
+/* Lighter placeholder text for better distinction from entered text */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+@layer utilities {
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:ms-agentforce="http://www.mulesoft.org/schema/mule/ms-agentforce"
+	xmlns:openai="http://www.mulesoft.org/schema/connectivity/openai"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/connectivity/openai http://www.mulesoft.org/schema/connectivity/openai/current/mule-openai.xsd
+http://www.mulesoft.org/schema/mule/ms-agentforce http://www.mulesoft.org/schema/mule/ms-agentforce/current/mule-ms-agentforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<openai:config name="Openai_config"
+		doc:name="Openai config" doc:id="360ca638-538f-4e8d-adc3-435c7bceb168">
+		<openai:api-key-connection baseUri="${openai.baseUri}" token="${openai.apiKey}"/>
+	</openai:config>
+	<sub-flow name="execute-openai"
+		doc:id="33d70243-e47b-4d2c-8f8f-52d43dba0782">
+		<logger level="INFO" doc:name="Logger" doc:id="05392da6-d741-48f3-8ae3-efc97bdc85c0" message="#[payload]"/>
+		<choice doc:name="Choice"
+			doc:id="9d275128-5d6a-4667-afa3-a0998b8d5483">
+			
+			<!-- CHAT OPERATIONS -->
+			<when expression='#["openai:create-chat-completion" == vars.operation.operation_key]'>
+				<openai:create-chat-completion doc:name="Create Chat Completion" doc:id="b3883df0-c898-47cb-b06d-3fc1d2de5a9c" config-ref="Openai_config">
+					<openai:create_chat_completion--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_chat_completion--body>
+				</openai:create-chat-completion>
+			</when>
+			
+			<!-- EMBEDDING OPERATIONS -->
+			<when expression='#["openai:create-embedding" == vars.operation.operation_key]'>
+				<openai:create-embedding doc:name="Create Embedding" doc:id="f11582a7-fd2b-4b51-b0e4-e6e96ad0cfcf" config-ref="Openai_config">
+					<openai:create-embedding--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create-embedding--body>
+				</openai:create-embedding>
+			</when>
+			
+			<!-- ASSISTANTS OPERATIONS -->
+			<when expression='#["openai:create-assistant" == vars.operation.operation_key]'>
+				<openai:create-assistant doc:name="Create Assistant" doc:id="916da56a-c4d9-48ee-9bfc-6c42a8289072" config-ref="Openai_config">
+					<openai:create_assistant--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_assistant--body>
+				</openai:create-assistant>
+			</when>
+			
+			<when expression='#["openai:list-assistants" == vars.operation.operation_key]'>
+				<choice doc:name="Choice" doc:id="0090875d-ddb2-4577-b73d-d472bfe529f0" >
+					<when expression='#[payload.parameters.order == "desc"]'>
+						<openai:list-assistants doc:name="List Assistants" doc:id="3e1f4c2a-8a92-4cb1-837e-8574c583c8fd" config-ref="Openai_config" limit="100"/>
+					</when>
+					<when expression='#[payload.parameters.order == "asc"]'>
+						<openai:list-assistants doc:name="List Assistants" doc:id="1d717436-6818-44ad-b5bd-c71b1fcc16d4" config-ref="Openai_config" limit="100"/>
+					</when>
+					<otherwise >
+						<openai:list-assistants doc:name="List Assistants" doc:id="1763b9cb-2a77-4a11-b325-90c5a96d07cd" config-ref="Openai_config" limit="100"/>
+					</otherwise>
+				</choice>
+			</when>
+			
+			<when expression='#["openai:retrieve-assistants" == vars.operation.operation_key]'>
+				<openai:retrieve-assistants doc:name="Retrieve Assistants" doc:id="2dacb444-b18d-4beb-84f6-77a620b787b1" config-ref="Openai_config" assistant_id="#[payload.parameters.assistant_id]"/>
+			</when>
+			
+			<when expression='#["openai:modify-assistant" == vars.operation.operation_key]'>
+				<openai:modify-assistant doc:name="Modify Assistant" doc:id="33a4117f-27a9-4da0-8aa2-1edd8d55ca42" config-ref="Openai_config" assistant_id="#[payload.parameters.assistant_id]">
+					<openai:modify_assistant--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:modify_assistant--body>
+				</openai:modify-assistant>
+			</when>
+			
+			<!-- THREAD OPERATIONS -->
+			<when expression='#["openai:create-thread" == vars.operation.operation_key]'>
+				<openai:create-thread doc:name="Create Thread" doc:id="af732e1e-a2a5-46b3-9974-f8460e546904" config-ref="Openai_config">
+					<openai:create_thread--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_thread--body>
+				</openai:create-thread>
+			</when>
+			
+			<when expression='#["openai:retrieve-thread" == vars.operation.operation_key]'>
+				<openai:retrieve-thread doc:name="Retrieve Thread" doc:id="522e857b-cdee-4856-93a5-bd45ea0026dc" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]"/>
+			</when>
+			
+			<when expression='#["openai:modify-thread" == vars.operation.operation_key]'>
+				<openai:modify-thread doc:name="Modify Thread" doc:id="b688616c-3ef1-43c4-b119-3ca573420d62" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]">
+					<openai:modify_thread--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:modify_thread--body>
+				</openai:modify-thread>
+			</when>
+			
+			<when expression='#["openai:delete-thread" == vars.operation.operation_key]'>
+				<openai:delete-thread doc:name="Delete Thread" doc:id="8587c4bc-2519-4a3d-8cf7-e373da79c355" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]"/>
+			</when>
+			
+			<when expression='#["openai:create-thread-and-run" == vars.operation.operation_key]'>
+				<openai:create-thread-and-run doc:name="Create Thread And Run" doc:id="6aceb2d0-bffa-4cb3-a611-3fdec74b0b39" config-ref="Openai_config">
+					<openai:create_thread_and_run--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_thread_and_run--body>
+				</openai:create-thread-and-run>
+			</when>
+			
+			<!-- MESSAGE OPERATIONS -->
+			<when expression='#["openai:create-message" == vars.operation.operation_key]'>
+				<openai:create-message doc:name="Create Message" doc:id="b56abd2c-3fa3-4f13-bee7-0522069a0233" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]">
+					<openai:create_message--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_message--body>
+				</openai:create-message>
+			</when>
+			
+			<when expression='#["openai:list-message" == vars.operation.operation_key]'>
+				<openai:list-message doc:name="List Message" doc:id="1c79f47f-2fbb-4722-9bc3-6ec5173b94e9" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]" limit="100"/>
+			</when>
+			
+			<when expression='#["openai:retrieve-message" == vars.operation.operation_key]'>
+				<openai:retrieve-message doc:name="Retrieve Message" doc:id="097780c7-be12-4de5-a293-5b4d3897b0fc" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]" message_id="#[payload.parameters.message_id]"/>
+			</when>
+			
+			<when expression='#["openai:modify-message" == vars.operation.operation_key]'>
+				<openai:modify-message doc:name="Modify Message" doc:id="5c3b7878-bff8-4465-bb92-885191e56543" config-ref="Openai_config" thread_id="#[payload.parameters.thread_id]" message_id="#[payload.parameters.message_id]">
+					<openai:modify_message--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:modify_message--body>
+				</openai:modify-message>
+			</when>
+			
+			<!-- MODERATION OPERATIONS -->
+			<when expression='#["openai:create-moderation" == vars.operation.operation_key]'>
+				<openai:create-moderation doc:name="Create Moderation" doc:id="0121efc5-27e3-4e1e-a5bb-5f22dd6f1463" config-ref="Openai_config">
+					<openai:create_moderation--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></openai:create_moderation--body>
+				</openai:create-moderation>
+			</when>
+			
+			<!-- MODEL OPERATIONS -->
+			<when expression='#["openai:list-models" == vars.operation.operation_key]'>
+				<openai:list-models doc:name="List Models" doc:id="241b155b-d867-4457-96af-04bf20c42219" config-ref="Openai_config"/>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise error"
+					doc:id="49e62df9-2587-49c0-9b9e-e3a99e24816b"
+					type="CUSTOM:UNSUPPORTED_OPERATION" 
+					description="#['Unsupported operation: ' ++ vars.operation.operation_key]" />
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse"
+			doc:id="851b08d0-7d79-4a9d-9f13-a14bb121002b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

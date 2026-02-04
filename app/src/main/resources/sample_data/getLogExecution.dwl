@@ -1,0 +1,36 @@
+output application/java 
+---
+ {
+  execution_id: "62ca825f-4b76-4cce-b067-02d5dc21970f",
+  operation_id: 48,
+  operation_key: "a2a:send-message",
+  operation_name: "Send Message",
+  connector_id: 7,
+  connector_name: "A2A",
+  maven_artifact_id: "mule4-a2a-connector",
+  runtime_config_id: 18,
+  runtime_config_name: "MCE_own_A2A_Server",
+  status: "success",
+  execution_started_at: |2025-11-13T11:45:24.85893|,
+  execution_completed_at: |2025-11-13T11:45:36.781539|,
+  duration_ms: 11895,
+  http_status_code: 200,
+  source_ip: "/127.0.0.1:50258",
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+  request_payload: {
+    "type": "jsonb",
+    "null": false,
+    value: "{\"parameters\": {\"message\": \"{\\\"message\\\":{\\\"role\\\":\\\"user\\\",\\\"parts\\\":[{\\\"kind\\\":\\\"text\\\",\\\"text\\\":\\\"Enable connector mule4-agentforce-connector\\\"}],\\\"messageId\\\":\\\"msg-vb6j3dk5p-mhxawuk9\\\",\\\"kind\\\":\\\"message\\\"},\\\"configuration\\\":{\\\"acceptedOutputModes\\\":[\\\"text\\\"],\\\"blocking\\\":true}}\"}, \"operationId\": 48, \"enableLogging\": true, \"runtimeConfigId\": 18, \"enableValidation\": false}"
+  },
+  response_payload: {
+    "type": "jsonb",
+    "null": false,
+    value: "{\"payload\": {\"kind\": \"message\", \"role\": \"agent\", \"parts\": [{\"kind\": \"text\", \"text\": \"You asked: Enable connector mule4-agentforce-connector\\n\\nAgent response: success\"}], \"messageId\": \"response-5ceeea92-81ef-4921-bd7b-6454eebc1f49\"}, \"attributes\": {\"headers\": {\"date\": \"Thu, 13 Nov 2025 10:45:35 GMT\", \"connection\": \"Keep-Alive\", \"content-type\": \"application/json\", \"content-length\": \"325\", \"x-correlation-id\": \"52114646-f1c7-4e7d-8e90-090b3f61b1f1\", \"strict-transport-security\": \"max-age=31536000; includeSubdomains\"}, \"statusCode\": 200, \"reasonPhrase\": \"\"}}"
+  },
+  error_type: null,
+  error_message: null,
+  error_code: null,
+  error_description: null,
+  created_at: |2025-11-13T11:45:24.85893|,
+  updated_at: |2025-11-13T11:45:36.781539|
+}

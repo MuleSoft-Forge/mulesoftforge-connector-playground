@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>mulesoft-connector-playground-app · Anypoint Studio Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/bootstrap.css" rel="stylesheet">
+    <link href="assets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/docs.css" rel="stylesheet">
+    <link href="assets/prettify.css" rel="stylesheet">
+    <link href="assets/scroller.css" rel="stylesheet">
+
+  </head>
+
+  <body data-twttr-rendered="true" data-spy="scroll" data-target=".bs-docs-sidebar"><iframe style="display: none;" id="rufous-sandbox" name="uid13460061790411"></iframe>
+
+    <!-- Navbar
+    ================================================== -->
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <p class="navbar-text pull-right">
+              <a href="https://www.mulesoft.com" class="navbar-link">
+                <img src="./assets/images/mulesoft-logo-final.png" alt="MuleSoft" id="mulesoftlogo">
+              </a>
+          </p>
+          <div class="scroller scroller-left"><img src="./assets/icons/glyphicons_chevron-left.png" alt="scrollLeft"></div>
+          <div class="scroller scroller-right"><img src="./assets/icons/glyphicons_chevron-right.png" alt="scrollRight"></div>
+          <div class="wrapper">
+            <ul class="nav nav-tabs list" id="myTab">
+                    <li class="active"><a href="./index.html">vectors</a></li>
+                      <li><a href="./einsteinai.html">einsteinai</a></li>
+                      <li><a href="./gemini.html">gemini</a></li>
+                      <li><a href="./a2a.html">a2a</a></li>
+                      <li><a href="./openai.html">openai</a></li>
+                      <li><a href="./mcp.html">mcp</a></li>
+                      <li><a href="./global-elements.html">global-elements</a></li>
+                      <li><a href="./agentforce.html">agentforce</a></li>
+                      <li><a href="./idp.html">idp</a></li>
+                      <li><a href="./bedrock.html">bedrock</a></li>
+                      <li><a href="./mulesoft-connector-playground.html">mulesoft-connector-playground</a></li>
+                      <li><a href="./inference.html">inference</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+  <header class="jumbotron subhead" id="overview">
+    <div class="container">
+      <h1>mulesoft-connector-playground-app</h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav affix">
+          <li class="nav-header">Flows</li>
+            <li data-toggle="collapse" data-target="#_execute_vectorsNav"><a href="#_execute_vectors"><i class="icon-chevron-right"></i> execute-vectors</a>
+            </li>
+            <div id="_execute_vectorsNav" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <ul>
+                </ul>
+              </div>
+            </div>
+        </ul>
+      </div>
+      <div class="span9">
+
+        <!-- Elements and their descriptions
+        ================================================== -->
+        <div style="max-height: 640px;width:100%;overflow:auto;">
+            <img src="img/vectors.png" usemap="#mFlowMap" alt="Mule Configuration Image">
+            <map name="mFlowMap">
+          </map>
+        </div>
+        <!--Mule configuration xml code-->
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" href="#collapseMuleConfiguration">
+            Show Mule Configuration XML code...
+          </a>
+        </div>
+        <div id="collapseMuleConfiguration" class="accordion-body collapse" style="height: 0px;">
+          <div class="accordion-inner">
+              <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:ms-inference="http://www.mulesoft.org/schema/mule/ms-inference" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ms-inference http://www.mulesoft.org/schema/mule/ms-inference/current/mule-ms-inference.xsd"&gt;
+    &lt;ms-vectors:embedding-config name="MuleSoft_Vectors_Connector_Embedding_Config_OpenAI" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="be5aa9c1-10ff-47f0-a52c-a67a856cff80"&gt; 
+        &lt;ms-vectors:open-ai-connection apiKey="${openai.apiKey}"/&gt; 
+    &lt;/ms-vectors:embedding-config&gt;  
+    &lt;ms-vectors:embedding-config name="MuleSoft_Vectors_Connector_Embedding_Config_Einstein" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="0ad81345-3a9e-42bb-b9d8-e25979ec1e5d"&gt; 
+        &lt;ms-vectors:einstein-connection salesforceOrg="${salesforce.einstein.salesforceOrg}" clientId="${salesforce.einstein.clientId}" clientSecret="${salesforce.einstein.clientSecret}"/&gt; 
+    &lt;/ms-vectors:embedding-config&gt;  
+    &lt;ms-vectors:store-config name="MuleSoft_Vectors_Connector_Store_Config_PGVector" doc:name="MuleSoft Vectors Connector Store config" doc:id="59d65590-4b92-4822-ae38-f5873c2f32a0"&gt; 
+        &lt;ms-vectors:pg-vector-connection host="${postgresql.host}" port="${postgresql.port}" database="${postgresql.database}" user="${postgresql.user}" password="${postgresql.password}"/&gt; 
+    &lt;/ms-vectors:store-config&gt;  
+    &lt;ms-vectors:transform-config name="MuleSoft_Vectors_Connector_Transform_Config" doc:name="MuleSoft Vectors Connector Transform config" doc:id="3d53b795-3304-4b74-82a0-b830f34c576c"/&gt;  
+    &lt;sub-flow name="execute-vectors" doc:id="fd6eef3b-37bd-43e1-b599-60dd7b64f599"&gt; 
+        &lt;choice doc:name="Choice" doc:id="e09aa688-5b67-47d8-bd23-c591a3b238f5"&gt; 
+            &lt;when expression="#[&amp;quot;ms-vectors:embedding-generate-from-text&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-vectors:embedding-generate-from-text" doc:id="7015b04b-0c23-45db-8190-b86f30f3aa4e"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="4629e52b-716b-4870-a453-6ebbd3fc7e9b"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-vectors:embedding-generate-from-text embeddingModelName="#[payload.parameters.modelName default &amp;quot;text-embedding-3-large&amp;quot;]" doc:name="[Embedding] Generate from text" doc:id="4252400c-c0a0-4996-b231-5fb5245273ff" config-ref="MuleSoft_Vectors_Connector_Embedding_Config_OpenAI"&gt; 
+                                &lt;ms-vectors:inputs&gt;&lt;![CDATA[#[%dw 2.0
+output application/java
+---
+read(payload.parameters.texts default "", "application/json")]]]&gt;   &lt;/ms-vectors:inputs&gt;
+                            &lt;/ms-vectors:embedding-generate-from-text&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;salesforce-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-vectors:embedding-generate-from-text embeddingModelName="#[payload.parameters.modelName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot;]" doc:name="[Embedding] Generate from text" doc:id="d3eb5836-314f-4895-bb48-e9018b38299e" config-ref="MuleSoft_Vectors_Connector_Embedding_Config_Einstein"&gt; 
+                                &lt;ms-vectors:inputs&gt;&lt;![CDATA[#[%dw 2.0
+output application/java
+---
+read(payload.parameters.texts default "", "application/json")]]]&gt;   &lt;/ms-vectors:inputs&gt;
+                            &lt;/ms-vectors:embedding-generate-from-text&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="f2b22e9a-3641-4cd1-8fca-9d9bb1fc6ae5" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:store-add&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-vectors:store-add" doc:id="6a68e5e6-8ebb-4062-b2fa-4b579b224330"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="bae85475-9235-4b7d-b6cf-018e7c0ee9c0"&gt; 
+                        &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-vectors:store-add doc:name="[Store] Add" doc:id="2a4db832-4459-4788-b021-a3880ee1d4fd" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" metadataEntries="#[output java
+---
+read(payload.parameters.metadataEntries default &amp;quot;{}&amp;quot;, &amp;quot;application/json&amp;quot;)]"&gt;
+                                &lt;ms-vectors:text-segments-and-embeddings&gt;&lt;![CDATA[#[%dw 2.0
+output application/json
+---
+read(payload.parameters.textSegmentsAndEmbeddings default "{}", "application/json")]]]&gt; &lt;/ms-vectors:text-segments-and-embeddings&gt;
+                            &lt;/ms-vectors:store-add&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="0a4f6899-a256-42f3-a632-d3345ee34ce2" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:query&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-vectors:query" doc:id="7f7ce6a2-91f1-4983-a268-bce397aee05a"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="07e54391-b73b-4748-b083-7c03fd5d4818"&gt; 
+                        &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-vectors:query doc:name="[Store] Query" doc:id="be28be26-aa05-4e1b-bb00-c20777001c74" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" maxResults="#[payload.parameters.maxResults]" minScore="#[payload.parameters.minScore]"&gt; 
+                                &lt;ms-vectors:text-segment-and-embedding&gt;&lt;![CDATA[#[%dw 2.0
+output application/json
+---
+read(payload.parameters.textSegmentsAndEmbeddings default "{}", "application/json")]]]&gt; &lt;/ms-vectors:text-segment-and-embedding&gt;
+                                &lt;ms-vectors:condition&gt;&lt;![CDATA[#[payload.parameters.metadataConditions]]]&gt;  &lt;/ms-vectors:condition&gt; 
+                            &lt;/ms-vectors:query&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="ae3fba37-6469-43ae-b05d-eee597dc691b" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:query-all&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-vectors:query-all" doc:id="e5c35230-60c5-4fc2-b634-c0a2bedba599"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="e9a044c0-27ab-4430-baff-e14787d11c99"&gt; 
+                        &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-vectors:query-all doc:name="[Store] Query all" doc:id="b3e9aeb6-a477-451b-a15e-698c7a7d4509" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" retrieveEmbeddings="#[payload.parameters.retrieveEmbeddings default false]" pageSize="#[payload.parameters.pageSize]"/&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="18905294-e991-44d0-b1f2-3ca8d05dc7ff" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:store-remove&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-vectors:store-remove" doc:id="947d0ca5-852e-4263-a18c-bbde70b8a9ff"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="cdb922f8-72b0-4d34-bc00-1231a2016cbe"&gt; 
+                        &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;choice doc:name="Choice" doc:id="743b1a5e-def3-4844-87ed-4cb380f98680"&gt; 
+                                &lt;when expression="#[!isEmpty(payload.parameters.metadataCondition)]"&gt; 
+                                    &lt;ms-vectors:store-remove doc:name="[Store] Remove" doc:id="352e5ec0-9248-4fa3-9e67-9486b77d5c54" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]"&gt; 
+                                        &lt;ms-vectors:condition&gt;&lt;![CDATA[#[payload.parameters.metadataCondtion]]]&gt;    &lt;/ms-vectors:condition&gt; 
+                                    &lt;/ms-vectors:store-remove&gt; 
+                                &lt;/when&gt;  
+                                &lt;when expression="#[!isEmpty(payload.parameters.ids)]"&gt; 
+                                    &lt;ms-vectors:store-remove doc:name="[Store] Remove" doc:id="7747ca26-8196-4709-8696-7ba2672516ec" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" ids="#[output java
+---
+read(payload.parameters.ids default &amp;quot;&amp;quot;, &amp;quot;application/json&amp;quot;)]"/&gt;
+                                &lt;/when&gt;  
+                                &lt;otherwise&gt; 
+                                    &lt;raise-error doc:name="Raise error" doc:id="b679fa5a-991a-40cc-aa2a-84cf6786964c" type="CUSTOM:MISSING_CONDITIONS" description="Filter Conditions are missing eith Ids or Metadata"/&gt; 
+                                &lt;/otherwise&gt; 
+                            &lt;/choice&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="fc74b4fc-837b-4076-be3c-2460a2408b0c" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:transform-chunk-text&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="cc656585-efab-4810-b8b9-766cd825a2ba" maxSegmentSizeInChar="#[payload.parameters.maxSegmentSize]" maxOverlapSizeInChars="#[payload.parameters.maxOverlapSize]"&gt; 
+                    &lt;ms-vectors:text&gt;&lt;![CDATA[#[payload.parameters.text]]]&gt; &lt;/ms-vectors:text&gt; 
+                &lt;/ms-vectors:transform-chunk-text&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-vectors:transform-parse-document&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;choice doc:name="Choice" doc:id="a1aa6e0d-9b61-435a-bef4-45abac1a0e0d"&gt; 
+                    &lt;when expression="#[payload.parameters.documentParser == &amp;quot;text&amp;quot;]"&gt; 
+                        &lt;ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="a3ff073b-a1d1-457c-8e05-b5394c7a5924" config-ref="MuleSoft_Vectors_Connector_Transform_Config"&gt; 
+                            &lt;ms-vectors:document-binary&gt;&lt;![CDATA[#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.document default "")]]]&gt;  &lt;/ms-vectors:document-binary&gt;
+                            &lt;ms-vectors:document-parser-parameters&gt; 
+                                &lt;ms-vectors:text-document-parser-parameters documentParser="#[payload.parameters.textDocumentParser]" name="#[payload.parameters.name]"/&gt; 
+                            &lt;/ms-vectors:document-parser-parameters&gt; 
+                        &lt;/ms-vectors:transform-parse-document&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="1d9ed436-c3ef-4e3e-a53e-f0151684dbd1" config-ref="MuleSoft_Vectors_Connector_Transform_Config"&gt; 
+                            &lt;ms-vectors:document-binary&gt;&lt;![CDATA[#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.document default "")]]]&gt;  &lt;/ms-vectors:document-binary&gt;
+                            &lt;ms-vectors:document-parser-parameters&gt; 
+                                &lt;ms-vectors:multiformat-document-parser-parameters includeMetadata="#[payload.parameters.includeMetadata default false]"/&gt; 
+                            &lt;/ms-vectors:document-parser-parameters&gt; 
+                        &lt;/ms-vectors:transform-parse-document&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/when&gt;  
+            &lt;otherwise&gt; 
+                &lt;raise-error doc:name="Raise error" doc:id="e1469980-e415-4b93-90f5-5d659fdc554a" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+            &lt;/otherwise&gt; 
+        &lt;/choice&gt;  
+        &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="9729316c-e4e9-4d7d-a88f-2cb38f67d1af"&gt; 
+            &lt;ee:message&gt; 
+                &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+            &lt;/ee:message&gt; 
+        &lt;/ee:transform&gt; 
+    &lt;/sub-flow&gt; 
+&lt;/mule&gt;
+</code></pre>
+
+          </div>
+        </div>
+
+          <section id="_execute_vectors">
+            <div class="page-header">
+                <h1>execute-vectors <img src="./assets/icons/flow.png"></h1>
+            </div>
+            <div class="documentation-indented" style="height:100%;width:100%;overflow:auto;">
+                <img src="img/execute_vectors.png" usemap="#flowMapexecute_vectors" alt="execute_vectors image">
+                <map name="flowMapexecute_vectors">
+                </map>
+            </div>
+            <div class="documentation-indented">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#_execute_vectorsxml_code">
+                  Show configuration XML code of the flow execute-vectors...
+                </a>
+              </div>
+              <div id="_execute_vectorsxml_code" class="accordion-body collapse" style="height: 0px;">
+                <div class="accordion-inner">
+                    <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;sub-flow name="execute-vectors" doc:id="fd6eef3b-37bd-43e1-b599-60dd7b64f599"&gt;  
+    &lt;choice doc:name="Choice" doc:id="e09aa688-5b67-47d8-bd23-c591a3b238f5"&gt; 
+        &lt;when expression="#[&amp;quot;ms-vectors:embedding-generate-from-text&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-vectors:embedding-generate-from-text" doc:id="7015b04b-0c23-45db-8190-b86f30f3aa4e"&gt; 
+                &lt;choice doc:name="Choice" doc:id="4629e52b-716b-4870-a453-6ebbd3fc7e9b"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-vectors:embedding-generate-from-text embeddingModelName="#[payload.parameters.modelName default &amp;quot;text-embedding-3-large&amp;quot;]" doc:name="[Embedding] Generate from text" doc:id="4252400c-c0a0-4996-b231-5fb5245273ff" config-ref="MuleSoft_Vectors_Connector_Embedding_Config_OpenAI"&gt;  
+                            &lt;ms-vectors:inputs&gt;&lt;![CDATA[#[%dw 2.0
+output application/java
+---
+read(payload.parameters.texts default "", "application/json")]]]&gt;   &lt;/ms-vectors:inputs&gt;
+                        &lt;/ms-vectors:embedding-generate-from-text&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;salesforce-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-vectors:embedding-generate-from-text embeddingModelName="#[payload.parameters.modelName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot;]" doc:name="[Embedding] Generate from text" doc:id="d3eb5836-314f-4895-bb48-e9018b38299e" config-ref="MuleSoft_Vectors_Connector_Embedding_Config_Einstein"&gt;  
+                            &lt;ms-vectors:inputs&gt;&lt;![CDATA[#[%dw 2.0
+output application/java
+---
+read(payload.parameters.texts default "", "application/json")]]]&gt;   &lt;/ms-vectors:inputs&gt;
+                        &lt;/ms-vectors:embedding-generate-from-text&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="f2b22e9a-3641-4cd1-8fca-9d9bb1fc6ae5" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:store-add&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-vectors:store-add" doc:id="6a68e5e6-8ebb-4062-b2fa-4b579b224330"&gt; 
+                &lt;choice doc:name="Choice" doc:id="bae85475-9235-4b7d-b6cf-018e7c0ee9c0"&gt; 
+                    &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-vectors:store-add doc:name="[Store] Add" doc:id="2a4db832-4459-4788-b021-a3880ee1d4fd" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" metadataEntries="#[output java
+---
+read(payload.parameters.metadataEntries default &amp;quot;{}&amp;quot;, &amp;quot;application/json&amp;quot;)]"&gt;
+                            &lt;ms-vectors:text-segments-and-embeddings&gt;&lt;![CDATA[#[%dw 2.0
+output application/json
+---
+read(payload.parameters.textSegmentsAndEmbeddings default "{}", "application/json")]]]&gt; &lt;/ms-vectors:text-segments-and-embeddings&gt;
+                        &lt;/ms-vectors:store-add&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="0a4f6899-a256-42f3-a632-d3345ee34ce2" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:query&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-vectors:query" doc:id="7f7ce6a2-91f1-4983-a268-bce397aee05a"&gt; 
+                &lt;choice doc:name="Choice" doc:id="07e54391-b73b-4748-b083-7c03fd5d4818"&gt; 
+                    &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-vectors:query doc:name="[Store] Query" doc:id="be28be26-aa05-4e1b-bb00-c20777001c74" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" maxResults="#[payload.parameters.maxResults]" minScore="#[payload.parameters.minScore]"&gt;  
+                            &lt;ms-vectors:text-segment-and-embedding&gt;&lt;![CDATA[#[%dw 2.0
+output application/json
+---
+read(payload.parameters.textSegmentsAndEmbeddings default "{}", "application/json")]]]&gt; &lt;/ms-vectors:text-segment-and-embedding&gt;
+                            &lt;ms-vectors:condition&gt;&lt;![CDATA[#[payload.parameters.metadataConditions]]]&gt;  &lt;/ms-vectors:condition&gt; 
+                        &lt;/ms-vectors:query&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="ae3fba37-6469-43ae-b05d-eee597dc691b" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:query-all&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-vectors:query-all" doc:id="e5c35230-60c5-4fc2-b634-c0a2bedba599"&gt; 
+                &lt;choice doc:name="Choice" doc:id="e9a044c0-27ab-4430-baff-e14787d11c99"&gt; 
+                    &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-vectors:query-all doc:name="[Store] Query all" doc:id="b3e9aeb6-a477-451b-a15e-698c7a7d4509" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" retrieveEmbeddings="#[payload.parameters.retrieveEmbeddings default false]" pageSize="#[payload.parameters.pageSize]"&gt;   &lt;/ms-vectors:query-all&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="18905294-e991-44d0-b1f2-3ca8d05dc7ff" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:store-remove&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-vectors:store-remove" doc:id="947d0ca5-852e-4263-a18c-bbde70b8a9ff"&gt; 
+                &lt;choice doc:name="Choice" doc:id="cdb922f8-72b0-4d34-bc00-1231a2016cbe"&gt; 
+                    &lt;when expression="#[&amp;quot;pgvector-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;choice doc:name="Choice" doc:id="743b1a5e-def3-4844-87ed-4cb380f98680"&gt; 
+                            &lt;when expression="#[!isEmpty(payload.parameters.metadataCondition)]"&gt; 
+                                &lt;ms-vectors:store-remove doc:name="[Store] Remove" doc:id="352e5ec0-9248-4fa3-9e67-9486b77d5c54" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]"&gt;  
+                                    &lt;ms-vectors:condition&gt;&lt;![CDATA[#[payload.parameters.metadataCondtion]]]&gt;    &lt;/ms-vectors:condition&gt; 
+                                &lt;/ms-vectors:store-remove&gt; 
+                            &lt;/when&gt;  
+                            &lt;when expression="#[!isEmpty(payload.parameters.ids)]"&gt; 
+                                &lt;ms-vectors:store-remove doc:name="[Store] Remove" doc:id="7747ca26-8196-4709-8696-7ba2672516ec" config-ref="MuleSoft_Vectors_Connector_Store_Config_PGVector" storeName="#[payload.parameters.storeName]" ids="#[output java
+---
+read(payload.parameters.ids default &amp;quot;&amp;quot;, &amp;quot;application/json&amp;quot;)]"&gt;  &lt;/ms-vectors:store-remove&gt;
+                            &lt;/when&gt;  
+                            &lt;otherwise&gt; 
+                                &lt;raise-error doc:name="Raise error" doc:id="b679fa5a-991a-40cc-aa2a-84cf6786964c" type="CUSTOM:MISSING_CONDITIONS" description="Filter Conditions are missing eith Ids or Metadata"/&gt; 
+                            &lt;/otherwise&gt; 
+                        &lt;/choice&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="fc74b4fc-837b-4076-be3c-2460a2408b0c" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:transform-chunk-text&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="cc656585-efab-4810-b8b9-766cd825a2ba" maxSegmentSizeInChar="#[payload.parameters.maxSegmentSize]" maxOverlapSizeInChars="#[payload.parameters.maxOverlapSize]"&gt;  
+                &lt;ms-vectors:text&gt;&lt;![CDATA[#[payload.parameters.text]]]&gt; &lt;/ms-vectors:text&gt; 
+            &lt;/ms-vectors:transform-chunk-text&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-vectors:transform-parse-document&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;choice doc:name="Choice" doc:id="a1aa6e0d-9b61-435a-bef4-45abac1a0e0d"&gt; 
+                &lt;when expression="#[payload.parameters.documentParser == &amp;quot;text&amp;quot;]"&gt; 
+                    &lt;ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="a3ff073b-a1d1-457c-8e05-b5394c7a5924" config-ref="MuleSoft_Vectors_Connector_Transform_Config"&gt;  
+                        &lt;ms-vectors:document-binary&gt;&lt;![CDATA[#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.document default "")]]]&gt;  &lt;/ms-vectors:document-binary&gt;
+                        &lt;ms-vectors:document-parser-parameters&gt; 
+                            &lt;ms-vectors:text-document-parser-parameters documentParser="#[payload.parameters.textDocumentParser]" name="#[payload.parameters.name]"/&gt; 
+                        &lt;/ms-vectors:document-parser-parameters&gt; 
+                    &lt;/ms-vectors:transform-parse-document&gt; 
+                &lt;/when&gt;  
+                &lt;otherwise&gt; 
+                    &lt;ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="1d9ed436-c3ef-4e3e-a53e-f0151684dbd1" config-ref="MuleSoft_Vectors_Connector_Transform_Config"&gt;  
+                        &lt;ms-vectors:document-binary&gt;&lt;![CDATA[#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.document default "")]]]&gt;  &lt;/ms-vectors:document-binary&gt;
+                        &lt;ms-vectors:document-parser-parameters&gt; 
+                            &lt;ms-vectors:multiformat-document-parser-parameters includeMetadata="#[payload.parameters.includeMetadata default false]"/&gt; 
+                        &lt;/ms-vectors:document-parser-parameters&gt; 
+                    &lt;/ms-vectors:transform-parse-document&gt; 
+                &lt;/otherwise&gt; 
+            &lt;/choice&gt; 
+        &lt;/when&gt;  
+        &lt;otherwise&gt; 
+            &lt;raise-error doc:name="Raise error" doc:id="e1469980-e415-4b93-90f5-5d659fdc554a" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+        &lt;/otherwise&gt; 
+    &lt;/choice&gt;  
+    &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="9729316c-e4e9-4d7d-a88f-2cb38f67d1af"&gt;  
+        &lt;ee:message&gt; 
+            &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+        &lt;/ee:message&gt; 
+    &lt;/ee:transform&gt; 
+&lt;/sub-flow&gt;
+</code></pre>
+
+                </div>
+              </div>
+              <p></p>
+            </div>
+          </section>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>Designed and built with <a href="https://www.mulesoft.com/platform/studio" target="_blank">Anypoint Studio</a>.</p>
+        <p>Code licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <p>Icons from <a href="https://glyphicons.com/">Glyphicons Free</a>, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+          <li><a href="https://blogs.mulesoft.com/bloghome/">Read the blog</a></li>
+          <li><a href="https://www.mulesoft.org/jira/issues/">Submit issues</a></li>
+        </ul>
+      </div>
+    </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/widgets.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="assets/prettify.js"></script>
+    <script src="assets/bootstrap-transition.js"></script>
+    <script src="assets/bootstrap-alert.js"></script>
+    <script src="assets/bootstrap-modal.js"></script>
+    <script src="assets/bootstrap-dropdown.js"></script>
+    <script src="assets/bootstrap-scrollspy.js"></script>
+    <script src="assets/bootstrap-tab.js"></script>
+    <script src="assets/bootstrap-tooltip.js"></script>
+    <script src="assets/bootstrap-popover.js"></script>
+    <script src="assets/bootstrap-button.js"></script>
+    <script src="assets/bootstrap-collapse.js"></script>
+    <script src="assets/bootstrap-carousel.js"></script>
+    <script src="assets/bootstrap-typeahead.js"></script>
+    <script src="assets/bootstrap-affix.js"></script>
+    <script src="assets/scroller.js"></script>
+    <script src="assets/application.js"></script>
+
+</body>
+</html>

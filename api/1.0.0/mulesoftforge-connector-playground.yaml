@@ -1,0 +1,3101 @@
+openapi: 3.0.3
+info:
+  title: MuleSoftForge Connector Playground
+  version: 1.0.0
+  description: |
+    A runtime API for exploring and executing MuleSoft Connectors through a web interface.
+    
+    This API provides:
+    - **Connector Discovery**: Browse available connectors, operations, and parameters
+    - **Configuration Management**: Create and manage runtime configurations for connectors
+    - **Connector Execution**: Execute connector operations with dynamic parameters
+    - **Metadata Access**: Retrieve configuration types and providers for UI form generation
+    
+    The API is designed to serve a Vue.js frontend and supports deployment on both CloudHub and Dev Localhost.
+
+    
+  contact:
+    name: MuleSoftForge Connector Playground Team
+    email: jeffcock@mulesoftforge.com
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+  - url: https://{app-name}.cloudhub.io
+    description: CloudHub deployment
+    variables:
+      app-name:
+        default: mulesoftforge-connector-playground
+        description: CloudHub application name
+
+tags:
+  - name: Configuration Metadata
+    description: Configuration metadata endpoints for dynamic UI form generation
+    
+  - name: Connectors
+    description: Connector catalog endpoints for browsing and managing connectors
+    
+  - name: Execution
+    description: Connector execution endpoints for runtime operation invocation
+    
+  - name: Runtime Configurations
+    description: Runtime configuration management for connector credentials and settings
+  
+  - name: Operations
+    description: Internal operations endpoints for database management and system utilities
+  
+  - name: Execution Tracking
+    description: Execution history and analytics for connector operations
+
+security:
+  - Client_ID_Enforcement_BasicAuth: []
+
+paths:
+  /connectors:
+    get:
+      operationId: listConnectors
+      summary: List All Connectors
+      description: |
+        Retrieves a list of all connectors in the system with optional filtering by activation status.
+        
+        **Filtering Behavior:**
+        - **Omitted or `null`**: Returns ALL connectors (active and inactive) - no restriction applied
+        - **`all`**: Returns ALL connectors (active and inactive) - no restriction applied
+        - **`active`**: Returns only connectors where `isActive = true`
+        - **`inactive`**: Returns only connectors where `isActive = false`
+        
+        **Default Behavior:** When the filter parameter is not provided, the API treats it as `all` 
+        and returns all connectors regardless of activation status. This allows UI developers to 
+        see all available connectors by default and optionally filter down to active or inactive only.
+        
+        **Ordering:** Results are always ordered alphabetically by connector name (A-Z).
+        
+        **Note for UI Developers:** The response includes `operationCount` for each connector, 
+        calculated via a subquery. This allows you to display "Agentforce (3 operations)" without 
+        additional API calls.
+      tags:
+        - Connectors
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          description: |
+            Filter connectors by activation status. If omitted, returns all connectors.
+            
+            - `all` or omitted: All connectors (no restriction)
+            - `active`: Only active connectors (isActive = true)
+            - `inactive`: Only inactive connectors (isActive = false)
+          schema:
+            type: string
+            enum: [active, inactive, all]
+      responses:
+        '200':
+          $ref: '#/components/responses/ConnectorList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    post:
+      operationId: createConnector
+      summary: Create New Connector
+      description: |
+        Creates a new connector in the catalog.
+      tags:
+        - Connectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorCreate'
+      responses:
+        '201':
+          description: Successfully created connector
+          headers:
+            Location:
+              description: URL of the newly created connector
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}:
+    get:
+      operationId: getConnector
+      summary: Get Connector Details
+      description: |
+        Retrieves complete details for a specific connector including all operations, 
+        operation parameters, configuration types, and providers. This is an aggregated 
+        endpoint designed to minimize API roundtrips for the frontend.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          description: The unique integer identifier of the connector
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved connector details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    put:
+      operationId: updateConnector
+      summary: Update Connector
+      description: |
+        Updates an existing connector's metadata (name, version, description, etc.).
+        Also used to activate/deactivate via `isActive`.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorUpdate'
+      responses:
+        '200':
+          description: Successfully updated connector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    delete:
+      operationId: deleteConnector
+      summary: Delete Connector
+      description: |
+        Permanently deletes a connector and all associated operations, parameters, and config types.
+        This operation cannot be undone.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted connector
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}/operations:
+    post:
+      operationId: createOperation
+      summary: Create Operation
+      description: |
+        Adds a new operation to an existing connector.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationCreate'
+      responses:
+        '201':
+          description: Successfully created operation
+          headers:
+            Location:
+              description: URL of the newly created operation
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}/operations/{operationId}:
+    put:
+      operationId: updateOperation
+      summary: Update Operation
+      description: |
+        Updates an existing operation's metadata.
+        Also used to activate/deactivate via `isActive`.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationUpdate'
+      responses:
+        '200':
+          description: Successfully updated operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    delete:
+      operationId: deleteOperation
+      summary: Delete Operation
+      description: |
+        Permanently deletes an operation and all associated parameters.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted operation
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}/operations/{operationId}/parameters:
+    get:
+      operationId: listOperationParameters
+      summary: List Parameters for Operation
+      description: |
+        Retrieves all parameters for a specific operation.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationParameterDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createOperationParameterForConnector
+      summary: Create Operation Parameter
+      description: |
+        Adds a new parameter to an operation.
+      tags:
+        - Connectors
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: operationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationParameterCreate'
+      responses:
+        '201':
+          description: Successfully created parameter
+          headers:
+            Location:
+              description: URL of the newly created parameter
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationParameterDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /parameters/{parameterId}:
+    get:
+      operationId: getOperationParameter
+      summary: Get Operation Parameter
+      description: |
+        Retrieves parameter details.
+      tags:
+        - Connectors
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationParameterDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    put:
+      operationId: updateOperationParameter
+      summary: Update Operation Parameter
+      description: |
+        Updates an existing operation parameter.
+      tags:
+        - Connectors
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationParameterUpdate'
+      responses:
+        '200':
+          description: Successfully updated parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationParameterDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    delete:
+      operationId: deleteOperationParameter
+      summary: Delete Operation Parameter
+      description: |
+        Permanently deletes an operation parameter.
+      tags:
+        - Connectors
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted parameter
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}/config-types:
+    get:
+      operationId: listConnectorConfigTypes
+      summary: List Config Types for Connector
+      description: |
+        Retrieves all configuration types for a specific connector.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved config types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConfigTypeDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createConfigType
+      summary: Create Config Type
+      description: |
+        Adds a new configuration type to a connector.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigTypeCreate'
+      responses:
+        '201':
+          description: Successfully created config type
+          headers:
+            Location:
+              description: URL of the newly created config type
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigType'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /connectors/{connectorId}/config-types/{configTypeId}:
+    put:
+      operationId: updateConnectorConfigType
+      summary: Update Connector Config Type
+      description: |
+        Updates an existing configuration type for a specific connector.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: configTypeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigTypeUpdate'
+      responses:
+        '200':
+          description: Successfully updated config type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigType'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: deleteConnectorConfigType
+      summary: Delete Connector Config Type
+      description: |
+        Permanently deletes a configuration type from a specific connector and all 
+        associated providers and parameters.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: connectorId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: configTypeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted config type
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /config-types/{configTypeId}/providers:
+    post:
+      operationId: createProvider
+      summary: Create Provider
+      description: |
+        Adds a new provider to a configuration type.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: configTypeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderCreate'
+      responses:
+        '201':
+          description: Successfully created provider
+          headers:
+            Location:
+              description: URL of the newly created provider
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /config-types/{configTypeId}/providers/{providerId}:
+    get:
+      operationId: getProvider
+      summary: Get Provider Details
+      description: |
+        Retrieves detailed information about a specific provider including all configuration 
+        parameters required for that provider. This endpoint provides all the metadata needed 
+        to dynamically generate a configuration form in the UI.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: configTypeId
+          in: path
+          required: true
+          description: The unique integer identifier of the configuration type
+          schema:
+            type: integer
+        - name: providerId
+          in: path
+          required: true
+          description: The unique integer identifier of the provider
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved provider with configuration parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    put:
+      operationId: updateProvider
+      summary: Update Provider
+      description: |
+        Updates an existing provider.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: configTypeId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderUpdate'
+      responses:
+        '200':
+          description: Successfully updated provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    delete:
+      operationId: deleteProvider
+      summary: Delete Provider
+      description: |
+        Permanently deletes a provider and all associated config parameters.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: configTypeId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted provider
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /providers/{providerId}/parameters:
+    post:
+      operationId: createConfigParameter
+      summary: Create Config Parameter
+      description: |
+        Adds a new configuration parameter to a provider.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigParameterCreate'
+      responses:
+        '201':
+          description: Successfully created config parameter
+          headers:
+            Location:
+              description: URL of the newly created parameter
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigParameterDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /config-parameters/{parameterId}:
+    delete:
+      operationId: deleteConfigParameter
+      summary: Delete Config Parameter
+      description: |
+        Permanently deletes a configuration parameter.
+      tags:
+        - Configuration Metadata
+      parameters:
+        - name: parameterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted config parameter
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /runtime-configs:
+    get:
+      operationId: listRuntimeConfigs
+      summary: List Runtime Configurations
+      description: |
+        Retrieves a list of all runtime configurations. Optionally filter by configuration type
+        or activation status.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configTypeId
+          in: query
+          required: false
+          description: Filter configurations by configuration type ID
+          schema:
+            type: integer
+        - name: isActive
+          in: query
+          required: false
+          description: Filter configurations by activation status
+          schema:
+            type: boolean
+      responses:
+        '200':
+          $ref: '#/components/responses/RuntimeConfigList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createRuntimeConfig
+      summary: Create Runtime Configuration
+      description: |
+        Creates a new runtime configuration with provider-specific parameter values. The 
+        configuration name must be unique within the configuration type scope.
+      tags:
+        - Runtime Configurations
+      requestBody:
+        required: true
+        description: Runtime configuration details and parameter values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuntimeConfigCreate'
+      responses:
+        '201':
+          description: Successfully created runtime configuration
+          headers:
+            Location:
+              description: URL of the newly created runtime configuration
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeConfig'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /runtime-configs/{configId}:
+    get:
+      operationId: getRuntimeConfig
+      summary: Get Runtime Configuration
+      description: |
+        Retrieves detailed information about a specific runtime configuration including all 
+        parameter values. Encrypted values are returned masked for security.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The unique integer identifier of the runtime configuration
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved runtime configuration details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeConfigDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      operationId: updateRuntimeConfig
+      summary: Update Runtime Configuration
+      description: |
+        Updates an existing runtime configuration. This is a full replacement operation - 
+        all parameter values should be provided.
+        Also used to activate/deactivate via `isActive`.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The unique integer identifier of the runtime configuration
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        description: Updated configuration details and parameter values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuntimeConfigUpdate'
+      responses:
+        '200':
+          description: Successfully updated runtime configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeConfig'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: deleteRuntimeConfig
+      summary: Delete Runtime Configuration
+      description: |
+        Permanently deletes a runtime configuration and all associated parameter values. 
+        This operation cannot be undone.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The unique integer identifier of the runtime configuration
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successfully deleted runtime configuration
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /runtime-configs/{configId}/idp/actions:
+    get:
+      operationId: getIdpActions
+      summary: Get IDP Actions for Runtime Configuration
+      description: |
+        Retrieves the list of available IDP Document Actions from Anypoint Platform 
+        using the authentication credentials from the specified runtime configuration.
+        
+        This endpoint proxies calls to the Anypoint Platform IDP API to securely 
+        fetch actions without exposing credentials to the frontend.
+        
+        **Authentication:** Uses the username, password, organisationId, and platformBaseUrl 
+        from the runtime configuration to authenticate with Anypoint Platform.
+        
+        **Use Case:** Populate the Action dropdown in the IDP Test Lab UI.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The runtime configuration ID containing IDP credentials
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved list of IDP actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdpAction'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /runtime-configs/{configId}/idp/actions/{actionId}/versions:
+    get:
+      operationId: getIdpActionVersions
+      summary: Get Versions for IDP Action
+      description: |
+        Retrieves the list of available versions for a specific IDP Document Action 
+        from Anypoint Platform using the runtime configuration's credentials.
+        
+        This endpoint proxies calls to the Anypoint Platform IDP API to securely 
+        fetch action versions without exposing credentials to the frontend.
+        
+        **Authentication:** Uses the username, password, organisationId, and platformBaseUrl 
+        from the runtime configuration.
+        
+        **Use Case:** Populate the Version dropdown in the IDP Test Lab UI after an action is selected.
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The runtime configuration ID containing IDP credentials
+          schema:
+            type: integer
+        - name: actionId
+          in: path
+          required: true
+          description: The UUID of the IDP Document Action
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully retrieved list of action versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdpActionVersion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /runtime-configs/{configId}/agentforce/agents:
+    get:
+      operationId: getAgentforceAgents
+      summary: Get Agentforce Agents for Runtime Configuration
+      description: |
+        Retrieves the list of available Agentforce AI agents from the connected Salesforce org 
+        using the OAuth credentials from the specified runtime configuration.
+        
+        This endpoint proxies calls to the Salesforce Agentforce API to securely 
+        fetch available agents without exposing credentials to the frontend.
+        
+        **Authentication:** Uses the clientId, clientSecret, and tokenUrl 
+        from the runtime configuration to authenticate with Salesforce via OAuth Client Credentials flow.
+        
+        **Use Case:** Populate the Agent dropdown in the Agentforce Test Lab UI.
+        
+        **Response Structure:** Returns an array of agent objects, each containing:
+        - `id` - The Salesforce agent ID (e.g., "0XxKa0000007qzVKAQ")
+        - `name` - Human-readable agent name (e.g., "Employee Agent (Default)")
+      tags:
+        - Runtime Configurations
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          description: The runtime configuration ID containing Salesforce OAuth credentials
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved list of Agentforce agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AgentforceAgent'
+              example:
+                - id: "0XxKa0000007qzVKAQ"
+                  name: "Employee Agent (Default)"
+                - id: "0XxKa0000007qzWLAB"
+                  name: "Customer Service Agent"
+                - id: "0XxKa0000007qzXMAC"
+                  name: "Sales Assistant Agent"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Authentication failed with Salesforce
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Authentication failed"
+                  detail:
+                    type: string
+                    example: "Invalid OAuth credentials for Salesforce"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /execute:
+    post:
+      operationId: executeOperation
+      summary: Execute Connector Operation
+      description: |
+        Executes a connector operation using a specified runtime configuration and input 
+        parameters. This is the core endpoint for runtime connector invocation.
+        
+        The execution flow:
+        1. Validates that the connector, operation, and runtime config exist and are active
+        2. Validates that all required parameters are provided
+        3. Retrieves configuration credentials from the database
+        4. Invokes the MuleSoft connector operation via internal flow
+        5. Returns the result from the external system
+      tags:
+        - Execution
+      requestBody:
+        required: true
+        description: Execution request with operation and runtime configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionRequest'
+      responses:
+        '200':
+          description: Successfully executed connector operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /_ops/reset-db:
+    post:
+      operationId: resetDatabase
+      summary: Reset Database (DESTRUCTIVE)
+      description: |
+        **⚠️ WARNING: This is a destructive operation that cannot be undone.**
+        
+        Drops and recreates the entire database schema, then re-seeds with initial data.
+        This endpoint is intended for development and testing only.
+        
+        **What it does:**
+        1. Drops the public schema (CASCADE deletes all tables, data, triggers)
+        2. Recreates the public schema
+        3. Executes schema.sql to rebuild all tables, enums, and triggers
+        4. Executes seed_agentforce.sql to populate Agentforce connector data
+        5. Executes seed_einstein_ai.sql to populate Einstein AI connector data
+        
+        **Security:**
+        Requires `X-Reset-Token` header with a valid token configured in MuleSoft properties.
+        
+        **Use Cases:**
+        - Development environment reset
+        - Integration test setup
+        - Quick clean state for testing
+      tags:
+        - Operations
+      security:
+        - ResetToken: []
+      responses:
+        '200':
+          description: Database successfully reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetDatabaseResponse'
+        '403':
+          description: Forbidden - Invalid or missing reset token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal server error - Database reset failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /execution-logs:
+    get:
+      operationId: listExecutionLogs
+      summary: List Execution History
+      description: |
+        Retrieves execution history with filtering and pagination.
+        Supports filtering by operation, connector, status, and date range.
+        
+        **Filtering Options:**
+        - **operationId**: Filter by specific operation ID
+        - **connectorId**: Filter by specific connector ID
+        - **mavenArtifactId**: Filter by connector Maven artifact ID
+        - **status**: Filter by execution status (started, success, error, timeout)
+        - **startDate**: Filter executions started after this date (ISO 8601 format)
+        - **endDate**: Filter executions started before this date (ISO 8601 format)
+        
+        **Pagination:**
+        - **limit**: Maximum number of results (default: 100, max: 500)
+        - **offset**: Number of results to skip (default: 0)
+        
+        **Ordering:** Results are ordered by execution start time (newest first).
+      tags:
+        - Execution Tracking
+      parameters:
+        - name: operationId
+          in: query
+          required: false
+          description: Filter by operation ID
+          schema:
+            type: integer
+        - name: connectorId
+          in: query
+          required: false
+          description: Filter by connector ID
+          schema:
+            type: integer
+        - name: mavenArtifactId
+          in: query
+          required: false
+          description: Filter by connector Maven artifact ID
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          description: Filter by execution status
+          schema:
+            type: string
+            enum: [started, success, error, timeout]
+        - name: startDate
+          in: query
+          required: false
+          description: Filter executions started after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          description: Filter executions started before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          required: false
+          description: Page number for pagination (default 1). Used to calculate offset as (page - 1) * limit
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of results (default 100, max 500)
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+        - name: offset
+          in: query
+          required: false
+          description: Number of results to skip for pagination (default 0)
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Successful response with execution history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExecutionLogSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /execution-logs/{executionId}:
+    get:
+      operationId: getExecutionDetail
+      summary: Get Execution Details
+      description: |
+        Retrieves complete execution details including request/response payloads
+        and error information if applicable.
+        
+        **Response Structure:**
+        - **Execution Metadata**: ID, operation, connector, timing, status
+        - **Request Payload**: Complete request parameters as JSON
+        - **Response Payload**: Complete response data as JSON (if execution completed)
+        - **Error Details**: Error type, code, message, description (if execution failed)
+        
+        **Use Cases:**
+        - **Debugging**: View exact request/response for failed executions
+        - **Audit Trail**: Track who executed what and when
+        - **Replay**: Get original request parameters to retry an operation
+      tags:
+        - Execution Tracking
+      parameters:
+        - name: executionId
+          in: path
+          required: true
+          description: Unique execution ID (UUID)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response with complete execution details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionLogDetail'
+        '404':
+          description: Execution not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /execution-stats:
+    get:
+      operationId: getExecutionStats
+      summary: Get Execution Statistics
+      description: |
+        Retrieves aggregated statistics for executions.
+        Includes success rate, average duration, and error breakdown.
+        
+        **Filtering Options:**
+        - **operationId**: Get stats for a specific operation
+        - **connectorId**: Get stats for a specific connector
+        - **startDate**: Include executions started after this date
+        - **endDate**: Include executions started before this date
+        
+        **Statistics Provided:**
+        - **Total Executions**: Count of all executions in the filtered set
+        - **Success/Error/Timeout Counts**: Breakdown by execution status
+        - **Success Rate**: Percentage of successful executions (0-100)
+        - **Duration Statistics**: Average, minimum, maximum execution time in milliseconds
+        - **Error Breakdown**: List of error types with counts and percentages
+        
+        **Use Cases:**
+        - **Performance Monitoring**: Track average execution times over time
+        - **Reliability Metrics**: Monitor success rates and error patterns
+        - **Capacity Planning**: Identify slow or frequently failing operations
+      tags:
+        - Execution Tracking
+      parameters:
+        - name: operationId
+          in: query
+          required: false
+          description: Filter by operation ID
+          schema:
+            type: integer
+        - name: connectorId
+          in: query
+          required: false
+          description: Filter by connector ID
+          schema:
+            type: integer
+        - name: startDate
+          in: query
+          required: false
+          description: Include executions started after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: false
+          description: Include executions started before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful response with execution statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionStats'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  responses:
+    # Success Responses with X-Total-Count header
+    ConnectorList:
+      description: Successfully retrieved the list of connectors
+      headers:
+        X-Total-Count:
+          description: Total number of connectors returned in the response
+          schema:
+            type: integer
+          example: 5
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ConnectorSummary'
+    
+    ConfigTypeList:
+      description: Successfully retrieved list of configuration types
+      headers:
+        X-Total-Count:
+          description: Total number of configuration types returned in the response
+          schema:
+            type: integer
+          example: 8
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ConfigTypeDetail'
+    
+    RuntimeConfigList:
+      description: Successfully retrieved list of runtime configurations
+      headers:
+        X-Total-Count:
+          description: Total number of runtime configurations returned in the response
+          schema:
+            type: integer
+          example: 12
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/RuntimeConfigSummary'
+    
+    # Error Responses
+    BadRequest:
+      description: Invalid request or query parameter value
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    
+    Conflict:
+      description: Resource conflict (duplicate name or constraint violation)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    
+    UnprocessableEntity:
+      description: Request cannot be processed due to business logic error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+  schemas:
+    # ==========================================
+    # Connector Schemas
+    # ==========================================
+    
+    ConnectorSummary:
+      type: object
+      description: Summary information about a connector for list views
+      required:
+        - id
+        - mavenArtifactId
+        - name
+        - version
+        - category
+        - isActive
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the connector
+        mavenArtifactId:
+          type: string
+          description: Maven artifact ID
+        name:
+          type: string
+          description: Display name of the connector
+        version:
+          type: string
+          description: Connector version
+        category:
+          type: string
+          enum: [AI]
+          description: Connector category
+        description:
+          type: string
+          description: Brief description of the connector
+        docUrl:
+          type: string
+          format: uri
+          description: URL to connector documentation
+        icon:
+          type: string
+          description: Icon filename or URL
+        isActive:
+          type: boolean
+          description: Whether the connector is active and available for use
+        operationCount:
+          type: integer
+          description: Number of operations available in this connector
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the connector was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the connector was last updated
+
+    Connector:
+      type: object
+      description: Basic connector information (used for create/update responses)
+      required:
+        - id
+        - mavenArtifactId
+        - name
+        - version
+        - category
+        - isActive
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the connector
+        mavenArtifactId:
+          type: string
+          description: Maven artifact ID
+        name:
+          type: string
+          description: Display name of the connector
+        version:
+          type: string
+          description: Connector version
+        category:
+          type: string
+          enum: [AI]
+          description: Connector category
+        description:
+          type: string
+          description: Brief description of the connector
+        docUrl:
+          type: string
+          format: uri
+          description: URL to connector documentation
+        icon:
+          type: string
+          description: Icon filename or URL
+        isActive:
+          type: boolean
+          description: Whether the connector is active and available for use
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the connector was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the connector was last updated
+
+    ConnectorDetail:
+      type: object
+      description: Complete connector information including operations and configuration metadata
+      required:
+        - id
+        - mavenArtifactId
+        - name
+        - version
+        - category
+        - isActive
+        - operations
+        - configTypes
+      properties:
+        id:
+          type: integer
+        mavenArtifactId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        category:
+          type: string
+          enum: [AI]
+        description:
+          type: string
+        docUrl:
+          type: string
+          format: uri
+        icon:
+          type: string
+        isActive:
+          type: boolean
+        operations:
+          type: array
+          description: All operations available for this connector
+          items:
+            $ref: '#/components/schemas/OperationDetail'
+        configTypes:
+          type: array
+          description: All configuration types supported by this connector
+          items:
+            $ref: '#/components/schemas/ConfigTypeDetail'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ==========================================
+    # Operation Schemas
+    # ==========================================
+
+    Operation:
+      type: object
+      description: Basic operation information (used for create/update responses)
+      required:
+        - id
+        - operationKey
+        - displayName
+        - category
+        - operationOrder
+        - isActive
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the operation
+        operationKey:
+          type: string
+          description: Operation key used in XML
+        displayName:
+          type: string
+          description: User-friendly operation name
+        description:
+          type: string
+          description: Detailed description of what the operation does
+        category:
+          type: string
+          enum: [Agent, Chat, Embedding, RAG, Tools, Image, Vision, Moderation, Text, General]
+          description: Operation category
+        helpUrl:
+          type: string
+          format: uri
+          description: URL to operation-specific documentation
+        operationOrder:
+          type: integer
+          description: Display order for operations within a connector
+        isActive:
+          type: boolean
+          description: Whether the operation is active and can be executed
+        requiredConfigTypeId:
+          type: integer
+          description: ID of the configuration type required for this operation
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OperationDetail:
+      type: object
+      description: Complete operation information including all parameters
+      required:
+        - id
+        - operationKey
+        - displayName
+        - category
+        - operationOrder
+        - isActive
+        - parameters
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the operation
+        operationKey:
+          type: string
+          description: Operation key used in XML
+        displayName:
+          type: string
+          description: User-friendly operation name
+        description:
+          type: string
+          description: Detailed description of what the operation does
+        category:
+          type: string
+          enum: [Agent, Chat, Embedding, RAG, Tools, Image, Vision, Moderation, Text, General]
+          description: Operation category
+        helpUrl:
+          type: string
+          format: uri
+          description: URL to operation-specific documentation
+        operationOrder:
+          type: integer
+          description: Display order for operations within a connector
+        isActive:
+          type: boolean
+          description: Whether the operation is active and can be executed
+        requiredConfigTypeId:
+          type: integer
+          description: ID of the configuration type required for this operation
+        parameters:
+          type: array
+          description: Input parameters for this operation
+          items:
+            $ref: '#/components/schemas/OperationParameter'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OperationParameter:
+      type: object
+      description: Input parameter definition for an operation
+      required:
+        - id
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        id:
+          type: integer
+        apiName:
+          type: string
+          description: Parameter name used in API requests
+        displayName:
+          type: string
+          description: User-friendly parameter name for UI display
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+          description: Data type of the parameter
+        isRequired:
+          type: boolean
+          description: Whether this parameter is required for operation execution
+        defaultValue:
+          type: string
+          description: Default value for optional parameters
+        description:
+          type: string
+          description: Explanation of the parameter's purpose and usage
+        validationRules:
+          type: object
+          description: JSON Schema validation rules
+          additionalProperties: true
+        exampleValue:
+          type: string
+          description: Example value for documentation and UI hints
+        parameterOrder:
+          type: integer
+          description: Display order in UI forms
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ==========================================
+    # Configuration Metadata Schemas
+    # ==========================================
+
+    ConfigType:
+      type: object
+      description: Basic configuration type information (used for create/update responses)
+      required:
+        - id
+        - configTypeKey
+        - displayName
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        configTypeKey:
+          type: string
+          description: Configuration type key representing the XML element
+        displayName:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ConfigTypeDetail:
+      type: object
+      description: Complete configuration type information with all providers
+      required:
+        - id
+        - configTypeKey
+        - displayName
+        - providers
+      properties:
+        id:
+          type: integer
+        configTypeKey:
+          type: string
+          description: Configuration type key representing the XML element
+        displayName:
+          type: string
+        description:
+          type: string
+        providers:
+          type: array
+          description: All providers that support this configuration type
+          items:
+            $ref: '#/components/schemas/ProviderSummary'
+
+    ProviderSummary:
+      type: object
+      description: Summary information about a configuration provider
+      required:
+        - id
+        - providerKey
+        - displayName
+      properties:
+        id:
+          type: integer
+        providerKey:
+          type: string
+          description: Provider key
+        displayName:
+          type: string
+        description:
+          type: string
+
+    Provider:
+      type: object
+      description: Basic provider information (used for create/update responses)
+      required:
+        - id
+        - providerKey
+        - displayName
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        providerKey:
+          type: string
+          description: Provider key
+        displayName:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProviderDetail:
+      type: object
+      description: Complete provider information including all configuration parameters
+      required:
+        - id
+        - providerKey
+        - displayName
+        - parameters
+      properties:
+        id:
+          type: integer
+        providerKey:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+        parameters:
+          type: array
+          description: Configuration parameters required by this provider
+          items:
+            $ref: '#/components/schemas/ConfigParameter'
+
+    ConfigParameter:
+      type: object
+      description: Configuration parameter definition for a provider
+      required:
+        - id
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        id:
+          type: integer
+        apiName:
+          type: string
+          description: Parameter name used in configuration
+        displayName:
+          type: string
+          description: User-friendly parameter name
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+        isRequired:
+          type: boolean
+          description: Whether this parameter is required
+        defaultValue:
+          type: string
+          description: Default value for the parameter
+        description:
+          type: string
+          description: Explanation of the parameter
+        validationRules:
+          type: object
+          description: JSON Schema validation rules
+          additionalProperties: true
+        parameterOrder:
+          type: integer
+          description: Display order in configuration forms
+
+    # ==========================================
+    # Runtime Configuration Schemas
+    # ==========================================
+
+    RuntimeConfigSummary:
+      type: object
+      description: Summary information about a runtime configuration
+      required:
+        - id
+        - name
+        - configTypeId
+        - isActive
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: User-defined name for this configuration
+        description:
+          type: string
+          description: Optional description of the configuration
+        configTypeId:
+          type: integer
+        configTypeName:
+          type: string
+          description: Name of the configuration type
+        isActive:
+          type: boolean
+          description: Whether this configuration is active and can be used
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    RuntimeConfig:
+      type: object
+      description: Basic runtime configuration information (used for create/update responses)
+      required:
+        - id
+        - name
+        - configTypeId
+        - providerId
+        - isActive
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: User-defined name for this configuration
+        description:
+          type: string
+          description: Optional description of the configuration
+        configTypeId:
+          type: integer
+          description: ID of the configuration type
+        providerId:
+          type: integer
+          description: ID of the provider
+        isActive:
+          type: boolean
+          description: Whether this configuration is active and can be used
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    RuntimeConfigDetail:
+      type: object
+      description: Complete runtime configuration with all parameter values and metadata
+      required:
+        - id
+        - name
+        - isActive
+        - configType
+        - connector
+        - provider
+        - parameters
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        configType:
+          type: object
+          description: Configuration type metadata
+          required:
+            - id
+            - configTypeKey
+            - displayName
+          properties:
+            id:
+              type: integer
+            configTypeKey:
+              type: string
+              description: Configuration type key representing the XML element
+            displayName:
+              type: string
+        connector:
+          type: object
+          description: Connector that owns this configuration type
+          required:
+            - id
+            - name
+            - mavenArtifactId
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            mavenArtifactId:
+              type: string
+        provider:
+          type: object
+          description: Provider selected for this configuration
+          required:
+            - id
+            - providerKey
+            - displayName
+          properties:
+            id:
+              type: integer
+            providerKey:
+              type: string
+            displayName:
+              type: string
+            description:
+              type: string
+        parameters:
+          type: array
+          description: Full parameter definitions with configured values
+          items:
+            type: object
+            required:
+              - id
+              - apiName
+              - displayName
+              - dataType
+              - isRequired
+              - parameterOrder
+              - isEncrypted
+            properties:
+              id:
+                type: integer
+              apiName:
+                type: string
+              displayName:
+                type: string
+              dataType:
+                type: string
+                enum: [String, Number, Boolean, Base64, JSON]
+              isRequired:
+                type: boolean
+              defaultValue:
+                type: string
+                nullable: true
+              description:
+                type: string
+              validationRules:
+                type: object
+                additionalProperties: true
+              parameterOrder:
+                type: integer
+              value:
+                type: string
+                nullable: true
+              isEncrypted:
+                type: boolean
+              valueCreatedAt:
+                type: string
+                format: date-time
+                nullable: true
+              valueUpdatedAt:
+                type: string
+                format: date-time
+                nullable: true
+
+    RuntimeConfigCreate:
+      type: object
+      description: Request body for creating a new runtime configuration
+      required:
+        - name
+        - providerId
+        - parameters
+      properties:
+        name:
+          type: string
+          description: Unique name for this configuration within the config type
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          description: Optional description of the configuration
+        providerId:
+          type: integer
+          description: ID of the provider this configuration targets (e.g., Salesforce, OpenAI). The config type is derived from the provider.
+        isActive:
+          type: boolean
+          description: Whether this configuration should be immediately active
+          default: false
+        parameters:
+          type: object
+          description: |
+            Key-value pairs where keys are parameter API names (for example, clientId, clientSecret)
+            and values are the configuration values. Use empty string for optional parameters you want to leave blank.
+          additionalProperties:
+            type: string
+
+    RuntimeConfigUpdate:
+      type: object
+      description: Request body for updating a runtime configuration
+      required:
+        - name
+        - providerId
+        - parameters
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        providerId:
+          type: integer
+          description: ID of the provider this configuration targets (can be changed during update)
+        parameters:
+          type: object
+          description: Complete set of parameter values
+          additionalProperties:
+            type: string
+        isActive:
+          type: boolean
+
+    # ==========================================
+    # Execution Schemas
+    # ==========================================
+
+    ExecutionRequest:
+      type: object
+      description: Request body for executing a connector operation
+      required:
+        - operationId
+        - runtimeConfigId
+        - parameters
+      properties:
+        operationId:
+          type: integer
+          description: ID of the operation to execute
+        runtimeConfigId:
+          type: integer
+          description: ID of the runtime configuration to use for credentials
+        parameters:
+          type: object
+          description: Operation-specific input parameters
+          additionalProperties: true
+        enableLogging:
+          type: boolean
+          description: |
+            Enable execution logging to database. When false, skips all database logging 
+            for faster execution. Useful for high-frequency testing or performance-sensitive scenarios.
+          default: true
+        enableValidation:
+          type: boolean
+          description: |
+            Enable input parameter validation. When false, skips validation checks 
+            for faster execution. Use with caution - invalid parameters may cause connector errors.
+          default: true
+
+    ExecutionResponse:
+      type: object
+      description: Response from a connector operation execution
+      required:
+        - executionId
+        - status
+        - result
+        - timestamp
+      properties:
+        executionId:
+          type: string
+          description: Unique identifier for this execution (for tracking)
+        status:
+          type: string
+          enum: [success, error]
+          description: Execution status
+        result:
+          type: object
+          description: Result from the connector operation
+          required:
+            - payload
+          properties:
+            payload:
+              type: object
+              description: Primary response data from the connector
+              additionalProperties: true
+            attributes:
+              type: object
+              description: Additional metadata from the connector
+              additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of when the execution completed
+
+    # ==========================================
+    # IDP Helper Schemas
+    # ==========================================
+
+    IdpAction:
+      type: object
+      description: Summary of an IDP Document Action from Anypoint Platform
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the IDP action
+          example: "90c3e286-72b5-42ca-92d0-22f86ea8d766"
+        name:
+          type: string
+          description: Display name of the action
+          example: "IDP-PO-CD656092-BurlingtonTextiles"
+        type:
+          type: string
+          enum: [GENERIC, INVOICE, PURCHASE_ORDER]
+          description: Type of document action
+          example: "PURCHASE_ORDER"
+        description:
+          type: string
+          description: Description of the action
+          example: "CD656092-BurlingtonTextiles Purchase Order"
+        createdAt:
+          type: string
+          format: date-time
+          description: When the action was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the action was last updated
+
+    IdpActionVersion:
+      type: object
+      description: Version information for an IDP Document Action
+      required:
+        - version
+        - status
+      properties:
+        version:
+          type: string
+          description: Semantic version of the action
+          example: "1.2.0"
+        status:
+          type: string
+          description: Publication status of this version
+          example: "SUCCESS"
+
+    AgentforceAgent:
+      type: object
+      description: Summary of an Agentforce AI agent from Salesforce
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Salesforce agent ID (18-character Salesforce ID)
+          example: "0XxKa0000007qzVKAQ"
+          pattern: '^[a-zA-Z0-9]{15,18}$'
+        name:
+          type: string
+          description: Human-readable name of the agent
+          example: "Employee Agent (Default)"
+          minLength: 1
+          maxLength: 255
+        isActive:
+          type: boolean
+          description: Whether the agent is currently active
+          example: true
+
+    # ==========================================
+    # Error Schema (RFC 9457)
+    # ==========================================
+
+    ProblemDetails:
+      type: object
+      description: |
+        RFC 9457 Problem Details for HTTP APIs. Provides a machine-readable format for 
+        specifying errors in HTTP API responses.
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: |
+            A URI identifier that categorizes the problem type. When dereferenced, it should 
+            provide human-readable documentation for the problem.
+          default: about:blank
+        title:
+          type: string
+          description: |
+            A short, human-readable summary of the problem type. Should not change from 
+            occurrence to occurrence of the problem.
+        status:
+          type: integer
+          format: int32
+          description: The HTTP status code for this occurrence of the problem
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+          description: |
+            A human-readable explanation specific to this occurrence of the problem. May 
+            provide additional context beyond the title.
+        instance:
+          type: string
+          format: uri
+          description: |
+            A URI reference that identifies the specific occurrence of the problem. It may 
+            or may not yield further information if dereferenced.
+        errors:
+          type: array
+          description: Optional array of field-specific validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: The field path that caused the error
+              message:
+                type: string
+                description: Human-readable error message for this field
+      additionalProperties: true
+
+    # ==========================================
+    # Admin Schemas - Connector Management
+    # ==========================================
+
+    ConnectorCreate:
+      type: object
+      description: Request body for creating a new connector
+      required:
+        - mavenArtifactId
+        - name
+        - version
+        - category
+      properties:
+        mavenArtifactId:
+          type: string
+          minLength: 1
+          maxLength: 255
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        version:
+          type: string
+          maxLength: 50
+        category:
+          type: string
+          enum: [AI, Database, SaaS, Integration, Messaging]
+        description:
+          type: string
+        docUrl:
+          type: string
+          format: uri
+          maxLength: 500
+        icon:
+          type: string
+          maxLength: 10000
+        isActive:
+          type: boolean
+          default: false
+
+    ConnectorUpdate:
+      type: object
+      description: Request body for updating a connector
+      required:
+        - name
+        - version
+        - category
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        version:
+          type: string
+          maxLength: 50
+        category:
+          type: string
+          enum: [AI, Database, SaaS, Integration, Messaging]
+        description:
+          type: string
+        docUrl:
+          type: string
+          format: uri
+          maxLength: 500
+        icon:
+          type: string
+          maxLength: 10000
+        isActive:
+          type: boolean
+
+    # ==========================================
+    # Admin Schemas - Operation Management
+    # ==========================================
+
+    OperationCreate:
+      type: object
+      description: Request body for creating a new operation
+      required:
+        - operationKey
+        - displayName
+        - category
+        - operationOrder
+      properties:
+        operationKey:
+          type: string
+          description: XML operation key (e.g., ms-agentforce:start-agent-conversation)
+          maxLength: 255
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          type: string
+          enum: [Agent, Chat, Embedding, RAG, Tools, Image, Vision, Moderation, Text, General]
+        requiredConfigTypeId:
+          type: integer
+          description: ID of the required configuration type for this operation
+        helpUrl:
+          type: string
+          format: uri
+          maxLength: 500
+        operationOrder:
+          type: integer
+          description: Display order for operations within a connector
+        isActive:
+          type: boolean
+          default: false
+
+    OperationUpdate:
+      type: object
+      description: Request body for updating an operation
+      required:
+        - displayName
+        - category
+        - operationOrder
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          type: string
+          enum: [Agent, Chat, Embedding, RAG, Tools, Image, Vision, Moderation, Text, General]
+        requiredConfigTypeId:
+          type: integer
+        helpUrl:
+          type: string
+          format: uri
+          maxLength: 500
+        operationOrder:
+          type: integer
+          description: Display order for operations within a connector
+        isActive:
+          type: boolean
+
+    # ==========================================
+    # Operation Parameter Management
+    # ==========================================
+
+    OperationParameterCreate:
+      type: object
+      description: Request body for creating an operation parameter
+      required:
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        apiName:
+          type: string
+          maxLength: 255
+        displayName:
+          type: string
+          maxLength: 255
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          description: JSON Schema validation rules
+          additionalProperties: true
+        exampleValue:
+          type: string
+        parameterOrder:
+          type: integer
+          minimum: 0
+
+    OperationParameterUpdate:
+      type: object
+      description: Request body for updating an operation parameter
+      required:
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          additionalProperties: true
+        exampleValue:
+          type: string
+        parameterOrder:
+          type: integer
+          minimum: 0
+
+    OperationParameterDetail:
+      type: object
+      description: Complete operation parameter details (admin view)
+      required:
+        - id
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        id:
+          type: integer
+        apiName:
+          type: string
+        displayName:
+          type: string
+        dataType:
+          type: string
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          additionalProperties: true
+        exampleValue:
+          type: string
+        parameterOrder:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ==========================================
+    # Admin Schemas - Config Type Management
+    # ==========================================
+
+    ConfigTypeCreate:
+      type: object
+      description: Request body for creating a config type
+      required:
+        - configTypeKey
+        - displayName
+      properties:
+        configTypeKey:
+          type: string
+          description: Configuration type key representing the XML element (e.g., text-generation-config)
+          maxLength: 255
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+
+    ConfigTypeUpdate:
+      type: object
+      description: Request body for updating a config type
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+
+    # ==========================================
+    # Admin Schemas - Provider Management
+    # ==========================================
+
+    ProviderCreate:
+      type: object
+      description: Request body for creating a provider
+      required:
+        - providerKey
+        - displayName
+      properties:
+        providerKey:
+          type: string
+          maxLength: 255
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+
+    ProviderUpdate:
+      type: object
+      description: Request body for updating a provider
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+
+    # ==========================================
+    # Config Parameter Management
+    # ==========================================
+
+    ConfigParameterCreate:
+      type: object
+      description: Request body for creating a config parameter
+      required:
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        apiName:
+          type: string
+          maxLength: 255
+        displayName:
+          type: string
+          maxLength: 255
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          additionalProperties: true
+        parameterOrder:
+          type: integer
+          minimum: 0
+
+    ConfigParameterUpdate:
+      type: object
+      description: Request body for updating a config parameter
+      required:
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+        dataType:
+          type: string
+          enum: [String, Number, Boolean, Base64, JSON]
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          additionalProperties: true
+        parameterOrder:
+          type: integer
+          minimum: 0
+
+    ConfigParameterDetail:
+      type: object
+      description: Complete config parameter details (admin view)
+      required:
+        - id
+        - apiName
+        - displayName
+        - dataType
+        - isRequired
+        - parameterOrder
+      properties:
+        id:
+          type: integer
+        apiName:
+          type: string
+        displayName:
+          type: string
+        dataType:
+          type: string
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        description:
+          type: string
+        validationRules:
+          type: object
+          additionalProperties: true
+        parameterOrder:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ==========================================
+    # Operations Schemas
+    # ==========================================
+
+    ResetDatabaseResponse:
+      type: object
+      description: Response from database reset operation
+      required:
+        - status
+        - message
+        - version
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          description: Status of the reset operation
+        message:
+          type: string
+          description: Human-readable confirmation message
+          example: Database reset complete
+        version:
+          type: string
+          description: API version that was seeded
+          example: 1.0.10
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the reset completed
+
+    # ==========================================
+    # Execution Tracking Schemas
+    # ==========================================
+
+    ExecutionLogSummary:
+      type: object
+      description: Summary view of a connector operation execution
+      required:
+        - executionId
+        - operationId
+        - status
+        - executionStartedAt
+      properties:
+        executionId:
+          type: string
+          format: uuid
+          description: Unique execution identifier
+        operationId:
+          type: integer
+          description: ID of the operation that was executed
+        operationKey:
+          type: string
+          description: API key of the operation (e.g., "chat", "embed")
+        connectorId:
+          type: integer
+          description: ID of the connector
+        connectorName:
+          type: string
+          description: Name of the connector
+        mavenArtifactId:
+          type: string
+          description: Maven artifact ID of the connector
+        runtimeConfigId:
+          type: integer
+          description: ID of the runtime configuration used
+        runtimeConfigName:
+          type: string
+          description: Name of the runtime configuration used
+        status:
+          type: string
+          enum: [started, success, error, timeout]
+          description: Execution status
+        executionStartedAt:
+          type: string
+          format: date-time
+          description: When the execution started (ISO 8601)
+        executionCompletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the execution completed (ISO 8601), null if still running
+        durationMs:
+          type: integer
+          nullable: true
+          description: Execution duration in milliseconds, null if not completed
+        httpStatusCode:
+          type: integer
+          nullable: true
+          description: HTTP status code returned, null if not completed
+        sourceIp:
+          type: string
+          nullable: true
+          description: Client IP address that initiated the execution
+
+    ExecutionLogDetail:
+      type: object
+      description: Complete execution details including request/response payloads
+      required:
+        - executionId
+        - operationId
+        - status
+        - executionStartedAt
+        - request
+      properties:
+        executionId:
+          type: string
+          format: uuid
+          description: Unique execution identifier
+        operationId:
+          type: integer
+          description: ID of the operation that was executed
+        operationKey:
+          type: string
+          description: API key of the operation
+        runtimeConfigId:
+          type: integer
+          description: ID of the runtime configuration used
+        connectorId:
+          type: integer
+          description: ID of the connector
+        mavenArtifactId:
+          type: string
+          description: Maven artifact ID of the connector
+        status:
+          type: string
+          enum: [started, success, error, timeout]
+          description: Execution status
+        executionStartedAt:
+          type: string
+          format: date-time
+          description: When the execution started (ISO 8601)
+        executionCompletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the execution completed (ISO 8601)
+        durationMs:
+          type: integer
+          nullable: true
+          description: Execution duration in milliseconds
+        httpStatusCode:
+          type: integer
+          nullable: true
+          description: HTTP status code returned
+        sourceIp:
+          type: string
+          description: Client IP address
+        userAgent:
+          type: string
+          description: Client user agent string
+        request:
+          type: object
+          description: Complete request payload
+          properties:
+            parameters:
+              type: object
+              additionalProperties: true
+              description: Request parameters as submitted
+        response:
+          type: object
+          nullable: true
+          description: Complete response payload (null if execution not completed)
+          properties:
+            payload:
+              type: object
+              additionalProperties: true
+              description: Response data from the connector
+        error:
+          type: object
+          nullable: true
+          description: Error details (null if execution succeeded)
+          properties:
+            errorType:
+              type: string
+              description: Mule error type identifier
+            errorCode:
+              type: string
+              description: Error code or namespace
+            errorMessage:
+              type: string
+              description: Human-readable error message
+            errorDescription:
+              type: string
+              description: Detailed error description
+            stackTrace:
+              type: string
+              description: Stack trace if available
+
+    ExecutionStats:
+      type: object
+      description: Aggregated execution statistics
+      required:
+        - totalExecutions
+        - successCount
+        - errorCount
+        - successRate
+      properties:
+        totalExecutions:
+          type: integer
+          description: Total number of executions in the filtered set
+        successCount:
+          type: integer
+          description: Number of successful executions
+        errorCount:
+          type: integer
+          description: Number of failed executions
+        timeoutCount:
+          type: integer
+          description: Number of timed-out executions
+        successRate:
+          type: number
+          format: float
+          description: Success rate percentage (0-100)
+        avgDurationMs:
+          type: integer
+          nullable: true
+          description: Average execution duration in milliseconds
+        minDurationMs:
+          type: integer
+          nullable: true
+          description: Minimum execution duration in milliseconds
+        maxDurationMs:
+          type: integer
+          nullable: true
+          description: Maximum execution duration in milliseconds
+        errorBreakdown:
+          type: array
+          description: Breakdown of errors by type
+          items:
+            type: object
+            properties:
+              errorType:
+                type: string
+                description: Error type identifier
+              count:
+                type: integer
+                description: Number of occurrences
+              percentage:
+                type: number
+                format: float
+                description: Percentage of total errors
+        dateRange:
+          type: object
+          description: Date range of the statistics
+          properties:
+            startDate:
+              type: string
+              format: date-time
+              nullable: true
+              description: Start of the date range filter
+            endDate:
+              type: string
+              format: date-time
+              nullable: true
+              description: End of the date range filter
+
+  securitySchemes:
+    ResetToken:
+      type: apiKey
+      in: header
+      name: X-Reset-Token
+      description: Secret token required for destructive operations like database reset
+    Client_ID_Enforcement_BasicAuth:
+      type: http
+      scheme: basic
+      description: Basic Auth mode https://docs.mulesoft.com/gateway/latest/policies-included-client-id-enforcement
+
+
+
+
+
+

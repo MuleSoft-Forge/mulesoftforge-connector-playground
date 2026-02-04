@@ -1,0 +1,415 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Common A2A Schema Definitions",
+    "$id": "http://example.com/schemas/common-defs.json",
+    "description": "Common definitions for A2A schemas",
+    "$defs": {
+        "Message": {
+            "type": "object",
+            "description": "Message containing task content",
+            "required": ["role", "parts", "messageId", "kind"],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": ["user", "agent"],
+                    "description": "Indicates the sender: \"user\" (from A2A Client) or \"agent\" (from A2A Server)."
+                },
+                "parts": {
+                    "$ref": "#/$defs/Parts"
+                },
+                "messageId": {
+                    "type": "string",
+                    "description": "Unique identifier for the message"
+                },
+                "kind": {
+                    "type": "string",
+                    "const": "message",
+                    "description": "Type discriminator, literal value 'message'."
+                },
+                "metadata": {
+                    "type": "object",
+                    "description": "Additional metadata for the message",
+                    "additionalProperties": true
+                },
+                "extensions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The URIs of extensions that are present or contributed to this Message.",
+                    "title": "Extensions"
+                },
+                "content": {
+                    "title": "Content",
+                    "type": "string"
+                }
+            }
+        },
+        "Task":{
+            "title": "A2A Task Schema",
+            "description": "JSON Schema for A2A Task",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "Id",
+                    "type": "string"
+                },
+                "sessionId": {
+                    "type": "string",
+                    "default": null,
+                    "title": "SessionId"
+                },
+                "contextId": {
+                    "type": "string",
+                    "title": "contextId",
+                    "description": "Server generated ID for contextual alignment across interactions"
+                },
+                "status": {
+                    "$ref": "#/$defs/TaskStatus"
+                },
+                "artifacts": {
+                    "type": "array",
+                    "title": "Artifacts",
+                    "items": {
+                        "$ref": "#/$defs/Artifact"
+                    }
+                },
+                "history": {
+                    "type": "array",
+                    "title": "History",
+                    "items": {
+                        "$ref": "#/$defs/Message"
+                    }
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object",
+                    "default": null,
+                    "title": "Metadata"
+                }
+            }
+        },
+        "TextPart": {
+            "type": "object",
+            "required": ["kind", "text"],
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "text"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "FilePart": {
+            "type": "object",
+            "required": ["kind", "file"],
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "file"
+                },
+                "file": {
+                    "type": "object",
+                    "description": "Contains the file details and data/reference.",
+                    "required": [],
+                    "properties": {
+                        "bytes": {
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "description": "Base64 encoded bytes of the file"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "mimeType": {
+                            "type": "string"
+                        },
+                        "uri": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "DataPart": {
+            "type": "object",
+            "required": ["kind", "data"],
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "data"
+                },
+                "data": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "FileWithBytes": {
+            "type": "object",
+            "required": ["bytes"],
+            "properties": {
+                "bytes": {
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "description": "Base64 encoded bytes of the file"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "mimeType": {
+                    "type": "string"
+                }
+            }
+        },
+        "FileWithUri": {
+            "type": "object",
+            "required": ["uri"],
+            "properties": {
+                "uri": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "mimeType": {
+                    "type": "string"
+                }
+            }
+        },
+        "MessageSendConfiguration": {
+            "type": "object",
+            "description": "Configuration for sending a message",
+            "required": ["acceptedOutputModes"],
+            "properties": {
+                "acceptedOutputModes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "historyLength": {
+                    "type": "integer"
+                },
+                "pushNotificationConfig": {
+                    "$ref": "#/$defs/PushNotificationConfig"
+                },
+                "blocking": {
+                    "type": "boolean",
+                    "description": "If the server should treat the client as a blocking request."
+                }
+            }
+        },
+        "PushNotificationConfig": {
+            "type": "object",
+            "description": "Configuration for setting up push notifications for task updates.",
+            "required": ["url"],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the push notification"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "URL for sending the push notifications"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification"
+                },
+                "authentication": {
+                    "$ref": "#/$defs/PushNotificationAuthenticationInfo"
+                }
+            }
+        },
+        "PushNotificationAuthenticationInfo": {
+            "type": "object",
+            "description": "Supported authentication schemes - e.g. Basic, Bearer",
+            "required": ["schemes"],
+            "properties": {
+                "schemes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "credentials": {
+                    "type": "string"
+                }
+            }
+        },
+        "TaskStatus": {
+            "title": "TaskStatus",
+            "type": "object",
+            "required": [
+                "state"
+            ],
+            "properties": {
+                "state": {
+                    "$ref": "#/$defs/TaskState"
+                },
+                "message": {
+                    "$ref": "#/$defs/Message",
+                    "default": null,
+                    "description": "Message containing task content"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "title": "Timestamp",
+                    "type": "string"
+                }
+            }
+        },
+        "TaskState": {
+            "description": "An enumeration.",
+            "enum": [
+                "submitted",
+                "working",
+                "input-required",
+                "completed",
+                "canceled",
+                "failed",
+                "rejected",
+                "auth-required",
+                "unknown"
+            ],
+            "title": "TaskState",
+            "type": "string"
+        },
+        "Artifact": {
+            "title": "Artifact",
+            "type": "object",
+            "required": [
+              "artifactId",
+              "parts"
+            ],
+            "properties": {
+              "artifactId": {
+                    "type": "string",
+                    "description": "Unique identifier for the artifact",
+                    "title": "ArtifactId"
+              },
+              "name": {
+                    "type": "string",
+                    "default": null,
+                    "title": "Name"
+              },
+              "description": {
+                    "type": "string",
+                    "default": null,
+                    "title": "Description"
+              },
+              "parts": {
+                    "$ref": "#/$defs/Parts"
+              },
+              "metadata": {
+                    "additionalProperties": {},
+                    "type": "object",
+                    "default": null,
+                    "title": "Metadata"
+              },
+              "extensions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The URIs of extensions that are present or contributed to this Artifact.",
+                    "title": "Extensions"
+              },
+              "index": {
+                "type": "integer",
+                "default": 0,
+                "title": "Index"
+              },
+              "append": {
+                "type": "boolean",
+                "default": null,
+                "title": "Append"
+              },
+              "lastChunk": {
+                "type": "boolean",
+                "default": null,
+                "title": "LastChunk"
+              }
+            }
+          },
+        "Parts":{
+            "title": "Parts",
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Part"
+            }
+        },
+        "Part": {
+            "title": "Part",
+            "type": "object",
+            "required": [],
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                },
+                "mimeType": {
+                    "title": "MimeType",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of the part",
+                    "title": "Type",
+                    "type": "string",
+                    "enum": ["text", "file", "data"]
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": ["text", "file", "data"]
+                },
+                "text": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "file": {
+                    "type": "object",
+                    "description": "Contains the file details and data/reference.",
+                    "required": [],
+                    "properties": {
+                        "bytes": {
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "description": "Base64 encoded bytes of the file"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "mimeType": {
+                            "type": "string"
+                        },
+                        "uri": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "data": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        }
+    }
+}

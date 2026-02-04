@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>mulesoft-connector-playground-app · Anypoint Studio Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/bootstrap.css" rel="stylesheet">
+    <link href="assets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/docs.css" rel="stylesheet">
+    <link href="assets/prettify.css" rel="stylesheet">
+    <link href="assets/scroller.css" rel="stylesheet">
+
+  </head>
+
+  <body data-twttr-rendered="true" data-spy="scroll" data-target=".bs-docs-sidebar"><iframe style="display: none;" id="rufous-sandbox" name="uid13460061790411"></iframe>
+
+    <!-- Navbar
+    ================================================== -->
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <p class="navbar-text pull-right">
+              <a href="https://www.mulesoft.com" class="navbar-link">
+                <img src="./assets/images/mulesoft-logo-final.png" alt="MuleSoft" id="mulesoftlogo">
+              </a>
+          </p>
+          <div class="scroller scroller-left"><img src="./assets/icons/glyphicons_chevron-left.png" alt="scrollLeft"></div>
+          <div class="scroller scroller-right"><img src="./assets/icons/glyphicons_chevron-right.png" alt="scrollRight"></div>
+          <div class="wrapper">
+            <ul class="nav nav-tabs list" id="myTab">
+                    <li><a href="./index.html">vectors</a></li>
+                      <li><a href="./einsteinai.html">einsteinai</a></li>
+                      <li><a href="./gemini.html">gemini</a></li>
+                      <li><a href="./a2a.html">a2a</a></li>
+                      <li><a href="./openai.html">openai</a></li>
+                      <li><a href="./mcp.html">mcp</a></li>
+                      <li><a href="./global-elements.html">global-elements</a></li>
+                      <li><a href="./agentforce.html">agentforce</a></li>
+                      <li><a href="./idp.html">idp</a></li>
+                      <li><a href="./bedrock.html">bedrock</a></li>
+                      <li><a href="./mulesoft-connector-playground.html">mulesoft-connector-playground</a></li>
+                      <li class="active"><a href="./inference.html">inference</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+  <header class="jumbotron subhead" id="overview">
+    <div class="container">
+      <h1>mulesoft-connector-playground-app</h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav affix">
+          <li class="nav-header">Flows</li>
+            <li data-toggle="collapse" data-target="#_execute_inferenceNav"><a href="#_execute_inference"><i class="icon-chevron-right"></i> execute-inference</a>
+            </li>
+            <div id="_execute_inferenceNav" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <ul>
+                </ul>
+              </div>
+            </div>
+        </ul>
+      </div>
+      <div class="span9">
+
+        <!-- Elements and their descriptions
+        ================================================== -->
+        <div style="max-height: 640px;width:100%;overflow:auto;">
+            <img src="img/inference.png" usemap="#mFlowMap" alt="Mule Configuration Image">
+            <map name="mFlowMap">
+          </map>
+        </div>
+        <!--Mule configuration xml code-->
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" href="#collapseMuleConfiguration">
+            Show Mule Configuration XML code...
+          </a>
+        </div>
+        <div id="collapseMuleConfiguration" class="accordion-body collapse" style="height: 0px;">
+          <div class="accordion-inner">
+              <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns:ms-inference="http://www.mulesoft.org/schema/mule/ms-inference" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-inference http://www.mulesoft.org/schema/mule/ms-inference/current/mule-ms-inference.xsd
+http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd"&gt;
+    &lt;ms-inference:text-generation-config name="MuleSoft_Inference_Text_Generation_Config_Anthropic" doc:name="MuleSoft Inference Text Generation Config Anthropic" doc:id="3bc952b4-901c-406b-af85-3f77047b764f"&gt; 
+        &lt;ms-inference:anthropic-connection anthropicModelName="#[(vars.runtimeConfigForConnector.modelName default p('anthropic.text.default.modelName'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('anthropic.apiKey'))]" maxTokens="#[(vars.runtimeConfigForConnector.maxTokens default 500)]" temperature="#[(vars.runtimeConfigForConnector.temperature default 0.9)]" topP="#[(vars.runtimeConfigForConnector.topP default 0.9)]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:text-generation-config&gt;  
+    &lt;ms-inference:text-generation-config name="MuleSoft_Inference_Text_Generation_Config_OpenAI" doc:name="MuleSoft Inference Text Generation Config OpenAI" doc:id="c1a5dd1f-5303-4522-b7ea-553b72801682"&gt; 
+        &lt;ms-inference:openai-connection openAIModelName="#[(vars.runtimeConfigForConnector.modelName default p('openai.text.default.modelName'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('openai.apiKey'))]" maxTokens="#[(vars.runtimeConfigForConnector.maxTokens default 500)]" temperature="#[(vars.runtimeConfigForConnector.temperature default 0.9)]" topP="#[(vars.runtimeConfigForConnector.topP default 0.9)]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:text-generation-config&gt;  
+    &lt;ms-inference:text-generation-config name="MuleSoft_Inference_Text_generation_Config_AzureOpenAI" doc:name="MuleSoft Inference Text generation Config AzureOpenAI" doc:id="3cba8f34-e96c-42e9-a5dc-feaac40114fe"&gt; 
+        &lt;ms-inference:azure-openai-connection azureModelName="#[(vars.runtimeConfigForConnector.modelName default p('azure.openai.text.default.modelName'))]" azureOpenaiApiVersion="#[(vars.runtimeConfigForConnector.apiVersion default p('azure.openai.text.default.apiVersion'))]" azureOpenAiEndpoint="#[(vars.runtimeConfigForConnector.endpoint default p('azure.openai.text.default.endpoint'))]" azureOpenaiResourceName="#[(vars.runtimeConfigForConnector.resourceName default p('azure.openai.text.default.resourceName'))]" azureOpenaiDeploymentId="#[(vars.runtimeConfigForConnector.deploymentId default p('azure.openai.text.default.deploymentId'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('azure.openai.default.apiKey'))]" azureOpenaiUser="#[(vars.runtimeConfigForConnector.user default p('azure.openai.text.default.user'))]" maxTokens="#[(vars.runtimeConfigForConnector.maxTokens default 500)]" temperature="#[(vars.runtimeConfigForConnector.temperature default 0.9)]" topP="#[(vars.runtimeConfigForConnector.topP default 0.9)]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:text-generation-config&gt;  
+    &lt;ms-inference:image-generation-config name="MuleSoft_Inference_Image_Generation_Config_OpenAI" doc:name="MuleSoft Inference Image Generation Config OpenAI" doc:id="2fb461a7-e58c-40f7-aa24-b51eb4d01d58"&gt; 
+        &lt;ms-inference:openai-image-connection apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('openai.apiKey'))]" openAIModelName="#[(vars.runtimeConfigForConnector.modelName default p('openai.image.default.modelName') )]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:image-generation-config&gt;  
+    &lt;ms-inference:vision-config name="MuleSoft_Inference_Vision_Config_OpenAI" doc:name="MuleSoft Inference Vision Config OpenAI" doc:id="84158e6a-b5d8-4189-bb59-e09f2831f6a9"&gt; 
+        &lt;ms-inference:openai-vision-connection openAIModelName="#[(vars.runtimeConfigForConnector.modelName default p('openai.vision.default.modelName'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('openai.apiKey'))]" maxTokens="#[(vars.runtimeConfigForConnector.maxTokens default 500)]" temperature="#[(vars.runtimeConfigForConnector.temperature default 0.9)]" topP="#[(vars.runtimeConfigForConnector.topP default 0.9)]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:vision-config&gt;  
+    &lt;ms-inference:vision-config name="MuleSoft_Inference_Vision_Config_Anthropic" doc:name="MuleSoft Inference Vision Config Anthropic" doc:id="2763f7d2-9549-41e0-92df-a262032114bb"&gt; 
+        &lt;ms-inference:anthropic-vision-connection anthropicModelName="#[(vars.runtimeConfigForConnector.modelName default p('anthropic.vision.default.modelName'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('anthropic.apiKey'))]" maxTokens="#[(vars.runtimeConfigForConnector.maxTokens default 500)]" temperature="#[(vars.runtimeConfigForConnector.temperature default 0.9)]" topP="#[(vars.runtimeConfigForConnector.topP default 0.9)]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:vision-config&gt;  
+    &lt;ms-inference:moderation-config name="MuleSoft_Inference_Moderation_config_OpenAI" doc:name="MuleSoft Inference Moderation config" doc:id="544f73f1-6896-4c41-a03d-63977f469e56"&gt; 
+        &lt;ms-inference:openai-moderation-connection openAIModelName="#[(vars.runtimeConfigForConnector.modelName default p('openai.moderation.default.modelName'))]" apiKey="#[(vars.runtimeConfigForConnector.apiKey default p('openai.apiKey'))]" customHeaders="#[if (!isEmpty(vars.runtimeConfigForConnector.customHeaders)) read(vars.runtimeConfigForConnector.customHeaders, &amp;quot;application/json&amp;quot;) else null]"/&gt; 
+    &lt;/ms-inference:moderation-config&gt;  
+    &lt;mcp:client-config name="MCP_Client_StreamableHttp_ForInference" doc:name="MCP Client" doc:id="e468aecf-1003-4e60-a50c-624b97fc73d4" clientName="MuleSoft Inference Connector" clientVersion="1.2.0"&gt; 
+        &lt;mcp:streamable-http-client-connection serverUrl="#[(vars.runtimeConfigForMCP.serverUrl)]" requestTimeout="#[(vars.runtimeConfigForMCP.requestTimeout default 30)]" requestTimeoutUnit="#[(vars.runtimeConfigForMCP.requestTimeoutUnit default &amp;quot;SECONDS&amp;quot;)]"&gt;  &lt;/mcp:streamable-http-client-connection&gt; 
+    &lt;/mcp:client-config&gt;  
+    &lt;sub-flow name="execute-inference" doc:id="8cfa60a5-efd9-4080-81da-7d5f8837ab2e"&gt; 
+        &lt;choice doc:name="Choice" doc:id="cd798b02-9987-41c6-84a4-94431a4f65f7"&gt; 
+            &lt;when expression="#[&amp;quot;ms-inference:agent-define-prompt-template&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:agent-define-prompt-template" doc:id="59bbc2cb-5e6c-4edd-808f-3b3742a048dc"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="3abb226f-c1f6-4527-92cd-474f9c4555b9"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="f03481b3-d9ee-4d33-b01a-9c478cd77b88" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                            &lt;/ms-inference:agent-define-prompt-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="f8805cca-e030-4609-bc50-733bd8d94d54" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                            &lt;/ms-inference:agent-define-prompt-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="0862054c-b802-4872-a5b1-56c50262a94b" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                            &lt;/ms-inference:agent-define-prompt-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="de9f544e-591b-4af3-8e01-dafccee1d415" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:chat-answer-prompt&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:chat-answer-prompt" doc:id="d3adc310-2ce7-47c3-9f1e-ff8b7f10c812"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="a0228590-f1f7-4690-9be8-0a2e31831a09"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="53b9852c-ddd8-47a7-9a4a-e64b165811f1" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                            &lt;/ms-inference:chat-answer-prompt&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="fa8909fd-f11b-4288-84c1-bb574758f453" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                            &lt;/ms-inference:chat-answer-prompt&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="e69d3ee4-7b89-4cad-a136-9a86fdc77c10" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                            &lt;/ms-inference:chat-answer-prompt&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="781adc43-21b2-4ba5-8ed0-34b02cf96323" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:chat-completions&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:chat-completions" doc:id="4cbc0d45-0dd8-47e9-ac14-a02fa989e518"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="c5757cf5-697f-4a34-9c15-9e7a4c88bc92"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="b644bdb5-0ac5-48cd-b0bf-0a5ed2842336" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:chat-completions&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="5ef778d7-099b-4609-ad3a-4f672a904c53" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt; 
+                                &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:chat-completions&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="5fa4976b-cd1b-4445-877a-d56394ce780e" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt; 
+                                &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:chat-completions&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="cb13d178-4301-485d-bb05-da76b68d3af7" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:generate-image&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:generate-image" doc:id="d587a18a-ccaf-4e32-a8f7-6f19566d3df4"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="665d64f3-dcfa-4f58-bfdc-f4aa21a05798"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:generate-image doc:name="[Image] Generate (only Base64)" doc:id="a12dd1dc-e992-40c1-a923-9a1e7b3e89b5" config-ref="MuleSoft_Inference_Image_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:generate-image&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="a98224a0-e188-4ca3-98c9-3b15c7056cc2" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:read-image&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:read-image" doc:id="e67490c3-c785-406a-91e1-3c11d44190df"&gt; 
+                    &lt;choice doc:name="Choice" doc:id="56438576-8b68-4002-bd50-310f985e1ee2"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:read-image doc:name="[Image] Read by (Url or Base64)" doc:id="40c26402-6671-4eeb-b9f2-91a666490bbb" config-ref="MuleSoft_Inference_Vision_Config_OpenAI"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt]]]&gt;   &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:image-url&gt;&lt;![CDATA[#[payload.parameters.image]]]&gt; &lt;/ms-inference:image-url&gt;  
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:read-image&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:read-image doc:name="[Image] Read by (Url or Base64)" doc:id="ef904fe5-5dd6-4f39-b484-09e06baa1f28" config-ref="MuleSoft_Inference_Vision_Config_Anthropic"&gt; 
+                                &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt]]]&gt;   &lt;/ms-inference:prompt&gt;  
+                                &lt;ms-inference:image-url&gt;&lt;![CDATA[#[payload.parameters.image]]]&gt; &lt;/ms-inference:image-url&gt;  
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:read-image&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="4eb47265-caf3-436b-8249-9443b0e09ea0" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:mcp-tools-native-template&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:mcp-tools-native-template" doc:id="f4ec9763-297e-4b55-8db9-d94936927c8d"&gt; 
+                    &lt;db:select doc:name="Get Runtime Config Values" doc:id="d906e9cb-5cee-4951-b378-1ed52ff23512" config-ref="Database_Config_Postgresql" target="configValuesMcp"&gt; 
+                        &lt;db:sql&gt;&lt;![CDATA[SELECT 
+  cp.api_name,
+  rcv.parameter_value
+FROM runtime_config_values rcv
+JOIN config_parameters cp ON rcv.parameter_id = cp.id
+WHERE rcv.runtime_config_id = :runtimeConfigId]]&gt;   &lt;/db:sql&gt;
+                        &lt;db:input-parameters&gt;&lt;![CDATA[#[output java
+---
+{
+  runtimeConfigId: (read(payload.parameters.additionalRequestAttributes, "application/json").mcpClientConfigId)
+}]]]&gt;   &lt;/db:input-parameters&gt;
+                    &lt;/db:select&gt;  
+                    &lt;ee:transform doc:name="Flatten Credentials" doc:id="fd4ed9a7-d533-48fe-a45e-9d835e823dc5"&gt; 
+                        &lt;ee:message/&gt;  
+                        &lt;ee:variables&gt; 
+                            &lt;ee:set-variable variableName="runtimeConfigForMCP"&gt;&lt;![CDATA[%dw 2.0
+output java
+---
+{ (
+    vars.configValuesMcp map (item) -&gt; (item.api_name): item.parameter_value
+) }]]&gt;  &lt;/ee:set-variable&gt;
+                        &lt;/ee:variables&gt; 
+                    &lt;/ee:transform&gt;  
+                    &lt;choice doc:name="Choice" doc:id="cd9e70be-b98a-46ba-99e7-b1e687a5a8a5"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="11e8154b-72da-47ec-b39d-9fe2a12b6ae7" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:mcp-config-references&gt; 
+                                    &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                                &lt;/ms-inference:mcp-config-references&gt;  
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                            &lt;/ms-inference:mcp-tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="fd049d4b-2b60-4eee-b290-16034e215b71" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt; 
+                                &lt;ms-inference:mcp-config-references&gt; 
+                                    &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                                &lt;/ms-inference:mcp-config-references&gt;  
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                            &lt;/ms-inference:mcp-tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="ef6a46ab-fcd9-4ced-921e-88520d7ef534" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt; 
+                                &lt;ms-inference:mcp-config-references&gt; 
+                                    &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                                &lt;/ms-inference:mcp-config-references&gt;  
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                            &lt;/ms-inference:mcp-tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="098c2ed9-e36e-43da-8b17-f1225b608c85" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:tools-native-template&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:tools-native-template" doc:id="1ec979ac-e83d-463e-873a-43f251f83304"&gt; 
+                    &lt;set-variable value="#[%dw 2.0
+output application/json
+---
+read(payload.parameters.tools default &amp;quot;{}&amp;quot;, &amp;quot;application/json&amp;quot;)]" doc:name="tools" doc:id="2799ce58-601c-4f3b-ac0a-af0688fa2e69" variableName="tools"/&gt;
+                    &lt;choice doc:name="Choice" doc:id="6d15587a-8e96-4e22-9f05-5c6f69f1cd6c"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="cc57957a-58f9-40aa-9277-9b3bd1bf00ef" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                                &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                            &lt;/ms-inference:tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="96afbffc-f602-496f-87a4-d6db60d78389" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                                &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                            &lt;/ms-inference:tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="9b834416-7b1c-49b5-aeed-358a399ec7d6" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt; 
+                                &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                                &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                                &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                                &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                                &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                            &lt;/ms-inference:tools-native-template&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="dfa510b9-9e48-4508-a7c8-4befaac95f63" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-inference:toxicity-detection-text&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;try doc:name="ms-inference:toxicity-detection-text" doc:id="620009e0-57be-44ae-8c14-6a9c0f92d927"&gt; 
+                    &lt;set-variable value="#[write(payload.parameters.text, &amp;quot;application/json&amp;quot;)]" doc:name="text - bug" doc:id="867370ed-36f3-4173-b3c5-18ed7531d668" variableName="text"/&gt;  
+                    &lt;choice doc:name="Choice" doc:id="932402c9-dfcd-4462-a1a6-3301451ac4c4"&gt; 
+                        &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                            &lt;ms-inference:toxicity-detection-text doc:name="[Toxicity] Detection by Text" doc:id="7288f63a-2788-48d6-a5f7-bef4cf228ec2" config-ref="MuleSoft_Inference_Moderation_config_OpenAI"&gt; 
+                                &lt;ms-inference:text&gt;&lt;![CDATA[#[vars.text]]]&gt; &lt;/ms-inference:text&gt;  
+                                &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                            &lt;/ms-inference:toxicity-detection-text&gt; 
+                        &lt;/when&gt;  
+                        &lt;otherwise&gt; 
+                            &lt;raise-error doc:name="Raise error" doc:id="73cd9230-fd20-4b6d-a846-f032ab3ebca5" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                        &lt;/otherwise&gt; 
+                    &lt;/choice&gt; 
+                &lt;/try&gt; 
+            &lt;/when&gt;  
+            &lt;otherwise&gt; 
+                &lt;raise-error doc:name="Raise error" doc:id="145072e5-228d-42d5-b9c4-3c0dac1628c3" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+            &lt;/otherwise&gt; 
+        &lt;/choice&gt;  
+        &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="9296675f-f320-4c71-9fe0-785c672fae3c"&gt; 
+            &lt;ee:message&gt; 
+                &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+            &lt;/ee:message&gt; 
+        &lt;/ee:transform&gt; 
+    &lt;/sub-flow&gt; 
+&lt;/mule&gt;
+</code></pre>
+
+          </div>
+        </div>
+
+          <section id="_execute_inference">
+            <div class="page-header">
+                <h1>execute-inference <img src="./assets/icons/flow.png"></h1>
+            </div>
+            <div class="documentation-indented" style="height:100%;width:100%;overflow:auto;">
+                <img src="img/execute_inference.png" usemap="#flowMapexecute_inference" alt="execute_inference image">
+                <map name="flowMapexecute_inference">
+                </map>
+            </div>
+            <div class="documentation-indented">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#_execute_inferencexml_code">
+                  Show configuration XML code of the flow execute-inference...
+                </a>
+              </div>
+              <div id="_execute_inferencexml_code" class="accordion-body collapse" style="height: 0px;">
+                <div class="accordion-inner">
+                    <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;sub-flow name="execute-inference" doc:id="8cfa60a5-efd9-4080-81da-7d5f8837ab2e"&gt;  
+    &lt;choice doc:name="Choice" doc:id="cd798b02-9987-41c6-84a4-94431a4f65f7"&gt; 
+        &lt;when expression="#[&amp;quot;ms-inference:agent-define-prompt-template&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:agent-define-prompt-template" doc:id="59bbc2cb-5e6c-4edd-808f-3b3742a048dc"&gt; 
+                &lt;choice doc:name="Choice" doc:id="3abb226f-c1f6-4527-92cd-474f9c4555b9"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="f03481b3-d9ee-4d33-b01a-9c478cd77b88" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                        &lt;/ms-inference:agent-define-prompt-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="f8805cca-e030-4609-bc50-733bd8d94d54" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                        &lt;/ms-inference:agent-define-prompt-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:agent-define-prompt-template doc:name="[Agent] Define Prompt Template" doc:id="0862054c-b802-4872-a5b1-56c50262a94b" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt; &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt; &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data as String]]]&gt; &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:prompt-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:prompt-request-attributes&gt; 
+                        &lt;/ms-inference:agent-define-prompt-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="de9f544e-591b-4af3-8e01-dafccee1d415" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:chat-answer-prompt&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:chat-answer-prompt" doc:id="d3adc310-2ce7-47c3-9f1e-ff8b7f10c812"&gt; 
+                &lt;choice doc:name="Choice" doc:id="a0228590-f1f7-4690-9be8-0a2e31831a09"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="53b9852c-ddd8-47a7-9a4a-e64b165811f1" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                        &lt;/ms-inference:chat-answer-prompt&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="fa8909fd-f11b-4288-84c1-bb574758f453" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                        &lt;/ms-inference:chat-answer-prompt&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-answer-prompt doc:name="[Chat] Answer Prompt" doc:id="e69d3ee4-7b89-4cad-a136-9a86fdc77c10" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:chat-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt; &lt;/ms-inference:chat-request-attributes&gt; 
+                        &lt;/ms-inference:chat-answer-prompt&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="781adc43-21b2-4ba5-8ed0-34b02cf96323" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:chat-completions&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:chat-completions" doc:id="4cbc0d45-0dd8-47e9-ac14-a02fa989e518"&gt; 
+                &lt;choice doc:name="Choice" doc:id="c5757cf5-697f-4a34-9c15-9e7a4c88bc92"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="b644bdb5-0ac5-48cd-b0bf-0a5ed2842336" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:chat-completions&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="5ef778d7-099b-4609-ad3a-4f672a904c53" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt;  
+                            &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:chat-completions&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:chat-completions doc:name="[Chat] Completions" doc:id="5fa4976b-cd1b-4445-877a-d56394ce780e" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt;  
+                            &lt;ms-inference:messages&gt;&lt;![CDATA[#[output application/json
+---
+read(payload.parameters.messages, "application/json")]]]&gt;   &lt;/ms-inference:messages&gt;
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:chat-completions&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="cb13d178-4301-485d-bb05-da76b68d3af7" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:generate-image&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:generate-image" doc:id="d587a18a-ccaf-4e32-a8f7-6f19566d3df4"&gt; 
+                &lt;choice doc:name="Choice" doc:id="665d64f3-dcfa-4f58-bfdc-f4aa21a05798"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:generate-image doc:name="[Image] Generate (only Base64)" doc:id="a12dd1dc-e992-40c1-a923-9a1e7b3e89b5" config-ref="MuleSoft_Inference_Image_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt; &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:generate-image&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="a98224a0-e188-4ca3-98c9-3b15c7056cc2" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:read-image&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:read-image" doc:id="e67490c3-c785-406a-91e1-3c11d44190df"&gt; 
+                &lt;choice doc:name="Choice" doc:id="56438576-8b68-4002-bd50-310f985e1ee2"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:read-image doc:name="[Image] Read by (Url or Base64)" doc:id="40c26402-6671-4eeb-b9f2-91a666490bbb" config-ref="MuleSoft_Inference_Vision_Config_OpenAI"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt]]]&gt;   &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:image-url&gt;&lt;![CDATA[#[payload.parameters.image]]]&gt; &lt;/ms-inference:image-url&gt;  
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:read-image&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:read-image doc:name="[Image] Read by (Url or Base64)" doc:id="ef904fe5-5dd6-4f39-b484-09e06baa1f28" config-ref="MuleSoft_Inference_Vision_Config_Anthropic"&gt;  
+                            &lt;ms-inference:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt]]]&gt;   &lt;/ms-inference:prompt&gt;  
+                            &lt;ms-inference:image-url&gt;&lt;![CDATA[#[payload.parameters.image]]]&gt; &lt;/ms-inference:image-url&gt;  
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:read-image&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="4eb47265-caf3-436b-8249-9443b0e09ea0" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:mcp-tools-native-template&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:mcp-tools-native-template" doc:id="f4ec9763-297e-4b55-8db9-d94936927c8d"&gt; 
+                &lt;db:select doc:name="Get Runtime Config Values" doc:id="d906e9cb-5cee-4951-b378-1ed52ff23512" config-ref="Database_Config_Postgresql" target="configValuesMcp"&gt;  
+                    &lt;db:sql&gt;&lt;![CDATA[SELECT 
+  cp.api_name,
+  rcv.parameter_value
+FROM runtime_config_values rcv
+JOIN config_parameters cp ON rcv.parameter_id = cp.id
+WHERE rcv.runtime_config_id = :runtimeConfigId]]&gt;   &lt;/db:sql&gt;
+                    &lt;db:input-parameters&gt;&lt;![CDATA[#[output java
+---
+{
+  runtimeConfigId: (read(payload.parameters.additionalRequestAttributes, "application/json").mcpClientConfigId)
+}]]]&gt;   &lt;/db:input-parameters&gt;
+                &lt;/db:select&gt;  
+                &lt;ee:transform doc:name="Flatten Credentials" doc:id="fd4ed9a7-d533-48fe-a45e-9d835e823dc5"&gt;  
+                    &lt;ee:message/&gt;  
+                    &lt;ee:variables&gt; 
+                        &lt;ee:set-variable variableName="runtimeConfigForMCP"&gt;&lt;![CDATA[%dw 2.0
+output java
+---
+{ (
+    vars.configValuesMcp map (item) -&gt; (item.api_name): item.parameter_value
+) }]]&gt;  &lt;/ee:set-variable&gt;
+                    &lt;/ee:variables&gt; 
+                &lt;/ee:transform&gt;  
+                &lt;choice doc:name="Choice" doc:id="cd9e70be-b98a-46ba-99e7-b1e687a5a8a5"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="11e8154b-72da-47ec-b39d-9fe2a12b6ae7" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:mcp-config-references&gt; 
+                                &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                            &lt;/ms-inference:mcp-config-references&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                        &lt;/ms-inference:mcp-tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="fd049d4b-2b60-4eee-b290-16034e215b71" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt;  
+                            &lt;ms-inference:mcp-config-references&gt; 
+                                &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                            &lt;/ms-inference:mcp-config-references&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                        &lt;/ms-inference:mcp-tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="ef6a46ab-fcd9-4ced-921e-88520d7ef534" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt;  
+                            &lt;ms-inference:mcp-config-references&gt; 
+                                &lt;ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_ForInference"/&gt; 
+                            &lt;/ms-inference:mcp-config-references&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:mcp-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;  &lt;/ms-inference:mcp-request-attributes&gt; 
+                        &lt;/ms-inference:mcp-tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="098c2ed9-e36e-43da-8b17-f1225b608c85" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:tools-native-template&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:tools-native-template" doc:id="1ec979ac-e83d-463e-873a-43f251f83304"&gt; 
+                &lt;set-variable value="#[%dw 2.0
+output application/json
+---
+read(payload.parameters.tools default &amp;quot;{}&amp;quot;, &amp;quot;application/json&amp;quot;)]" doc:name="tools" doc:id="2799ce58-601c-4f3b-ac0a-af0688fa2e69" variableName="tools"/&gt;
+                &lt;choice doc:name="Choice" doc:id="6d15587a-8e96-4e22-9f05-5c6f69f1cd6c"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="cc57957a-58f9-40aa-9277-9b3bd1bf00ef" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                            &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                        &lt;/ms-inference:tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;anthropic-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="96afbffc-f602-496f-87a4-d6db60d78389" config-ref="MuleSoft_Inference_Text_Generation_Config_Anthropic"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                            &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                        &lt;/ms-inference:tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;when expression="#[&amp;quot;azureopenai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="9b834416-7b1c-49b5-aeed-358a399ec7d6" config-ref="MuleSoft_Inference_Text_generation_Config_AzureOpenAI"&gt;  
+                            &lt;ms-inference:template&gt;&lt;![CDATA[#[payload.parameters.template]]]&gt;   &lt;/ms-inference:template&gt;  
+                            &lt;ms-inference:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions]]]&gt;   &lt;/ms-inference:instructions&gt;  
+                            &lt;ms-inference:data&gt;&lt;![CDATA[#[payload.parameters.data]]]&gt;   &lt;/ms-inference:data&gt;  
+                            &lt;ms-inference:tools&gt;&lt;![CDATA[#[vars.tools]]]&gt;   &lt;/ms-inference:tools&gt;  
+                            &lt;ms-inference:tools-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;    &lt;/ms-inference:tools-request-attributes&gt; 
+                        &lt;/ms-inference:tools-native-template&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="dfa510b9-9e48-4508-a7c8-4befaac95f63" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-inference:toxicity-detection-text&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;try doc:name="ms-inference:toxicity-detection-text" doc:id="620009e0-57be-44ae-8c14-6a9c0f92d927"&gt; 
+                &lt;set-variable value="#[write(payload.parameters.text, &amp;quot;application/json&amp;quot;)]" doc:name="text - bug" doc:id="867370ed-36f3-4173-b3c5-18ed7531d668" variableName="text"/&gt;  
+                &lt;choice doc:name="Choice" doc:id="932402c9-dfcd-4462-a1a6-3301451ac4c4"&gt; 
+                    &lt;when expression="#[&amp;quot;openai-connection&amp;quot; == vars.runtimeConfig.provider_key]"&gt; 
+                        &lt;ms-inference:toxicity-detection-text doc:name="[Toxicity] Detection by Text" doc:id="7288f63a-2788-48d6-a5f7-bef4cf228ec2" config-ref="MuleSoft_Inference_Moderation_config_OpenAI"&gt;  
+                            &lt;ms-inference:text&gt;&lt;![CDATA[#[vars.text]]]&gt; &lt;/ms-inference:text&gt;  
+                            &lt;ms-inference:additional-request-attributes&gt;&lt;![CDATA[#[if (!isEmpty(payload.parameters.additonalRequestAttributes)) read(payload.parameters.additonalRequestAttributes, "application/json") else null]]]&gt;   &lt;/ms-inference:additional-request-attributes&gt; 
+                        &lt;/ms-inference:toxicity-detection-text&gt; 
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;raise-error doc:name="Raise error" doc:id="73cd9230-fd20-4b6d-a846-f032ab3ebca5" type="CUSTOM:UNSUPPORTED_PROVIDER" description="#['Provider not supported: ' ++ vars.runtimeConfig.provider_key]"/&gt; 
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt; 
+            &lt;/try&gt; 
+        &lt;/when&gt;  
+        &lt;otherwise&gt; 
+            &lt;raise-error doc:name="Raise error" doc:id="145072e5-228d-42d5-b9c4-3c0dac1628c3" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+        &lt;/otherwise&gt; 
+    &lt;/choice&gt;  
+    &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="9296675f-f320-4c71-9fe0-785c672fae3c"&gt;  
+        &lt;ee:message&gt; 
+            &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+        &lt;/ee:message&gt; 
+    &lt;/ee:transform&gt; 
+&lt;/sub-flow&gt;
+</code></pre>
+
+                </div>
+              </div>
+              <p></p>
+            </div>
+          </section>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>Designed and built with <a href="https://www.mulesoft.com/platform/studio" target="_blank">Anypoint Studio</a>.</p>
+        <p>Code licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <p>Icons from <a href="https://glyphicons.com/">Glyphicons Free</a>, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+          <li><a href="https://blogs.mulesoft.com/bloghome/">Read the blog</a></li>
+          <li><a href="https://www.mulesoft.org/jira/issues/">Submit issues</a></li>
+        </ul>
+      </div>
+    </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/widgets.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="assets/prettify.js"></script>
+    <script src="assets/bootstrap-transition.js"></script>
+    <script src="assets/bootstrap-alert.js"></script>
+    <script src="assets/bootstrap-modal.js"></script>
+    <script src="assets/bootstrap-dropdown.js"></script>
+    <script src="assets/bootstrap-scrollspy.js"></script>
+    <script src="assets/bootstrap-tab.js"></script>
+    <script src="assets/bootstrap-tooltip.js"></script>
+    <script src="assets/bootstrap-popover.js"></script>
+    <script src="assets/bootstrap-button.js"></script>
+    <script src="assets/bootstrap-collapse.js"></script>
+    <script src="assets/bootstrap-carousel.js"></script>
+    <script src="assets/bootstrap-typeahead.js"></script>
+    <script src="assets/bootstrap-affix.js"></script>
+    <script src="assets/scroller.js"></script>
+    <script src="assets/application.js"></script>
+
+</body>
+</html>

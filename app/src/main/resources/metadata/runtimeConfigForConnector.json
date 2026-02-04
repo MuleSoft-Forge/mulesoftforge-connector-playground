@@ -1,0 +1,10 @@
+{
+  "clientId": "xxxxxxxxxxxxxxxxx",
+  "clientSecret": "xxxxxxxxxxxxxxxxx",
+  "tokenUrl": "https://xxxxxxxxxxxxxxxxx.my.salesforce.com/services/oauth2/token",
+  "scopes": "",
+  "salesforceOrg": "xxxxxxxxxxxxxxxxx.my.salesforce.com",
+  "serverUrl": "https://your-app-name.cloudhub.io",
+  "requestTimeout": "30",
+  "requestTimeoutUnit": "SECONDS"
+}

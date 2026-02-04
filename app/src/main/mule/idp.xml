@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mule-idp="http://www.mulesoft.org/schema/mule/mule-idp"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mule-idp http://www.mulesoft.org/schema/mule/mule-idp/current/mule-mule-idp.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+
+
+	
+	
+		<mule-idp:config name="MuleSoft_IDP_Config" doc:name="MuleSoft IDP Config" doc:id="4ce529e2-3840-4cdf-aeb9-0089250da1fa" >
+		<mule-idp:connection 
+		organisationId="#[(vars.runtimeConfigForConnector.organisationId default p('mulesoft.anypoint.idp.orgId'))]" 
+		username="#[(vars.runtimeConfigForConnector.username default p('mulesoft.anypoint.idp.username'))]" 
+		password="#[(vars.runtimeConfigForConnector.password default p('mulesoft.anypoint.idp.password'))]" 
+		serviceBaseUrl="#[(vars.runtimeConfigForConnector.serviceBaseUrl default p('mulesoft.anypoint.idp.service.host'))]" 
+		platformBaseUrl="#[(vars.runtimeConfigForConnector.platformBaseUrl default p('mulesoft.anypoint.idp.platform.host'))]"
+		>
+			<mule-idp:oauth-client-credentials 
+			clientId="#[(vars.runtimeConfigForConnector.clientId default p('mulesoft.anypoint.idp.clientId'))]" 
+			clientSecret="#[(vars.runtimeConfigForConnector.clientSecret default p('mulesoft.anypoint.idp.clientSecret'))]" 
+			scopes="#[(vars.runtimeConfigForConnector.scopes default p('mulesoft.anypoint.idp.scopes'))]" 
+			tokenUrl="#[(vars.runtimeConfigForConnector.tokenUrl default p('mulesoft.anypoint.idp.tokenUrl'))]"
+			/>
+		</mule-idp:connection></mule-idp:config>
+	<sub-flow name="execute-idp" doc:id="4e743f9f-a067-4f06-8e79-af2d3c4b6274" >
+		<logger level="INFO" doc:name="Logger" doc:id="fda9cd0f-4ace-4052-b1cd-e617b1938642" />
+		<choice doc:name="Choice" doc:id="26495d9a-30b9-49ea-9907-6c8d1fb60563">
+						<when expression='#["mule-idp:submit-execution" == vars.operation.operation_key]'>
+							<mule-idp:submit-execution actionId="#[payload.parameters.actionId]" versionSemantic="#[payload.parameters.versionSemantic]" doc:name="Service IDP - Execution - Submit" doc:id="22a3373f-cb85-40d4-89ad-f3d3f310244c" config-ref="MuleSoft_IDP_Config" fileName="#[payload.parameters.fileName]" callbackUrl="#[payload.parameters.callbackUrl]" headerXSfdcCoreTenantId="#[payload.parameters.headerXSfdcCoreTenantId]">
+								<mule-idp:file-content><![CDATA[#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.fileContent default "")]]]></mule-idp:file-content>
+							</mule-idp:submit-execution>
+						</when>
+						<when expression='#["mule-idp:retrieve-execution-result" == vars.operation.operation_key]'>
+							<mule-idp:retrieve-execution-result actionId="#[payload.parameters.actionId]" versionSemantic="#[payload.parameters.versionSemantic]" doc:name="Service IDP - Execution Result - Retrieve" doc:id="7f31cbd0-5472-4108-a9bf-1750dabc36e7" config-ref="MuleSoft_IDP_Config" executionId="#[payload.parameters.executionId]" valueOnly="#[payload.parameters.valueOnly default false]" />
+						</when>
+						<when expression='#["mule-idp:list-review-tasks" == vars.operation.operation_key]'>
+							<mule-idp:list-review-tasks doc:name="Service IDP - Review Tasks - List" doc:id="a7aac5ee-5715-44b8-ba82-69bb07a0a9c0" config-ref="MuleSoft_IDP_Config" page="#[payload.parameters.page default 0]" size="#[payload.parameters.size default 20]" />
+						</when>
+						<when expression='#["mule-idp:retrieve-review-task" == vars.operation.operation_key]'>
+							<mule-idp:retrieve-review-task actionId="#[payload.parameters.actionId]" doc:name="Service IDP - Review Task - Retrieve" doc:id="93602393-260e-44d3-a98f-2719b34911a5" config-ref="MuleSoft_IDP_Config" executionId="#[payload.parameters.executionId]" />
+						</when>
+						<when expression='#["mule-idp:delete-review-task" == vars.operation.operation_key]'>
+							<mule-idp:delete-review-task actionId="#[payload.parameters.actionId]" doc:name="Service IDP - Review Task - Delete" doc:id="9d75b956-2b93-4395-8c48-89830bcb7a73" config-ref="MuleSoft_IDP_Config" executionId="#[payload.parameters.executionId]" />
+							<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{}]" doc:name="Empty Object" doc:id="ada611fc-55ba-45e5-ab55-8c22ab8f5e7c" />
+						</when>
+						<when expression='#["mule-idp:update-review-task" == vars.operation.operation_key]'>
+							<mule-idp:update-review-task actionId="#[payload.parameters.actionId]" doc:name="Service IDP - Review Task - Update" doc:id="b2b6fe5b-fad7-45c9-be1c-692041b604c8" config-ref="MuleSoft_IDP_Config" executionId="#[payload.parameters.executionId]" contents='#[read(payload.parameters.contents, "application/json")]' />
+						</when>
+						<when expression='#["mule-idp:list-actions" == vars.operation.operation_key]'>
+							<mule-idp:list-actions doc:name="Platform IDP - Actions - List" doc:id="931d51b0-1ce7-4714-933e-89022418f601" config-ref="MuleSoft_IDP_Config" page="#[payload.parameters.page default 0 as Number]" size="#[payload.parameters.size default 20 as Number]" sort='#[payload.parameters.sort default "UPDATED_AT_DESC"]' />
+						</when>
+						<when expression='#["mule-idp:get-action-details" == vars.operation.operation_key]'>
+							<mule-idp:get-action-details actionId="#[payload.parameters.actionId]" versionSemantic="#[payload.parameters.versionSemantic]" doc:name="Platform IDP - Action Detail - Retrieve" doc:id="49ade66c-a65f-4180-a0ba-3f8fbf62d0e7" config-ref="MuleSoft_IDP_Config" />
+						</when>
+						<when expression='#["mule-idp:list-action-reviewers" == vars.operation.operation_key]'>
+							<mule-idp:list-action-reviewers actionId="#[payload.parameters.actionId]" doc:name="Platform IDP - Action Reviewers - List" doc:id="3bc78bae-6248-4fb9-92b0-3505be7b861a" config-ref="MuleSoft_IDP_Config" />
+						</when>
+						<when expression='#["mule-idp:update-action-reviewers" == vars.operation.operation_key]'>
+							<mule-idp:update-action-reviewers actionId="#[payload.parameters.actionId]" doc:name="Platform IDP - Action Reviewers - Update" doc:id="e2ae0ef5-9336-4ba6-9ee3-a9c13702e265" config-ref="MuleSoft_IDP_Config" contents='#[read(payload.parameters.contents, "application/json")]' />
+						</when>
+						<when expression='#["mule-idp:get-action-version" == vars.operation.operation_key]'>
+							<mule-idp:get-action-version actionId="#[payload.parameters.actionId]" versionSemantic="#[payload.parameters.versionSemantic]" doc:name="Platform IDP - Action Version - Retrieve" doc:id="d1f658d2-d120-4067-8ea7-68fbae308bdb" config-ref="MuleSoft_IDP_Config" />
+						</when>
+						<when expression='#["mule-idp:list-action-versions" == vars.operation.operation_key]'>
+							<mule-idp:list-action-versions actionId="#[payload.parameters.actionId]" doc:name="Platform IDP - Action Versions - List" doc:id="a467b9d4-5055-40c6-a278-71bb6a275fc6" config-ref="MuleSoft_IDP_Config" page="#[payload.parameters.page default 0 as Number]" size="#[payload.parameters.size default 20 as Number]" sort='#[payload.parameters.sort default "VERSION_DESC"]' />
+						</when>
+						<otherwise>
+							<raise-error doc:name="Raise error" doc:id="e27fbfcb-10b8-44f7-97e3-ff43928fa232" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported" />
+						</otherwise>
+					</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse" doc:id="8ce4f35e-5f34-412f-a41a-f2f66e15f273">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+	</sub-flow>
+	<sub-flow name="webapp-getIDPActionVersions" doc:id="f87102d9-4796-4cd6-a12d-41258cffd03f" >
+		<set-variable value="#[attributes.uriParams.configId as Number default 0]" doc:name="runtimeConfigId" doc:id="4d838d8b-09a8-4d44-91a8-55472ebbe1d1" variableName="runtimeConfigId" />
+		<flow-ref doc:name="get-runtimeConfigForConnector" doc:id="c01471c7-0d89-4503-821c-9c177287816c" name="get-runtimeConfigForConnector" />
+		<mule-idp:list-action-versions actionId="#[attributes.uriParams.actionId]" doc:name="Platform IDP - Action Versions - List" doc:id="fec53d1c-a996-4c7d-9fc7-42c7eb355ec8" config-ref="MuleSoft_IDP_Config" size="100" sort="VERSION_DESC" />
+		<ee:transform doc:name="Response" doc:id="92992c9f-a4e5-4295-93dc-4795b33b4038">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	createdAt: payload01.createdAt,
+	actionId: payload01.actionId,
+	version: payload01.version,
+	status: payload01.status,
+	updatedAt: payload01.updatedAt
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="webapp-getIDPActions" doc:id="c3af4609-4b3a-45a7-9df1-ed3105d341cd" >
+		<set-variable value="#[attributes.uriParams.configId as Number default 0]" doc:name="runtimeConfigId" doc:id="19924b7d-6098-41bc-a46f-1a5ad4f23410" variableName="runtimeConfigId" />
+		<flow-ref doc:name="get-runtimeConfigForConnector" doc:id="baae1461-edb2-4131-bbce-a1ce1483a689" name="get-runtimeConfigForConnector" />
+		<mule-idp:list-actions doc:name="Platform IDP - Actions - List" doc:id="5f51b335-5091-4393-81b9-8e1d28335416" config-ref="MuleSoft_IDP_Config" size="100" sort="NAME_DESC" />
+		<ee:transform doc:name="Response" doc:id="4003c5a5-8130-4384-a4e5-f2fd94d6b334">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.actions map ( action , indexOfAction ) -> {
+	createdAt: action.createdAt,
+	name: action.name,
+	description: action.description,
+	id: action.id,
+	"type": action."type",
+	updatedAt: action.updatedAt
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+
+
+
+</mule>

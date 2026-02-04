@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-agentforce="http://www.mulesoft.org/schema/mule/ms-agentforce"
+	xmlns:gemini="http://www.mulesoft.org/schema/connectivity/gemini"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/connectivity/gemini http://www.mulesoft.org/schema/connectivity/gemini/current/mule-gemini.xsd
+http://www.mulesoft.org/schema/mule/ms-agentforce http://www.mulesoft.org/schema/mule/ms-agentforce/current/mule-ms-agentforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<gemini:config name="Gemini_config" doc:name="Gemini config" doc:id="cd4e5fd8-6484-4a8b-bff0-fb9f7e21e286" >
+		<gemini:api-key-connection apiKey="${google.gemini.apiKey}" baseUri="${google.gemini.baseUri}"/>
+	</gemini:config>
+	<sub-flow name="execute-gemini" doc:id="c81da342-eb2e-49aa-888e-184cbfeeb937" >
+		<choice doc:name="Choice" doc:id="4ccd0e38-9352-4a38-ac2f-47bd3744f54c" >
+			<when expression='#["gemini:list-models" == vars.operation.operation_key]' >
+				<gemini:list-models doc:name="List Models" doc:id="98828939-0cf6-44df-9a53-12bcd41563c1" config-ref="Gemini_config"/>
+			</when>
+			<when expression='#["gemini:get-model" == vars.operation.operation_key]' >
+				<gemini:get-model doc:name="Get Model" doc:id="df13e8c9-a73a-4698-8ab9-b2719f2bde05" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]"/>
+			</when>
+			<when expression='#["gemini:generate-content" == vars.operation.operation_key]'>
+				<gemini:generate-content doc:name="Generate Content" doc:id="cf126d0e-5750-4c0d-90a6-69d4c77039d7" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]">
+					<gemini:generate-content--body ><![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]></gemini:generate-content--body>
+				</gemini:generate-content>
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="8867e8a3-cf19-463b-8632-6a73f81bdde7" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported" />
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse" doc:id="39822a09-d7c7-408b-9ad7-076b41748972" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-getOperationSchema.json",
+  "title": "mcp-server-tool-getOperationSchema",
+  "description": "Get the complete parameter schema for a specific operation",
+  "type": "object",
+  "properties": {
+    "operationKey": {
+      "type": "string",
+      "description": "Operation key to get schema for (e.g., 'mcp:call-tool', 'ms-inference:chat-answer-prompt', 'agentforce:run-agent')"
+    }
+  },
+  "required": ["operationKey"]
+}

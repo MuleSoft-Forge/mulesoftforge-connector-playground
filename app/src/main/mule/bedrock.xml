@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:mac-bedrock="http://www.mulesoft.org/schema/mule/mac-bedrock"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mac-bedrock http://www.mulesoft.org/schema/mule/mac-bedrock/current/mule-mac-bedrock.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<mac-bedrock:config name="Amazon_Bedrock_Config" doc:name="Amazon Bedrock Config" doc:id="7a14deea-da4c-4855-acdd-3ab6e077881e" awsAccessKeyId="#[(vars.runtimeConfigForConnector.accessKeyId default p('aws.bedrock.accessKeyId'))]" awsSecretAccessKey="#[(vars.runtimeConfigForConnector.secretAccessKey default p('aws.bedrock.secretAccessKey'))]" endpointOverride="#[(vars.runtimeConfigForConnector.endpointOverride default p('aws.bedrock.endpointOverride'))]" fipsModeEnabled="#[vars.runtimeConfigForConnector.fipsModeEnabled default false]" awsSessionToken="#[(vars.runtimeConfigForConnector.sessionToken default p('aws.bedrock.sessionToken'))]"/>
+	<sub-flow name="execute-bedrock" doc:id="bfa27ee3-1217-4029-bcb7-32b0d90ea116" >
+		<choice doc:name="Choice" doc:id="c1549138-448c-4a44-86c7-b3400d3d0472" >
+			<when expression='#["mac-bedrock:agent-chat" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-chat doc:name="Agent chat" doc:id="76e4965c-c8ef-407c-a557-9001ad50c2ef" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" agentAliasId="#[payload.parameters.agentAliasId]" prompt="#[payload.parameters.prompt]" enableTrace="#[payload.parameters.enableTrace default false as Boolean]" latencyOptimized="#[payload.parameters.latencyOptimized default false as Boolean]" sessionId="#[payload.parameters.sessionId]" excludePreviousThinkingSteps="#[payload.parameters.excludePreviousThinkingSteps]" previousConversationTurnsToInclude="#[payload.parameters.previousConversationTurnsToInclude]" knowledgeBaseId="#[payload.parameters.knowledgeBaseId]" numberOfResults="#[payload.parameters.numberOfResults as Number]" overrideSearchType="#[payload.parameters.overrideSearchType default null]" retrievalMetadataFilterType="#[payload.parameters.retrievalMetadataFilterType default null]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' metadataFilters='#[output java&#10;---&#10;read(payload.parameters.metadataFilters default "{}", "application/json")]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-chat-streaming-sse" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-chat-streaming-sse doc:name="Agent chat streaming (SSE)" doc:id="9d9b83f4-1574-4211-b5cf-23714c68aaca" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" agentAliasId="#[payload.parameters.agentAliasId]" prompt="#[payload.parameters.prompt]" enableTrace="#[payload.parameters.enableTrace default false as Boolean]" latencyOptimized="#[payload.parameters.latencyOptimized default false as Boolean]" sessionId="#[payload.parameters.sessionId]" excludePreviousThinkingSteps="#[payload.parameters.excludePreviousThinkingSteps]" previousConversationTurnsToInclude="#[payload.parameters.previousConversationTurnsToInclude]" knowledgeBaseId="#[payload.parameters.knowledgeBaseId]" numberOfResults="#[payload.parameters.numberOfResults  as Number]" overrideSearchType="#[payload.parameters.overrideSearchType default null]" retrievalMetadataFilterType="#[payload.parameters.retrievalMetadataFilterType default null]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' metadataFilters='#[output java&#10;---&#10;read(payload.parameters.metadataFilters default "{}", "application/json")]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-create" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-create doc:name="Agent create" doc:id="ec70b7a2-ac6b-4908-a5d7-55e840237296" config-ref="Amazon_Bedrock_Config" agentName="#[payload.parameters.agentName]" instructions="#[payload.parameters.instructions]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-create-alias" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-create-alias doc:name="Agent create alias" doc:id="92ed8010-3cb3-467a-abfc-56ad658445e8" config-ref="Amazon_Bedrock_Config" agentAlias="#[payload.parameters.agentAlias]" agentId="#[payload.parameters.agentId]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-define-prompt-template" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-define-prompt-template doc:name="Agent define prompt template" doc:id="3ea89e5c-a079-46cc-8cde-70510fd9a6c8" config-ref="Amazon_Bedrock_Config" template="#[payload.parameters.template]" instructions="#[payload.parameters.instructions]" dataset="#[payload.parameters.dataset]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' temperature="#[payload.parameters.temperature as Number]" topP="#[payload.parameters.topP as Number]" topK="#[payload.parameters.topK as Number]" maxTokenCount="#[payload.parameters.maxTokenCount as Number]" guardrailIdentifier="#[payload.parameters.guardrailIdentifier as Number]" guardrailVersion="#[payload.parameters.guardrailVersion as Number]" awsAccountId="#[payload.parameters.awsAccountId]" />
+			</when>
+			<when expression='#["mac-bedrock:agent-delete-agent-aliases" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-delete-agent-aliases doc:name="Agent delete agent aliases" doc:id="a0c215c3-3d18-41c9-8ec4-035916f8f15e" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" agentAliasName="#[payload.parameters.agentAliasName]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-delete-by-id" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-delete-by-id doc:name="Agent delete by id" doc:id="5e62c551-71ba-40ed-9bc3-7b364daedc21" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-get-alias-by-agent-id" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-get-alias-by-agent-id doc:name="Agent get alias by agent id" doc:id="c7c52046-b78a-4d72-a747-1f3b2d605d2f" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-get-by-id" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-get-by-id doc:name="Agent get by id" doc:id="ad1870a0-9182-4ffa-90f5-d9952f0a7f61" config-ref="Amazon_Bedrock_Config" agentId="#[payload.parameters.agentId]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-get-by-name" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-get-by-name doc:name="Agent get by name" doc:id="a7daf9ba-8956-4681-b0b6-3003f2624255" config-ref="Amazon_Bedrock_Config" agentName="#[payload.parameters.agentName]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:agent-list" == vars.operation.operation_key]' >
+				<mac-bedrock:agent-list doc:name="Agent list" doc:id="4c913d84-c701-4340-9409-d5c2c6b79795" config-ref="Amazon_Bedrock_Config" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:chat-answer-prompt" == vars.operation.operation_key]' >
+				<mac-bedrock:chat-answer-prompt doc:name="Chat answer prompt" doc:id="69efeda7-5caf-442f-aac6-53d4dce8ecda" config-ref="Amazon_Bedrock_Config" prompt="#[payload.parameters.prompt]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' temperature="#[payload.parameters.temperature as Number]" topP="#[payload.parameters.topP as Number]" topK="#[payload.parameters.topK as Number]" maxTokenCount="#[payload.parameters.maxTokenCount as Number]" guardrailIdentifier="#[payload.parameters.guardrailIdentifier]" guardrailVersion="#[payload.parameters.guardrailVersion as Number]" awsAccountId="#[payload.parameters.awsAccountId]" />
+			</when>
+			<when expression='#["mac-bedrock:chat-answer-prompt-memory" == vars.operation.operation_key]' >
+				<mac-bedrock:chat-answer-prompt-memory doc:name="Chat answer prompt memory" doc:id="46c1cd76-c91a-4fb0-9689-252c261138a3" config-ref="Amazon_Bedrock_Config" prompt="#[payload.parameters.prompt]" memoryPath="#[payload.parameters.memoryPath]" memoryName="#[payload.parameters.memoryName]" keepLastMessages="#[payload.parameters.keepLastMessages]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' temperature="#[payload.parameters.temperature as Number]" topP="#[payload.parameters.topP as Number]" topK="#[payload.parameters.topK as Number]" maxTokenCount="#[payload.parameters.maxTokenCount as Number]" guardrailIdentifier="#[payload.parameters.guardrailIdentifier]" guardrailVersion="#[payload.parameters.guardrailVersion as Number]" awsAccountId="#[payload.parameters.awsAccountId]" />
+			</when>
+			<when expression='#["mac-bedrock:custom-model-details" == vars.operation.operation_key]' >
+				<mac-bedrock:custom-model-details doc:name="Custom model details" doc:id="d4dcc625-aa62-4771-9733-5c5ebd766895" config-ref="Amazon_Bedrock_Config" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:custom-models-list" == vars.operation.operation_key]' >
+				<mac-bedrock:custom-models-list doc:name="Custom models list" doc:id="fd440bda-de01-44c8-acc7-44b12eb7422b" config-ref="Amazon_Bedrock_Config" region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:embedding-adhoc-query" == vars.operation.operation_key]' >
+				<set-variable value="${app.home}" doc:name="app" doc:id="7214165d-32d1-4b9c-929d-e26ba6607d68" variableName="app" />
+				<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;vars.app ++ "/adhoc"]' doc:name="path" doc:id="ccf87497-2ea6-4ea3-a4d6-c4913c0d560a" variableName="path" />
+				<file:write doc:name="Write" doc:id="c8f693db-862e-47a8-b099-adadd938fe95" path="#[vars.path]">
+					<file:content ><![CDATA[#[%dw 2.0
+import * from dw::core::Binaries 
+output application/octet-stream 
+---
+fromBase64(payload.parameters.filePath)]]]></file:content>
+				</file:write>
+				<mac-bedrock:embedding-adhoc-query doc:name="Embedding adhoc query" doc:id="b0325232-747b-4d0a-83b8-7ea3f5970c17" config-ref="Amazon_Bedrock_Config" prompt="#[payload.parameters.prompt]" filePath="#[vars.path]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' dimension="#[payload.parameters.dimension as Number]" normalize="#[payload.parameters.normalize default true as Boolean]" optionType='#[payload.parameters.optionType default "FULL"]' />
+				<file:delete doc:name="Delete" doc:id="9f273141-d851-408c-b26b-b092ea01acb0" path="#[vars.path]"/>
+			</when>
+			<when expression='#["mac-bedrock:embedding-generate-from-text" == vars.operation.operation_key]' >
+				<mac-bedrock:embedding-generate-from-text doc:name="Embedding generate from text" doc:id="443a0c50-9ef2-4195-870c-df99789c1075" config-ref="Amazon_Bedrock_Config" prompt="#[payload.parameters.prompt]" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' dimension="#[payload.parameters.dimension as Number]" normalize="#[payload.parameters.normalize default true as Boolean]" />
+			</when>
+			<when expression='#["mac-bedrock:foundational-model-details" == vars.operation.operation_key]' >
+				<mac-bedrock:foundational-model-details doc:name="Foundational model details" doc:id="805572e8-7c38-4638-b885-8fdd2f6e9470" config-ref="Amazon_Bedrock_Config" modelName='#[payload.parameters.modelName]' region='#[payload.parameters.region]' />
+			</when>
+			<when expression='#["mac-bedrock:foundational-models-list" == vars.operation.operation_key]' >
+				<mac-bedrock:foundational-models-list doc:name="Foundational models list" doc:id="4a859565-413e-4d73-972d-eaff46999498" config-ref="Amazon_Bedrock_Config" region='#[payload.parameters.region default "us-east-1"]' />
+			</when>
+			<when expression='#["mac-bedrock:image-generate" == vars.operation.operation_key]' >
+				<set-variable value="${app.home}" doc:name="app" doc:id="ccccb978-5a43-4bc2-ad00-c6d93260b958" variableName="app" />
+				<set-variable value='#[%dw 2.0&#10;output application/java&#10;---&#10;vars.app ++ "/imageGen.png"]' doc:name="path" doc:id="e94c24a4-ed49-4b34-9551-a33ff6e900db" variableName="path" />
+				<mac-bedrock:image-generate doc:name="Image generate" doc:id="65d6a224-113f-491a-a268-a2e0e771edcb" config-ref="Amazon_Bedrock_Config" TextToImage="#[payload.parameters.TextToImage]" AvoidInImage="#[payload.parameters.AvoidInImage]" fullPathOutput="#[vars.path]" modelName="#[payload.parameters.modelName]" numOfImages="#[payload.parameters.numOfImages as Number]" height="#[payload.parameters.height as Number]" width="#[payload.parameters.width as Number]" cfgScale="#[payload.parameters.cfgScale as Number]" seed="#[payload.parameters.seed as Number]" region="#[payload.parameters.region]"/>
+				<ee:transform doc:name="Transform Message" doc:id="5ba090ef-614f-4d77-96be-3f3886d3a8d7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/java
+---
+{
+	returnBase64ForMCPG: toBase64(readUrl("file://" ++ vars.path as String,"application/octet-stream"))
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<async doc:name="Async" doc:id="7987f86b-7663-4f7c-96a5-bd6d1fa51252" >
+					<file:delete doc:name="Delete" doc:id="f629fdd4-1089-4d8c-88e2-3397e15598ba" path="#[vars.path]" />
+				</async>
+			</when>
+			<when expression='#["mac-bedrock:sentiment-analyze" == vars.operation.operation_key]' >
+				<mac-bedrock:sentiment-analyze doc:name="Sentiment analyze" doc:id="49a65824-0cbc-4e1b-ab25-b6d09157b4a4" config-ref="Amazon_Bedrock_Config" TextToAnalyze="#[payload.parameters.TextToAnalyze]" modelName="#[payload.parameters.modelName]" region="#[payload.parameters.region]" temperature="#[payload.parameters.temperature  as Number]" topP="#[payload.parameters.topP  as Number]" topK="#[payload.parameters.topK  as Number]" maxTokenCount="#[payload.parameters.maxTokenCount  as Number]" guardrailIdentifier="#[payload.parameters.guardrailIdentifier]" guardrailVersion="#[payload.parameters.guardrailVersion  as Number]" awsAccountId="#[payload.parameters.awsAccountId]" />
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="b86573b5-4443-4bc1-9e1b-a75ec2231eea" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported" />
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse" doc:id="1acae409-53ac-45a8-9ba4-61d05b28574f">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+	</sub-flow>
+</mule>

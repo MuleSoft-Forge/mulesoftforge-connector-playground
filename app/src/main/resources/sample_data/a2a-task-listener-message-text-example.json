@@ -1,0 +1,19 @@
+{
+  "message": {
+    "role": "user",
+    "parts": [
+      {
+        "kind": "text",
+        "text": "Disable connector mule4-agentforce-connector"
+      }
+    ],
+    "messageId": "msg-37m6tm4t7-mhyx55wo",
+    "kind": "message"
+  },
+  "configuration": {
+    "acceptedOutputModes": [
+      "text"
+    ],
+    "blocking": true
+  }
+}

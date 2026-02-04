@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskStatusUpdateEvent",
+  "description": "Event for task status updates in A2A streaming as defined in A2A Protocol specification",
+  "type": "object",
+  "required": ["taskId", "contextId", "kind", "status", "final"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "description": "Task identifier"
+    },
+    "contextId": {
+      "type": "string",
+      "description": "The context the task is associated with"
+    },
+    "kind": {
+      "type": "string",
+      "const": "status-update",
+      "description": "Type discriminator for status update events"
+    },
+    "status": {
+      "$ref": "#/definitions/TaskStatus",
+      "description": "Current status of the task"
+    },
+    "final": {
+      "type": "boolean",
+      "description": "Indicates the end of the event stream"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Extension metadata",
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "TaskStatus": {
+      "title": "TaskStatus",
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/TaskState"
+        },
+        "message": {
+          "$ref": "#/definitions/Message",
+          "description": "Additional status updates for client"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      }
+    },
+    "TaskState": {
+      "description": "An enumeration.",
+      "enum": [
+        "submitted",
+        "working",
+        "input-required",
+        "completed",
+        "canceled",
+        "failed",
+        "rejected",
+        "auth-required",
+        "unknown"
+      ],
+      "title": "TaskState",
+      "type": "string"
+    },
+    "Message": {
+      "type": "object",
+      "required": ["role", "parts", "messageId", "kind"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["user", "agent"],
+          "description": "Sender: user (A2A Client) or agent (A2A Server)"
+        },
+        "parts": {
+          "$ref": "#/definitions/Parts"
+        },
+        "messageId": {
+          "type": "string",
+          "description": "Unique identifier for the message"
+        },
+        "kind": {
+          "type": "string",
+          "const": "message",
+          "description": "Type discriminator, literal value 'message'"
+        },
+        "referenceTaskIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of other task IDs that this message references for additional context."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata",
+          "additionalProperties": true
+        }
+      }
+    },
+    "Parts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Part"
+      }
+    },
+    "Part": {
+      "title": "Part",
+      "type": "object",
+      "required": [],
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "mimeType": {
+          "title": "MimeType",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the part",
+          "title": "Type",
+          "type": "string",
+          "enum": ["text", "file", "data"]
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["text", "file", "data"]
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content (for text parts)"
+        },
+        "file": {
+          "$ref": "#/definitions/File",
+          "description": "File content (for file parts)"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "File": {
+      "type": "object",
+      "description": "Contains the file details and data/reference.",
+      "required": [],
+      "properties": {
+        "bytes": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "description": "Base64 encoded bytes of the file"
+        },
+        "name": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

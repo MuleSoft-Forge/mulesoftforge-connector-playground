@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_dd4f8694_b08e_4dcf_8002_20e5c0318a2e_Input_Payload = {
+  runtimeConfigId: Number, 
+  enableValidation?: Boolean, 
+  operationId: Number, 
+  enableLogging?: Boolean, 
+  parameters: { _?: Any } {"description": "Operation-specific input parameters"}, 
+  _?: Any
+} {"description": "Request body for executing a connector operation"}
+

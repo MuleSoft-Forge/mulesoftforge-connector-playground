@@ -1,0 +1,3307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:websocket="http://www.mulesoft.org/schema/mule/websocket" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mac-bedrock="http://www.mulesoft.org/schema/mule/mac-bedrock" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:a2a="http://www.mulesoft.org/schema/mule/a2a" xmlns:mule-idp="http://www.mulesoft.org/schema/mule/mule-idp" xmlns:ms-inference="http://www.mulesoft.org/schema/mule/ms-inference" xmlns:ms-einstein-ai="http://www.mulesoft.org/schema/mule/ms-einstein-ai" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ms-agentforce="http://www.mulesoft.org/schema/mule/ms-agentforce" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/ms-agentforce http://www.mulesoft.org/schema/mule/ms-agentforce/current/mule-ms-agentforce.xsd
+http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd
+http://www.mulesoft.org/schema/mule/ms-einstein-ai http://www.mulesoft.org/schema/mule/ms-einstein-ai/current/mule-ms-einstein-ai.xsd
+http://www.mulesoft.org/schema/mule/ms-inference http://www.mulesoft.org/schema/mule/ms-inference/current/mule-ms-inference.xsd
+http://www.mulesoft.org/schema/mule/mule-idp http://www.mulesoft.org/schema/mule/mule-idp/current/mule-mule-idp.xsd
+http://www.mulesoft.org/schema/mule/a2a http://www.mulesoft.org/schema/mule/a2a/current/mule-a2a.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/mac-bedrock http://www.mulesoft.org/schema/mule/mac-bedrock/current/mule-mac-bedrock.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/websocket http://www.mulesoft.org/schema/mule/websocket/current/mule-websocket.xsd">
+    <http:listener-config name="mulesoftforge-connector-playground-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+        <http:listener-interceptors>
+            <http:cors-interceptor>
+                <http:origins>
+                    <http:public-resource />
+                </http:origins>
+            </http:cors-interceptor>
+        </http:listener-interceptors>
+    </http:listener-config>
+    <apikit:config name="mulesoftforge-connector-playground-config" api="resource::${api.groupId}:${api.artifactId}:${api.version}:oas:zip:mulesoftforge-connector-playground.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+<!--     <api-gateway:autodiscovery apiId="${anypoint.platform.apiAutoDiscovery}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="aff15b3f-f113-40ed-9d70-31166ef8f45e" flowRef="mulesoftforge-connector-playground-main"/> -->
+	<api-gateway:autodiscovery apiId="${anypoint.platform.apiAutoDiscovery}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="8becdae2-8eb7-410a-8469-c175c671d95e" flowRef="mulesoftforge-connector-playground-main" />
+	<websocket:config name="WebSockets_Config" doc:name="WebSockets Config" doc:id="391e67c8-a72c-4769-b35b-8b1cd6ddfd47" >
+		<websocket:connection >
+			<websocket:server-settings listenerConfig="mulesoftforge-connector-playground-httpListenerConfig" listenerBasePath="/ws"/>
+		</websocket:connection>
+	</websocket:config>
+	<flow name="static-webapp" doc:id="2e7bd50c-53a1-43e5-bd35-14c71fc7aaff">
+        <http:listener doc:name="Listener" doc:id="b21dd7ae-8226-420c-b06c-ab7e2e0f950c" config-ref="mulesoftforge-connector-playground-httpListenerConfig" path="/webapp/*" />
+		<set-variable value="${app.home}" doc:name="app" doc:id="38f6b46b-ee85-48fe-b9d9-69d68db1d0d3" variableName="app" />
+		<set-variable value="#[%dw 2.0&#xA;output application/java&#xA;---&#xA;vars.app ++ &quot;/static&quot;]" doc:name="path" doc:id="794f8153-6ff8-451e-b587-dd366b8effee" variableName="path" />
+        <http:load-static-resource doc:name="Load static resource" doc:id="8886ecdc-73b5-4359-babe-28bf60e6977b" resourceBasePath="#[vars.path]" />
+    </flow>
+    <flow name="mulesoftforge-connector-playground-main">
+        <http:listener config-ref="mulesoftforge-connector-playground-httpListenerConfig" path="/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+		<apikit:router config-ref="mulesoftforge-connector-playground-config" />
+		<error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <!-- [STUDIO:"mulesoftforge-connector-playground-console"]<flow name="mulesoftforge-connector-playground-console">
+        <http:listener config-ref="mulesoftforge-connector-playground-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:body>#[payload&#93;</http:body>
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:error-response>
+        </http:listener>
+		<apikit:console config-ref="mulesoftforge-connector-playground-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{message: "Resource not found"}&#93;&#93;></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> [STUDIO] -->
+    <flow name="post:\execute:application\json:mulesoftforge-connector-playground-config" doc:id="62ef2840-ef06-4426-8a78-d152d4b75e38">
+        <!-- EXECUTION TRACKING: Capture start time -->
+        <!-- NEW: Extract control flags from payload -->
+        <!-- EXECUTION TRACKING: Log execution start (CONDITIONAL) -->
+		<logger level="INFO" doc:name="🚀🚀🚀 Execute A Connector Operation" doc:id="11a2db64-5bf9-4349-b6d8-15db65c45a4e" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 🚀🚀🚀 Execute A Connector Operation" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🚀🚀🚀 Execute A Connector Operation" &#10;++ "\n\n"]'/>
+		<set-variable value="#[attributes.headers.'x-forwarded-for' default attributes.remoteAddress]" doc:name="sourceIp" doc:id="0d6cd676-b166-48bb-9782-8a1b74673e43" variableName="sourceIp"/>
+		<set-variable value="#[attributes.headers.'user-agent']" doc:name="userAgent" doc:id="0eb9a9bd-fb38-427c-884a-202b198aaffb" variableName="userAgent"/>
+        <!-- Step 1: Query Operation -->
+        <!-- CONDITIONAL VALIDATION -->
+        <!-- EXECUTION TRACKING: Log successful completion (CONDITIONAL) -->
+        <!-- Set HTTP Status 200 for successful execution -->
+        <!-- Step 7: Transform Response -->
+        <!-- Error Handler -->
+		<flow-ref doc:name="execute" doc:id="ca89b1c9-408b-4053-97a5-2f6e354b127a" name="execute" />
+		<error-handler>
+            <!-- Validation Errors (400 Bad Request) -->
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="Validation Errors" type="CUSTOM:MISSING_PARAMETERS, CUSTOM:UNKNOWN_PARAMETERS, CUSTOM:OPERATION_NOT_FOUND, CUSTOM:CONFIG_NOT_FOUND, CUSTOM:OPERATION_INACTIVE, CUSTOM:CONNECTOR_INACTIVE, CUSTOM:CONFIG_INACTIVE, CUSTOM:CONFIG_TYPE_MISMATCH">
+                <set-variable value="400" doc:name="Set httpStatus 400" variableName="httpStatus" />
+                <!-- CONDITIONAL ERROR LOGGING -->
+                <choice doc:name="Log Error?">
+                    <when expression="#[vars.enableValidation == true]">
+						<db:query-single doc:name="Log Execution Error" doc:id="7fae78a8-283e-49f5-b14c-fe001abab540" config-ref="Database_Config_Postgresql" target="executionErrorLog" >
+							<db:sql ><![CDATA[SELECT sp_log_execution_error(
+                CAST(:executionId AS UUID),
+                :errorType,
+                :errorMessage,
+                :errorCode,
+                :errorDescription,
+                :stackTrace,
+                CAST(:durationMs AS INTEGER),
+                CAST(:httpStatus AS INTEGER)
+            )]]></db:sql>
+							<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/java
+fun sanitize(str) = if (str == null) null else (str as String replace /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/ with "")
+---
+{
+                executionId: vars.executionId default null,
+                errorType: error.errorType.identifier,
+                errorMessage: sanitize(error.description),
+                errorCode: error.errorType.namespace,
+                errorDescription: sanitize(error.detailedDescription default null),
+                stackTrace: null,
+                durationMs: if (vars.executionStartTime != null) 
+                            (((now() - vars.executionStartTime) as Number {unit: "milliseconds"}) as Number) 
+                            else null,
+                httpStatus: vars.httpStatus default 500
+            }]]]></db:input-parameters>
+						</db:query-single>
+                    </when>
+                </choice>
+                <!-- Generate proper error response -->
+                <ee:transform doc:name="RFC 9457 Error Response" doc:id="34974050-4c60-40cd-b3b1-198a834ee935">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "type": "about:blank",
+  title: error.errorType.identifier,
+  status: 400,
+  detail: error.description,
+  instance: "/execute"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-propagate>
+            <!-- All Other Errors (500 Internal Server Error) -->
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" type="ANY">
+                <!-- CONDITIONAL ERROR LOGGING -->
+                <set-variable value="500" doc:name="Set httpStatus 500" doc:id="d47fba24-5ee5-45d6-a828-6a76631619d3" variableName="httpStatus" />
+				<choice doc:name="Log Error?">
+                    <when expression="#[vars.enableValidation == true]">
+						<db:query-single doc:name="Log Execution Error" doc:id="8d1717a0-fb6b-4dae-8749-083feff612bd" config-ref="Database_Config_Postgresql" target="executionErrorLog" >
+							<db:sql ><![CDATA[SELECT sp_log_execution_error(
+                CAST(:executionId AS UUID),
+                :errorType,
+                :errorMessage,
+                :errorCode,
+                :errorDescription,
+                :stackTrace,
+                CAST(:durationMs AS INTEGER),
+                CAST(:httpStatus AS INTEGER)
+            )]]></db:sql>
+							<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/java
+fun sanitize(str) = if (str == null) null else (str as String replace /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/ with "")
+---
+{
+                executionId: vars.executionId default null,
+                errorType: error.errorType.identifier,
+                errorMessage: sanitize(error.description),
+                errorCode: error.errorType.namespace,
+                errorDescription: sanitize(error.detailedDescription default null),
+                stackTrace: null,
+                durationMs: if (vars.executionStartTime != null) 
+                            (((now() - vars.executionStartTime) as Number {unit: "milliseconds"}) as Number) 
+                            else null,
+                httpStatus: vars.httpStatus default 500
+            }]]]></db:input-parameters>
+						</db:query-single>
+                    </when>
+                </choice>
+                <!-- Generate proper error response -->
+                <ee:transform doc:name="RFC 9457 Error Response" doc:id="dcb77a00-92bc-4bf4-a280-9dd535ed0531"> <ee:message> 
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "type": "about:blank",
+  title: error.errorType.identifier,
+  status: 400,
+  detail: error.description,
+  instance: "/execute"
+}]]></ee:set-payload> </ee:message> </ee:transform> 
+				
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="websocket-execute-on-new-inbound-message" doc:id="b97839d7-d6e3-4de9-aecc-332dffec88c0" >
+		<websocket:inbound-listener doc:name="On New Inbound Message" doc:id="da7cd219-b5cb-4622-b3a3-195fc3ed4c80" config-ref="WebSockets_Config" path="/execute"/>
+		<logger level="INFO" doc:name="🛎️🛎️🛎️ message/websocket" doc:id="ed39bd31-623c-4a4c-a37b-1c48cef55757" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n️ 🛎️🛎️🛎️️ message/websocket - Execute" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n🛎 Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n🛎 Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🛎️🛎️🛎️️ message/websocket - Execute" &#10;++ "\n\n"]' />
+		<set-variable value="#[attributes.remoteAddress]" doc:name="sourceIp" doc:id="cecbcff7-dfef-4cd8-9339-c2c0bc2394b1" variableName="sourceIp" />
+		<set-variable value='#["WebSocket-Client"]' doc:name="userAgent" doc:id="b3f1cef2-be44-4622-a009-468ba2645d87" variableName="userAgent" />
+		<set-variable value='#[attributes.socketId]' doc:name="socketId" doc:id="eeb96900-f874-4709-9ed3-b1b36e7fc7fb" variableName="socketId" />
+		<set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;read(payload default "{}", "application/json")]' doc:name="Set Payload" doc:id="6ea1e6ec-88f7-4184-87bc-03e67d8973e0" mimeType="application/json"/>
+		<flow-ref doc:name="execute" doc:id="1b151bdf-7edf-4641-a6ed-6031dc1b1318" name="execute" />
+		<websocket:close-socket doc:name="Close socket" doc:id="67c3d4c0-0c17-48e0-9f52-946d95e1e11e" config-ref="WebSockets_Config" socketId="#[vars.socketId]"/>
+	</flow>
+	<sub-flow name="execute" doc:id="1e6c52e4-35c0-4da5-9f22-ba9ab6ec38eb">
+		<try doc:name="Log" doc:id="2a8cf015-eb1e-466a-9bc6-06d35604d9bd">
+			<choice doc:name="Log Start?">
+            <when expression="#[payload.enableLogging == true]">
+				<set-variable value="#[true]" doc:name="Set enableValidation Flag" variableName="enableValidation" />
+				<set-variable value="#[now()]" doc:name="Set Execution Start Time" variableName="executionStartTime" />
+				<db:query-single doc:name="Log Execution Start" doc:id="58ba544c-9396-4fc1-8dca-7b336657a16e" config-ref="Database_Config_Postgresql" target="executionStart">
+                    <db:sql><![CDATA[SELECT sp_log_execution_start(
+                CAST(:operationId AS INTEGER),
+                CAST(:runtimeConfigId AS INTEGER),
+                CAST(:requestPayload AS JSONB),
+                :sourceIp,
+                :userAgent
+            ) as execution_id]]></db:sql>
+                    <db:input-parameters><![CDATA[#[{
+	operationId: payload.operationId,
+	runtimeConfigId: payload.runtimeConfigId,
+	requestPayload: write(payload, "application/json"),
+	sourceIp: vars.sourceIp,
+	userAgent: vars.userAgent
+}]]]></db:input-parameters>
+                </db:query-single>
+                <set-variable variableName="executionId" value="#[vars.executionStart.execution_id as String]" doc:name="Set Execution ID" />
+            </when>
+			<otherwise>
+                <!-- Skip logging - set null executionId -->
+                <set-variable value="#[false]" doc:name="Set enableValidation Flag" doc:id="6e91e1e3-07ca-4e66-acd9-4990e488da58" variableName="enableValidation" />
+            </otherwise>
+        </choice>
+		</try>
+		<db:query-single doc:name="Query Operation" config-ref="Database_Config_Postgresql" target="operation">
+            <db:sql><![CDATA[SELECT 
+  o.id, 
+  o.operation_key, 
+  o.connector_id, 
+  o.is_active as operation_active,
+  o.required_config_type_id,
+  c.is_active as connector_active,
+  c.maven_artifact_id
+FROM operations o
+JOIN connectors c ON c.id = o.connector_id
+WHERE o.id = :operationId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (payload.operationId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+		<choice doc:name="Validate?">
+            <when expression="#[payload.enableValidation]">
+                <!-- ALL EXISTING VALIDATION STEPS -->
+				<try doc:name="Validate" doc:id="8fd0d825-c464-401d-ad4a-805eaf436160">
+					<validation:is-not-null doc:name="Validate Operation Exists" value="#[vars.operation.connector_id]" message="Operation not found">
+                    <error-mapping sourceType="VALIDATION:NULL" targetType="CUSTOM:OPERATION_NOT_FOUND" />
+                </validation:is-not-null>
+					<validation:is-true doc:name="Validate Operation Active" expression="#[vars.operation.operation_active]" message="Operation is not active">
+                    <error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOM:OPERATION_INACTIVE" />
+                </validation:is-true>
+					<validation:is-true doc:name="Validate Connector Active" expression="#[vars.operation.connector_active]" message="Connector is not active">
+                    <error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOM:CONNECTOR_INACTIVE" />
+                </validation:is-true>
+					<db:query-single doc:name="Query Runtime Config" config-ref="Database_Config_Postgresql" target="runtimeConfig">
+                    <db:sql><![CDATA[SELECT 
+  rc.id,
+  rc.name,
+  rc.is_active, 
+  rc.config_type_id,
+  rc.provider_id,
+  cp.provider_key 
+FROM runtime_configurations rc
+JOIN config_providers cp ON rc.provider_id = cp.id 
+WHERE rc.id = :runtimeConfigId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  runtimeConfigId: (payload.runtimeConfigId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+					<validation:is-not-null doc:name="Validate Config Exists" value="#[vars.runtimeConfig.id]" message="Runtime configuration not found">
+                    <error-mapping sourceType="VALIDATION:NULL" targetType="CUSTOM:CONFIG_NOT_FOUND" />
+                </validation:is-not-null>
+					<validation:is-true doc:name="Validate Config Active" expression="#[vars.runtimeConfig.is_active]" message="Runtime configuration is not active">
+                    <error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOM:CONFIG_INACTIVE" />
+                </validation:is-true>
+					<validation:is-true doc:name="Validate Config Type Match" expression="#[vars.runtimeConfig.config_type_id == vars.operation.required_config_type_id]" message="Runtime configuration type does not match operation requirements">
+                    <error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="CUSTOM:CONFIG_TYPE_MISMATCH" />
+                </validation:is-true>
+					<db:select doc:name="Get Operation Parameters" config-ref="Database_Config_Postgresql" target="operationParams">
+                    <db:sql><![CDATA[SELECT 
+  api_name, 
+  is_required, 
+  data_type
+FROM operation_parameters
+WHERE operation_id = :operationId
+ORDER BY parameter_order]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (payload.operationId as Number default 0)
+}]]]></db:input-parameters>
+                </db:select>
+					<ee:transform doc:name="Check Required Parameters" doc:id="c873bada-bfbd-45d1-a8d0-314386a69426">
+                    <ee:message>
+                    </ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="validate"><![CDATA[%dw 2.0
+output java
+---
+do {
+  var allParamNames = vars.operationParams map $.api_name
+  var requiredParamNames = (vars.operationParams filter $.is_required) map $.api_name
+  var providedKeys = (payload.parameters pluck $$) map ($ as String)
+  
+  // Check 1: Find unknown parameters (provided but not in database)
+  var unknownParams = providedKeys filter (key) -> 
+    !(allParamNames contains key)
+  
+  // Check 2: Find missing required parameters
+  var missingParams = requiredParamNames filter (paramName) -> 
+    !(providedKeys contains paramName)
+  
+  ---
+  {
+    unknownParams: unknownParams,
+    missingParams: missingParams
+  }
+}]]></ee:set-variable>
+					</ee:variables>
+                </ee:transform>
+					<validation:is-empty-collection doc:name="Validate No Missing Params" values="#[vars.validate.missingParams]" message="#['Missing required parameters: ' ++ (vars.validate.missingParams joinBy ', ')]">
+                    <error-mapping sourceType="VALIDATION:NOT_EMPTY_COLLECTION" targetType="CUSTOM:MISSING_PARAMETERS" />
+                </validation:is-empty-collection>
+					<validation:is-empty-collection doc:name="Validate No Unknown Params" values="#[payload.unknownParams]" message="#['Unknown parameters provided: ' ++ (vars.validate.unknownParams joinBy ', ')]">
+                    <error-mapping sourceType="VALIDATION:NOT_EMPTY_COLLECTION" targetType="CUSTOM:UNKNOWN_PARAMETERS" />
+                </validation:is-empty-collection>
+				</try>
+            </when>
+            <otherwise>
+                <!-- SKIP VALIDATION - Just get runtime config directly -->
+                <db:query-single doc:name="Query Runtime Config (No Validation)" config-ref="Database_Config_Postgresql" target="runtimeConfig">
+                    <db:sql><![CDATA[SELECT 
+  rc.id,
+  rc.name,
+  rc.is_active, 
+  rc.config_type_id,
+  rc.provider_id,
+  cp.provider_key 
+FROM runtime_configurations rc
+JOIN config_providers cp ON rc.provider_id = cp.id 
+WHERE rc.id = :runtimeConfigId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  runtimeConfigId: (payload.runtimeConfigId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+            </otherwise>
+        </choice>
+		<set-variable value="#[payload.runtimeConfigId as Number default 0]" doc:name="runtimeConfigId" doc:id="2b46558a-0da0-4ba5-b2ff-a5d2e0f4a990" variableName="runtimeConfigId" />
+		<db:select doc:name="getRuntimeConfigValues" doc:id="b8ece63a-8716-4edd-ae0b-8b901d83383e" config-ref="Database_Config_Postgresql" target="getRuntimeConfigValues">
+			<db:sql><![CDATA[SELECT 
+  cp.api_name,
+  rcv.parameter_value
+FROM runtime_config_values rcv
+JOIN config_parameters cp ON rcv.parameter_id = cp.id
+WHERE rcv.runtime_config_id = :runtimeConfigId]]></db:sql>
+			<db:input-parameters><![CDATA[#[output java 
+---
+{
+  runtimeConfigId: (vars.runtimeConfigId)
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="runtimeConfigForConnector - Flatten Credentials" doc:id="e05ae538-a10a-4e62-b80d-cf2f5e7e123e">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="runtimeConfigForConnector"><![CDATA[%dw 2.0
+output application/java
+
+---
+{ (
+    vars.getRuntimeConfigValues map (item) -> (item.api_name): item.parameter_value
+) }]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="773a914f-7b99-479c-b053-86626b27ae92">
+			<choice doc:name="Route by Connector">
+            <when expression="#[&quot;mule4-agentforce-connector&quot; == vars.operation.maven_artifact_id]">
+				<flow-ref doc:name="execute-agentforce" doc:id="b8938716-bcfb-40ec-8736-7796297230e2" name="execute-agentforce" />
+            </when>
+				<when expression="#[&quot;mule4-einstein-ai-connector&quot; == vars.operation.maven_artifact_id]">
+					<flow-ref doc:name="execute-einsteinai" doc:id="0d17f6f4-cce6-4e75-bc3b-585c7472b359" name="execute-einsteinai" />
+            </when>
+            <when expression="#[&quot;mule4-mulesoft-inference-connector&quot; == vars.operation.maven_artifact_id]">
+					<flow-ref doc:name="execute-inference" doc:id="342ba3ee-17b2-4e56-add5-805c90c4cf4c" name="execute-inference" />
+            </when>
+				<when expression="#[&quot;mule4-mcp-connector&quot; == vars.operation.maven_artifact_id]">
+				<flow-ref doc:name="execute-mcp" doc:id="e51577e3-5625-4f01-b696-002486ffa00c" name="execute-mcp" />
+            </when>
+            <when expression="#[&quot;mule4-vectors-connector&quot; == vars.operation.maven_artifact_id]">
+					<flow-ref doc:name="execute-vectors" doc:id="017a7a4e-a1ad-461c-8f73-3bedfc47f396" name="execute-vectors" />
+            </when>
+				<when expression="#[&quot;mule-idp-connector&quot; == vars.operation.maven_artifact_id]">
+					<flow-ref doc:name="execute-idp" doc:id="7d645cc7-97f6-43e9-bf04-8b7ff3a88de9" name="execute-idp" />
+            </when>
+				<when expression="#[&quot;mule4-a2a-connector&quot; == vars.operation.maven_artifact_id]">
+					<flow-ref doc:name="execute-a2a" doc:id="3e1ac2a7-bfa9-4474-922a-70327b2aec77" name="execute-a2a" />
+            </when>
+				<when expression='#["mule4-amazon-bedrock-connector" == vars.operation.maven_artifact_id]'>
+					<flow-ref doc:name="execute-bedrock" doc:id="44779472-101f-4f9f-b0f6-c4d3a1d45834" name="execute-bedrock" />
+				</when>
+				<when expression='#["openai-anypoint-connector-model" == vars.operation.maven_artifact_id]'>
+					<flow-ref doc:name="execute-openai" doc:id="9475ddfb-118f-4537-a8bf-1b04ddfe9826" name="execute-openai"/>
+				</when>
+				<when expression='#["gemini-anypoint-connector-model" == vars.operation.maven_artifact_id]'>
+					<flow-ref doc:name="execute-gemini" doc:id="2e473d47-813a-47ef-92e7-286240c74ce1" name="execute-gemini" />
+				</when>
+				<otherwise>
+                <raise-error type="CUSTOM:UNSUPPORTED_CONNECTOR" description="#['Connector not supported: ' ++ vars.operation.operation_key]" />
+            </otherwise>
+        </choice>
+		</try>
+		<try doc:name="Log" doc:id="acf8a70c-edd2-4a72-91c7-05035717dd01">
+			<choice doc:name="Log Completion?">
+            <when expression="#[vars.enableValidation]">
+				<db:query-single doc:name="Log Execution Complete" doc:id="b2a9d10b-031d-494f-a996-0151c5f907f7" config-ref="Database_Config_Postgresql" target="executionEnd">
+					<db:sql><![CDATA[SELECT sp_log_execution_complete(
+                CAST(:executionId AS UUID),
+                CAST(:responsePayload AS JSONB),
+                CAST(:httpStatus AS INTEGER),
+                CAST(:durationMs AS INTEGER)
+            )]]></db:sql>
+					<db:input-parameters><![CDATA[#[%dw 2.0
+---
+{
+	sourceIp: vars.sourceIp,
+	userAgent: vars.userAgent,
+	executionId: vars.executionId,
+	responsePayload: write(payload, "application/json"),
+	httpStatus: 200,
+	durationMs: ((now() - vars.executionStartTime) as Number {
+		unit: "milliseconds"
+	})
+}]]]></db:input-parameters>
+				</db:query-single>
+            </when>
+        </choice>
+		</try>
+	</sub-flow>
+	<sub-flow name="get-runtimeConfigForConnector" doc:id="1b5d8512-d785-4a70-bf8c-9dab639a85b2">
+        <db:select doc:name="getRuntimeConfigValues" doc:id="699d553e-9c5c-41f0-9f2d-6d0e8e17691a" config-ref="Database_Config_Postgresql" target="getRuntimeConfigValues">
+            <db:sql><![CDATA[SELECT 
+  cp.api_name,
+  rcv.parameter_value
+FROM runtime_config_values rcv
+JOIN config_parameters cp ON rcv.parameter_id = cp.id
+WHERE rcv.runtime_config_id = :runtimeConfigId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java 
+---
+{
+  runtimeConfigId: (vars.runtimeConfigId)
+}]]]></db:input-parameters>
+        </db:select>
+        <ee:transform doc:name="runtimeConfigForConnector - Flatten Credentials" doc:id="e4b7414f-d1b7-4d71-b01f-ec744d348606">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="runtimeConfigForConnector"><![CDATA[%dw 2.0
+output application/java
+
+---
+{ (
+    vars.getRuntimeConfigValues map (item) -> (item.api_name): item.parameter_value
+) }]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </sub-flow>
+	<flow name="get:\runtime-configs\(configId)\agentforce\agents:mulesoftforge-connector-playground-config">
+        <set-variable value="#[attributes.uriParams.configId as Number default 0]" doc:name="runtimeConfigId" doc:id="845e219a-0d46-42ee-9cc9-3858d8b131b9" variableName="runtimeConfigId"/>
+		<flow-ref doc:name="get-runtimeConfigForConnector" doc:id="4eb78d39-5428-4037-9eed-8a8b4da3fab8" name="get-runtimeConfigForConnector" />
+        <http:request doc:name="Get Agentforce Agents" doc:id="7ec19c15-edeb-4724-990e-adf310f54046" config-ref="Salesforce_HTTP_Config" path="/services/data/v65.0/query">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+    "Accept" : "application/json",
+    "Content-Type" : "application/json;charset=utf-8"
+}]]]></http:headers>
+            <http:query-params><![CDATA[#[output application/java
+---
+{
+    "q" : "select Status,BotDefinitionId,BotDefinition.MasterLabel from BotVersion"
+}]]]></http:query-params>
+        </http:request>
+        <ee:transform doc:name="Response" doc:id="b6f1c130-912d-4a68-b89b-df21ed736af8">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(payload.records
+	  filter (
+    $.BotDefinition.MasterLabel != "Agentforce (Default)"
+    and $.BotDefinition.MasterLabel != "Einstein Copilot"
+  ) 
+  distinctBy $.BotDefinitionId
+  map {
+    id: $.BotDefinitionId,
+    name: $.BotDefinition.MasterLabel,
+    isActive: $.Status == "Active"
+  }
+  orderBy $.name)]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\_ops\reset-db:mulesoftforge-connector-playground-config">
+        <choice doc:name="Authorize Reset" doc:id="15f6ecf1-336e-40df-be40-b95432b4cfd4">
+            <when expression="#[(attributes.headers.'x-reset-token' default '') != (p('mcpg.reset.token') default '')]">
+                <set-variable value="403" doc:name="Set Variable" doc:id="922fc622-5940-4848-9b81-46ab3442e5fc" variableName="httpStatus" />
+                <ee:transform doc:name="403 Forbidden" doc:id="31a0a283-9a2f-4b8d-86d4-5467dfd5e13d">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/forbidden",
+  "title": "FORBIDDEN",
+  "status": 403,
+  "detail": "Invalid or missing reset token",
+  "instance": attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <try doc:name="Reset DB (DDL + Seed)" doc:id="f4883761-2022-44e1-ba19-79aaf279b91e">
+                    <db:execute-ddl doc:name="DROP SCHEMA public CASCADE" doc:id="feca93f8-2f13-4737-b2f0-1c26b59f652a" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[DROP SCHEMA public CASCADE]]></db:sql>
+                    </db:execute-ddl>
+                    <db:execute-ddl doc:name="CREATE SCHEMA public" doc:id="16d031f4-9af4-4cab-87d4-a8936633d2d9" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[CREATE SCHEMA public]]></db:sql>
+                    </db:execute-ddl>
+                    <db:execute-ddl doc:name="GRANT ALL ON SCHEMA" doc:id="d4631e65-c049-4f7c-b325-6779f90e3847" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[GRANT ALL ON SCHEMA public TO public]]></db:sql>
+                    </db:execute-ddl>
+                    <db:execute-script doc:name="Execute schema.sql" doc:id="a0fc3d2f-c69b-4083-b497-23ef74569a14" config-ref="Database_Config_Postgresql" file="database/schema.sql" />
+                    <try doc:name="seed_agentforce.sql" doc:id="6ee7a685-4cc0-4514-b0fc-40835e5369cd">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="c421441e-26d4-4254-bbc3-98e969135dbc" location="database/seed_agentforce.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="0b367fe1-a672-4fb2-aacd-7cff5b3add6e" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_einstein_ai.sql" doc:id="53870f6e-89eb-4a06-9486-da75169655d8">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="ebc47bc0-b900-4520-baae-ca396d864f09" location="database/seed_einstein_ai.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="f7eb2821-040b-4bca-a97a-cd6a7117bfc0" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_mulesoft_inference.sql" doc:id="5770d163-ddcd-4906-95d5-4dc9b632b656">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="575bc249-83af-455c-8e6c-03f8dc2e5999" location="database/seed_mulesoft_inference.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="cdaadc61-0ec4-44e7-87fc-88bf8f303617" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_mcp.sql" doc:id="f93142ab-7379-42a5-877d-a65462e590d6">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="42adcbc9-1925-407c-9af0-2b0b2c3355fc" location="database/seed_mcp.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="e9afbeb2-03cb-4fd1-a3e0-780c0614c016" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_mulesoft_vectors.sql" doc:id="ad4394d4-d5e6-435d-91a2-b59cb5aed0ec">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="a202447d-e92c-4efa-9ffb-537d27d2a6fb" location="database/seed_mulesoft_vectors.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="3df29c46-3e92-4df7-86f6-e2beaecc8331" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_idp.sql" doc:id="97fa38dd-feb9-478e-8f89-75f413e6f9a1">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="75e74c11-85a3-405b-b224-1a3ec447f2ee" location="database/seed_idp.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="882800eb-122e-483f-bf96-ef154904fafe" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_a2a.sql" doc:id="3196dc39-863d-40b1-b5ff-0a3e0f6df4a5">
+                        <parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="8c8a38b9-58c0-4fa6-8f39-b33ef73afc6a" location="database/seed_a2a.sql" target="sqlScriptText" targetValue="#[payload]" />
+                        <db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="dc32a9a3-0100-4c5d-9520-14b77be14c50" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+                        </db:execute-script>
+                    </try>
+                    <try doc:name="seed_bedrock.sql" doc:id="e5a4245e-5520-4082-84b5-d4112ca5c6e1">
+							<parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="a828ad05-abe0-4a04-8bf4-18ff76d93040" location="database/seed_bedrock.sql" target="sqlScriptText" targetValue="#[payload]" />
+							<db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="14a417b3-b595-4202-a854-10bd1e31b63a" config-ref="Database_Config_Postgresql">
+								<db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+							</db:execute-script>
+						</try>
+					<try doc:name="seed_openai.sql" doc:id="d46e2f36-c052-40f9-b8c3-56ed9970788d">
+							<parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="62e89abe-c367-41d1-96f7-e0a3fa1efeb8" location="database/seed_openai.sql" target="sqlScriptText" targetValue="#[payload]" />
+							<db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="0e141b37-8530-4b5e-b44e-da677aa97ff0" config-ref="Database_Config_Postgresql">
+								<db:sql><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+							</db:execute-script>
+						</try>
+                    <try doc:name="seed_gemini.sql" doc:id="3de75b28-1056-4f2a-87ee-7ec2bd879bac" >
+						<parse-template doc:name="Parse Template with Configuration Properties Values" doc:id="754904b4-c292-4798-b45c-896f61a1c283" location="database/seed_gemini.sql" target="sqlScriptText" targetValue="#[payload]" />
+						<db:execute-script doc:name="Execute parsed sqlScriptText" doc:id="e82ffa43-ef3c-4090-ad2a-39834dabf698" config-ref="Database_Config_Postgresql" >
+							<db:sql ><![CDATA[#[vars.sqlScriptText]]]></db:sql>
+						</db:execute-script>
+					</try>
+					<ee:transform doc:name="Response" doc:id="c8657393-0e2c-4eb5-b6d6-3dd8141e8eb0">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[output application/json
+---
+{
+  "status": "ok",
+  "message": "Database reset complete",
+  "version": "1.0.0",
+  "timestamp": now() as String
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+					<error-handler>
+                        <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f4d1a26f-e7c6-4da8-b45a-2413c769c987" type="ANY">
+                            <set-variable value="500" doc:name="httpStatus" doc:id="730199c7-6e5d-494f-a3ed-651cef038aa7" variableName="httpStatus" />
+                            <ee:transform doc:name="500 Problem" doc:id="360a11db-fd95-47c2-9d74-7fdaa2871719">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[output application/json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/internal-error",
+  "title": "Database Reset Failed",
+  "status": 500,
+  "detail": (error.description default "Unknown error during database reset"),
+  "instance": attributes.requestPath default ""
+}]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+                        </on-error-propagate>
+                    </error-handler>
+                </try>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\connectors:mulesoftforge-connector-playground-config">
+        <db:select doc:name="Select" doc:id="9215edd8-f6c6-4ffc-97f0-5abbed53cb53" config-ref="Database_Config_Postgresql">
+            <db:sql><![CDATA[SELECT 
+  c.id,
+  c.maven_artifact_id,
+  c.name,
+  c.version,
+  c.category,
+  c.description,
+  c.doc_url,
+  c.icon,
+  c.is_active,
+  c.created_at,
+  c.updated_at,
+  (SELECT COUNT(*) FROM operations WHERE connector_id = c.id) as operation_count
+FROM connectors c
+    WHERE 
+      (:filter = 'all')
+      OR (:filter = 'active' AND c.is_active = true)
+      OR (:filter = 'inactive' AND c.is_active = false)
+ORDER BY c.name;]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java 
+---
+{
+	filter: (attributes.queryParams.filter default 'all' as String)
+}]]]></db:input-parameters>
+        </db:select>
+        <ee:transform doc:name="Response and outboundHeaders" doc:id="85a28000-6ba4-4781-9462-aac735af4e1c">
+            <ee:message>
+                <ee:set-payload><![CDATA[output json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	operationCount: payload01.operation_count,
+	createdAt: payload01.created_at as String,
+	mavenArtifactId: payload01.maven_artifact_id,
+	name: payload01.name,
+	docUrl: payload01.doc_url,
+	icon: payload01.icon,
+	description: payload01.description,
+	id: payload01.id,
+	category: payload01.category,
+	isActive: payload01.is_active,
+	version: payload01.version,
+	updatedAt: payload01.updated_at as String
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable resource="dwl/outboundHeaders-xTotalCount.dwl" variableName="outboundHeaders" />
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="post:\connectors:application\json:mulesoftforge-connector-playground-config">
+        <db:query-single doc:name="Check mavenArtifactId Exists?" doc:id="6d6beefa-1572-4c72-9fc8-9116cbed96cd" target="check" config-ref="Database_Config_Postgresql">
+            <db:sql><![CDATA[SELECT id 
+FROM connectors 
+WHERE maven_artifact_id = :mavenArtifactId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+	mavenArtifactId: (payload.mavenArtifactId as String default "")
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice" doc:id="047c1f89-b10d-4a4f-98ab-cb4ce409334e">
+            <when expression="#[!isEmpty(vars.check)]">
+                <set-variable value="409" doc:name="httpStatus-409" doc:id="f265fa11-3f28-4ab3-88e1-0b4c91770645" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="4851d459-de10-4336-9e8d-9926e9ffef47">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+    "type": "https://api.myapp.com/docs/problems/conflict",
+    title: "Connector Already Exists",
+    status: 409,
+    detail: "A connector with maven_artifact_id '" ++ payload.mavenArtifactId ++ "' already exists",
+    instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" doc:id="77c0cf38-04ca-4f61-aeac-52cab4d07251" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:insert doc:name="Insert" doc:id="2c030085-265d-45c8-b6f0-990791ff4631" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                    <db:sql><![CDATA[INSERT INTO connectors (
+          maven_artifact_id,
+          name,
+          version,
+          category,
+          description,
+          doc_url,
+          icon,
+          is_active
+        ) VALUES (
+          :mavenArtifactId,
+          :name,
+          :version,
+          :category::connector_category,
+          :description,
+          :docUrl,
+          :icon,
+          :isActive
+)]]></db:sql>
+                    <db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+                    <db:auto-generated-keys-column-names>
+                        <db:auto-generated-keys-column-name value="id" />
+                    </db:auto-generated-keys-column-names>
+                </db:insert>
+                <db:query-single doc:name="Query single" doc:id="b63df7a8-8f06-4979-a161-37d8523f4118" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * 
+FROM connectors 
+WHERE id = :id]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+	id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response and outboundHeaders" doc:id="da647199-8b0b-42bb-81b4-5882667e1638">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	mavenArtifactId: payload.maven_artifact_id,
+	icon: payload.icon,
+	description: payload.description,
+	isActive: payload.is_active,
+	version: payload.version,
+	createdAt: payload.created_at as String,
+	name: payload.name,
+	docUrl: payload.doc_url,
+	id: payload.id,
+	category: payload.category,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+    "Location": "/connectors/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\connectors\(connectorId):mulesoftforge-connector-playground-config">
+        <db:select doc:name="Select [returning join so need SELECT over a Single Query]" doc:id="7b2c0f97-4220-4e22-905d-8b6191381ee1" config-ref="Database_Config_Postgresql" target="get">
+            <db:sql><![CDATA[SELECT 
+  -- Connector fields
+  c.id as connector_id,
+  c.maven_artifact_id,
+  c.name as connector_name,
+  c.version,
+  c.category,
+  c.description,
+  c.doc_url,
+  c.icon,
+  c.is_active as connector_is_active,
+  c.created_at as connector_created_at,
+  c.updated_at as connector_updated_at,
+  
+  -- Operation fields (will be null if no operations)
+  o.id as operation_id,
+  o.operation_key,
+  o.display_name as operation_display_name,
+  o.description as operation_description,
+  o.category as operation_category,
+  o.help_url,
+  o.operation_order,
+  o.is_active as operation_is_active,
+  o.required_config_type_id,
+  o.created_at as operation_created_at,
+  o.updated_at as operation_updated_at,
+  
+  -- Parameter fields (will be null if no parameters)
+  op.id as parameter_id,
+  op.api_name,
+  op.display_name as parameter_display_name,
+  op.data_type,
+  op.is_required,
+  op.default_value,
+  op.description as parameter_description,
+  op.validation_rules,
+  op.example_value,
+  op.parameter_order,
+  op.created_at as parameter_created_at,
+  op.updated_at as parameter_updated_at,
+  
+  -- Config Type fields (will be null if no config types)
+  ct.id as config_type_id,
+  ct.config_type_key,
+  ct.display_name as config_type_display_name,
+  ct.description as config_type_description,
+  
+  -- Provider fields (will be null if no providers)
+  cp.id as provider_id,
+  cp.provider_key,
+  cp.display_name as provider_display_name,
+  cp.description as provider_description
+
+FROM connectors c
+LEFT JOIN operations o ON o.connector_id = c.id
+LEFT JOIN operation_parameters op ON op.operation_id = o.id
+LEFT JOIN connector_config_types ct ON ct.connector_id = c.id
+LEFT JOIN config_providers cp ON cp.config_type_id = ct.id
+
+WHERE c.id = :connectorId
+
+ORDER BY 
+  o.operation_order,
+  op.parameter_order,
+  ct.display_name,
+  cp.display_name;]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+	connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:select>
+        <choice doc:name="Choice" doc:id="afa44247-e450-4894-84c3-a5df7d798337">
+            <when expression="#[isEmpty(vars.get)]">
+                <set-variable value="404" doc:name="httpStatus-404" doc:id="7066b228-08a3-4988-8076-a738e4ce44e9" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 945" doc:id="f977e9b7-be00-4987-b5da-5e6924c84b21">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+    "type": "https://api.myapp.com/docs/problems/not-found",
+    title: "Connector Not Found",
+    status: 404,
+    detail: "Connector with Id " ++ attributes.uriParams.connectorId as String ++ " does not exist" ,
+    instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" doc:id="e15b833e-a388-4ccc-b04c-29bbdab26b5a" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n&#x1f6a8; Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Response" doc:id="6fbfb066-836b-431d-a28b-21187b94f447">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+do {
+  var allRows = vars.get
+  var connector = allRows[0]  // First row has connector info
+  ---
+  {
+    id: connector.connector_id,
+    mavenArtifactId: connector.maven_artifact_id,
+    name: connector.connector_name,
+    version: connector.version,
+    category: connector.category,
+    description: connector.description,
+    docUrl: connector.doc_url,
+    icon: connector.icon,
+    isActive: connector.connector_is_active,
+    createdAt: connector.connector_created_at,
+    updatedAt: connector.connector_updated_at,
+    
+    // Group rows by operation_id to get operations with their parameters
+    operations: (allRows 
+      filter ($.operation_id != null)
+      groupBy $.operation_id
+      pluck (operationRows, operationId) -> {
+        id: operationRows[0].operation_id,
+        operationKey: operationRows[0].operation_key,
+        displayName: operationRows[0].operation_display_name,
+        description: operationRows[0].operation_description,
+        category: operationRows[0].operation_category,
+        helpUrl: operationRows[0].help_url,
+        isActive: operationRows[0].operation_is_active,
+        requiredConfigTypeId: operationRows[0].required_config_type_id,
+		operationOrder: operationRows[0].operation_order,
+        createdAt: operationRows[0].operation_created_at,
+        updatedAt: operationRows[0].operation_updated_at,
+        
+        // Each operation row has parameter data
+        parameters: (operationRows
+          filter ($.parameter_id != null)
+          distinctBy $.parameter_id   
+          map {
+            id: $.parameter_id,
+            apiName: $.api_name,
+            displayName: $.parameter_display_name,
+            dataType: $.data_type,
+            isRequired: $.is_required,
+            defaultValue: $.default_value,
+            description: $.parameter_description,
+            exampleValue: $.example_value,
+            parameterOrder: $.parameter_order,
+			validationRules: if ($.validation_rules != null) 
+                  (read($.validation_rules.value as String, "application/json")) 
+                  else null,
+            createdAt: $.parameter_created_at,
+            updatedAt: $.parameter_updated_at
+          }
+        )
+      }
+    ),
+    
+    // Group rows by config_type_id to get config types with providers
+    configTypes: (allRows
+      filter ($.config_type_id != null)
+      groupBy $.config_type_id
+      pluck (configTypeRows, configTypeId) -> {
+        id: configTypeRows[0].config_type_id,
+        configTypeKey: configTypeRows[0].config_type_key,
+        displayName: configTypeRows[0].config_type_display_name,
+        description: configTypeRows[0].config_type_description,
+        
+        // Get unique providers (duplicated across parameter rows)
+        providers: (configTypeRows
+          filter ($.provider_id != null)
+          distinctBy $.provider_id
+          map {
+            id: $.provider_id,
+            providerKey: $.provider_key,
+            displayName: $.provider_display_name,
+            description: $.provider_description
+          }
+        )
+      }
+    )
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\connectors\(connectorId):application\json:mulesoftforge-connector-playground-config">
+        <db:update doc:name="Update" doc:id="f7961e63-d848-4f51-9a2a-21bebb305616" config-ref="Database_Config_Postgresql" target="update">
+            <db:sql><![CDATA[UPDATE connectors
+SET
+  name = :name,
+  version = :version,
+  category = :category::connector_category,
+  description = :description,
+  doc_url = :docUrl,
+  icon = :icon,
+  is_active = :isActive
+WHERE id = :id]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (attributes.uriParams.connectorId as Number default 0),
+  name: (payload.name as String),
+  version: (payload.version as String),
+  category: (payload.category as String),
+  description: (payload.description default null),
+  docUrl: (payload.docUrl default null),
+  icon: (payload.icon default null),
+  isActive: (payload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+        </db:update>
+        <choice doc:name="Choice" doc:id="fe487836-79e1-45fb-bfb9-2dc5ae3fb5b9">
+            <when expression="#[vars.update.affectedRows == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" doc:id="1cc0d81e-f8cb-4044-a7a1-0c0274a6d8b2" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 945" doc:id="f3de2d06-2e79-4eb8-8cf7-452e63a2b5a7">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with ID " ++ (attributes.uriParams.connectorId as String) ++ " does not exist",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" doc:id="87f3e5c2-db86-45df-8cad-5f68a98777cf" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:query-single doc:name="Query single" doc:id="f493a660-cc98-490a-81d3-10e50b5c9fb3" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * 
+FROM connectors 
+WHERE id = :id]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response" doc:id="b8cb7dc5-44af-47ad-8efd-31496d82ea0c">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  mavenArtifactId: payload.maven_artifact_id,
+  icon: payload.icon,
+  description: payload.description,
+  isActive: payload.is_active,
+  version: payload.version,
+  createdAt: payload.created_at as String,
+  name: payload.name,
+  docUrl: payload.doc_url,
+  id: payload.id,
+  category: payload.category,
+  updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\connectors\(connectorId):mulesoftforge-connector-playground-config">
+        <!-- Delete connector (CASCADE deletes operations, params, config types) -->
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM connectors WHERE id = :id]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="1f4c1e73-c337-4a63-b5c2-a3a591ae07a5">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with ID " ++ (attributes.uriParams.connectorId as String) ++ " does not exist",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Return 204 No Content (empty payload) -->
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\connectors\(connectorId)\operations:application\json:mulesoftforge-connector-playground-config">
+        <!-- Check if connector exists -->
+        <db:query-single doc:name="Check Connector Exists" config-ref="Database_Config_Postgresql" target="connectorExists">
+            <db:sql><![CDATA[SELECT id FROM connectors WHERE id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.connectorExists)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="e59617d0-0f34-4a57-9a9d-e52c9db7f681">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with ID " ++ (attributes.uriParams.connectorId as String) ++ " does not exist",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/operations"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Check for duplicate operationKey -->
+                <db:query-single doc:name="Check operationKey Exists?" config-ref="Database_Config_Postgresql" target="check">
+                    <db:sql><![CDATA[SELECT id FROM operations WHERE connector_id = :connectorId AND operation_key = :operationKey]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  operationKey: (payload.operationKey as String default "")
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice">
+                    <when expression="#[!isEmpty(vars.check)]">
+                        <set-variable value="409" doc:name="httpStatus-409" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="be179f97-e0ca-4b68-8474-dabb5aba3101">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/conflict",
+  title: "Operation Already Exists",
+  status: 409,
+  detail: "An operation with operation_key '" ++ payload.operationKey ++ "' already exists for this connector",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/operations"
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+                    </when>
+                    <otherwise>
+                        <!-- Insert operation -->
+                        <db:insert doc:name="Insert" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                            <db:sql><![CDATA[INSERT INTO operations (
+  connector_id,
+  operation_key,
+  display_name,
+  description,
+  category,
+  required_config_type_id,
+  help_url,
+  operation_order,
+  is_active
+) VALUES (
+  :connectorId,
+  :operationKey,
+  :displayName,
+  :description,
+  :category::operation_category,
+  :requiredConfigTypeId,
+  :helpUrl,
+  :operationOrder,
+  :isActive
+)]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  operationKey: (payload.operationKey as String),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null),
+  category: (payload.category as String),
+  requiredConfigTypeId: (payload.requiredConfigTypeId default null),
+  helpUrl: (payload.helpUrl default null),
+  operationOrder: (payload.operationOrder as Number),
+  isActive: (payload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+                            <db:auto-generated-keys-column-names>
+                                <db:auto-generated-keys-column-name value="id" />
+                            </db:auto-generated-keys-column-names>
+                        </db:insert>
+                        <!-- Fetch created operation -->
+                        <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[SELECT * FROM operations WHERE id = :id]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                        </db:query-single>
+                        <!-- Transform to Operation schema -->
+                        <ee:transform doc:name="Response and outboundHeaders">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	operationKey: payload.operation_key,
+	displayName: payload.display_name,
+	description: payload.description,
+	category: payload.category,
+	requiredConfigTypeId: payload.required_config_type_id,
+	helpUrl: payload.help_url,
+	operationOrder: payload.operation_order,
+	isActive: payload.is_active,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                            </ee:message>
+                            <ee:variables>
+                                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/connectors/" ++ (payload.connector_id as String) ++ "/operations/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                            </ee:variables>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\connectors\(connectorId)\operations\(operationId):application\json:mulesoftforge-connector-playground-config">
+        <db:update doc:name="Update" config-ref="Database_Config_Postgresql" target="update">
+            <db:sql><![CDATA[UPDATE operations
+SET
+  display_name = :displayName,
+  description = :description,
+  category = :category::operation_category,
+  required_config_type_id = :requiredConfigTypeId,
+  help_url = :helpUrl,
+  operation_order = :operationOrder,
+  is_active = :isActive
+WHERE id = :operationId AND connector_id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null),
+  category: (payload.category as String),
+  requiredConfigTypeId: (payload.requiredConfigTypeId default null),
+  helpUrl: (payload.helpUrl default null),
+  operationOrder: (payload.operationOrder as Number),
+  isActive: (payload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+        </db:update>
+        <choice doc:name="Choice">
+            <when expression="#[vars.update.affectedRows == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="29ca72c7-cd9f-45a0-9f41-d6d38afbe08e">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Operation Not Found",
+  status: 404,
+  detail: "Operation with ID " ++ (attributes.uriParams.operationId as String) ++ " does not exist for connector " ++ (attributes.uriParams.connectorId as String),
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/operations/" ++ (attributes.uriParams.operationId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * FROM operations WHERE id = :operationId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	operationKey: payload.operation_key,
+	displayName: payload.display_name,
+	description: payload.description,
+	category: payload.category,
+	requiredConfigTypeId: payload.required_config_type_id,
+	helpUrl: payload.help_url,
+	operationOrder: payload.operation_order,
+	isActive: payload.is_active,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\connectors\(connectorId)\operations\(operationId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM operations WHERE id = :operationId AND connector_id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="1291d250-fc5c-4db5-9c84-e0541c0745f1">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Operation Not Found",
+  status: 404,
+  detail: "Operation with ID " ++ (attributes.uriParams.operationId as String) ++ " does not exist for connector " ++ (attributes.uriParams.connectorId as String),
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/operations/" ++ (attributes.uriParams.operationId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\connectors\(connectorId)\config-types:application\json:mulesoftforge-connector-playground-config">
+        <!-- Check if connector exists -->
+        <db:query-single doc:name="Check Connector Exists" config-ref="Database_Config_Postgresql" target="connectorExists">
+            <db:sql><![CDATA[SELECT id FROM connectors WHERE id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.connectorExists)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="d30b6dd8-484b-4174-8fcf-c2d84ab1ab15">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with ID " ++ (attributes.uriParams.connectorId as String) ++ " does not exist",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/config-types"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Check for duplicate configTypeKey -->
+                <db:query-single doc:name="Check configTypeKey Exists?" config-ref="Database_Config_Postgresql" target="check">
+                    <db:sql><![CDATA[SELECT id FROM connector_config_types WHERE connector_id = :connectorId AND config_type_key = :configTypeKey]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  configTypeKey: (payload.configTypeKey as String default "")
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice">
+                    <when expression="#[!isEmpty(vars.check)]">
+                        <set-variable value="409" doc:name="httpStatus-409" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="76bca8a4-4f7e-4bd4-a87a-8ea5d6835921">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/conflict",
+  title: "Config Type Already Exists",
+  status: 409,
+  detail: "A config type with config_type_key '" ++ payload.configTypeKey ++ "' already exists for this connector",
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/config-types"
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+                    </when>
+                    <otherwise>
+                        <!-- Insert config type -->
+                        <db:insert doc:name="Insert" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                            <db:sql><![CDATA[INSERT INTO connector_config_types (
+  connector_id,
+  config_type_key,
+  display_name,
+  description
+) VALUES (
+  :connectorId,
+  :configTypeKey,
+  :displayName,
+  :description
+)]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  configTypeKey: (payload.configTypeKey as String),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null)
+}]]]></db:input-parameters>
+                            <db:auto-generated-keys-column-names>
+                                <db:auto-generated-keys-column-name value="id" />
+                            </db:auto-generated-keys-column-names>
+                        </db:insert>
+                        <!-- Fetch created config type -->
+                        <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[SELECT * FROM connector_config_types WHERE id = :id]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                        </db:query-single>
+                        <!-- Transform to ConfigType schema -->
+                        <ee:transform doc:name="Response and outboundHeaders">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	configTypeKey: payload.config_type_key,
+	displayName: payload.display_name,
+	description: payload.description,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                            </ee:message>
+                            <ee:variables>
+                                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/config-types/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                            </ee:variables>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\config-types\(configTypeId)\providers:application\json:mulesoftforge-connector-playground-config">
+        <!-- Check if config type exists -->
+        <db:query-single doc:name="Check Config Type Exists" config-ref="Database_Config_Postgresql" target="configTypeExists">
+            <db:sql><![CDATA[SELECT id FROM connector_config_types WHERE id = :configTypeId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.configTypeExists)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="df7596ad-6038-4e82-b3c0-91cd290b9b63">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Config Type Not Found",
+  status: 404,
+  detail: "Config type with ID " ++ (attributes.uriParams.configTypeId as String) ++ " does not exist",
+  instance: "/config-types/" ++ (attributes.uriParams.configTypeId as String) ++ "/providers"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Check for duplicate providerKey -->
+                <db:query-single doc:name="Check providerKey Exists?" config-ref="Database_Config_Postgresql" target="check">
+                    <db:sql><![CDATA[SELECT id FROM config_providers WHERE config_type_id = :configTypeId AND provider_key = :providerKey]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+  providerKey: (payload.providerKey as String default "")
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice">
+                    <when expression="#[!isEmpty(vars.check)]">
+                        <set-variable value="409" doc:name="httpStatus-409" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="87544d3c-4847-453c-8587-75fd1bfbf4d2">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/conflict",
+  title: "Provider Already Exists",
+  status: 409,
+  detail: "A provider with provider_key '" ++ payload.providerKey ++ "' already exists for this config type",
+  instance: "/config-types/" ++ (attributes.uriParams.configTypeId as String) ++ "/providers"
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+                    </when>
+                    <otherwise>
+                        <!-- Insert provider -->
+                        <db:insert doc:name="Insert" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                            <db:sql><![CDATA[INSERT INTO config_providers (
+  config_type_id,
+  provider_key,
+  display_name,
+  description
+) VALUES (
+  :configTypeId,
+  :providerKey,
+  :displayName,
+  :description
+)]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+  providerKey: (payload.providerKey as String),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null)
+}]]]></db:input-parameters>
+                            <db:auto-generated-keys-column-names>
+                                <db:auto-generated-keys-column-name value="id" />
+                            </db:auto-generated-keys-column-names>
+                        </db:insert>
+                        <!-- Fetch created provider -->
+                        <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[SELECT * FROM config_providers WHERE id = :id]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                        </db:query-single>
+                        <!-- Transform to Provider schema -->
+                        <ee:transform doc:name="Response and outboundHeaders">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	providerKey: payload.provider_key,
+	displayName: payload.display_name,
+	description: payload.description,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                            </ee:message>
+                            <ee:variables>
+                                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/providers/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                            </ee:variables>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\providers\(providerId)\parameters:application\json:mulesoftforge-connector-playground-config">
+        <!-- Check if provider exists -->
+        <db:query-single doc:name="Check Provider Exists" config-ref="Database_Config_Postgresql" target="providerExists">
+            <db:sql><![CDATA[SELECT id FROM config_providers WHERE id = :providerId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.providerExists)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="1330de1b-447b-4c13-8111-39628e826cb1">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Provider Not Found",
+  status: 404,
+  detail: "Provider with ID " ++ (attributes.uriParams.providerId as String) ++ " does not exist",
+  instance: "/providers/" ++ (attributes.uriParams.providerId as String) ++ "/parameters"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Check for duplicate apiName -->
+                <db:query-single doc:name="Check apiName Exists?" config-ref="Database_Config_Postgresql" target="check">
+                    <db:sql><![CDATA[SELECT id FROM config_parameters WHERE provider_id = :providerId AND api_name = :apiName]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0),
+  apiName: (payload.apiName as String default "")
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice">
+                    <when expression="#[!isEmpty(vars.check)]">
+                        <set-variable value="409" doc:name="httpStatus-409" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="43926b8b-0765-49b2-b541-a5e4fceef368">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/conflict",
+  title: "Config Parameter Already Exists",
+  status: 409,
+  detail: "A config parameter with api_name '" ++ payload.apiName ++ "' already exists for this provider",
+  instance: "/providers/" ++ (attributes.uriParams.providerId as String) ++ "/parameters"
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                        <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+                    </when>
+                    <otherwise>
+                        <!-- Insert config parameter -->
+                        <db:insert doc:name="Insert" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                            <db:sql><![CDATA[INSERT INTO config_parameters (
+  provider_id,
+  api_name,
+  display_name,
+  data_type,
+  is_required,
+  default_value,
+  description,
+  validation_rules,
+  parameter_order
+) VALUES (
+  :providerId,
+  :apiName,
+  :displayName,
+  :dataType::parameter_data_type,
+  :isRequired,
+  :defaultValue,
+  :description,
+  :validationRules::jsonb,
+  :parameterOrder
+)]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0),
+  apiName: (payload.apiName as String),
+  displayName: (payload.displayName as String),
+  dataType: (payload.dataType as String),
+  isRequired: (payload.isRequired as Boolean default false),
+  defaultValue: (payload.defaultValue default null),
+  description: (payload.description default null),
+  validationRules: if (payload.validationRules != null) write(payload.validationRules, "application/json") else null,
+  parameterOrder: (payload.parameterOrder as Number)
+}]]]></db:input-parameters>
+                            <db:auto-generated-keys-column-names>
+                                <db:auto-generated-keys-column-name value="id" />
+                            </db:auto-generated-keys-column-names>
+                        </db:insert>
+                        <!-- Fetch created config parameter -->
+                        <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[SELECT * FROM config_parameters WHERE id = :id]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                        </db:query-single>
+                        <!-- Transform to ConfigParameter schema -->
+                        <ee:transform doc:name="Response and outboundHeaders">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	apiName: payload.api_name,
+	displayName: payload.display_name,
+	dataType: payload.data_type,
+	isRequired: payload.is_required,
+	defaultValue: payload.default_value,
+	description: payload.description,
+	validationRules: if (payload.validation_rules != null) 
+                  (read(payload.validation_rules.value as String, "application/json")) 
+                  else null,
+	parameterOrder: payload.parameter_order,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                            </ee:message>
+                            <ee:variables>
+                                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/config-parameters/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                            </ee:variables>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\parameters\(parameterId):application\json:mulesoftforge-connector-playground-config">
+        <db:update doc:name="Update" config-ref="Database_Config_Postgresql" target="update">
+            <db:sql><![CDATA[UPDATE operation_parameters
+SET
+  display_name = :displayName,
+  data_type = :dataType::parameter_data_type,
+  is_required = :isRequired,
+  default_value = :defaultValue,
+  description = :description,
+  validation_rules = :validationRules::jsonb,
+  example_value = :exampleValue,
+  parameter_order = :parameterOrder
+WHERE id = :parameterId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  parameterId: (attributes.uriParams.parameterId as Number default 0),
+  displayName: (payload.displayName as String),
+  dataType: (payload.dataType as String),
+  isRequired: (payload.isRequired as Boolean default false),
+  defaultValue: (payload.defaultValue default null),
+  description: (payload.description default null),
+  validationRules: if (payload.validationRules != null) write(payload.validationRules, "application/json") else null,
+  exampleValue: (payload.exampleValue default null),
+  parameterOrder: (payload.parameterOrder as Number)
+}]]]></db:input-parameters>
+        </db:update>
+        <choice doc:name="Choice">
+            <when expression="#[vars.update.affectedRows == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="635e7467-fe2d-432c-9975-435d09eef7f1">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Parameter Not Found",
+  status: 404,
+  detail: "Parameter with ID " ++ (attributes.uriParams.parameterId as String) ++ " does not exist",
+  instance: "/parameters/" ++ (attributes.uriParams.parameterId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * FROM operation_parameters WHERE id = :parameterId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  parameterId: (attributes.uriParams.parameterId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response" doc:id="83fff5aa-4b4d-4429-b409-16a04cf94baa">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	apiName: payload.api_name,
+	displayName: payload.display_name,
+	dataType: payload.data_type,
+	isRequired: payload.is_required,
+	defaultValue: payload.default_value,
+	description: payload.description,
+	validationRules: if (payload.validation_rules != null) 
+                  (read(payload.validation_rules.value as String, "application/json")) 
+                  else null,
+	exampleValue: payload.example_value,
+	parameterOrder: payload.parameter_order,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\parameters\(parameterId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM operation_parameters WHERE id = :parameterId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  parameterId: (attributes.uriParams.parameterId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="775ea7c3-2514-48ca-a012-74195d055fe8">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Parameter Not Found",
+  status: 404,
+  detail: "Parameter with ID " ++ (attributes.uriParams.parameterId as String) ++ " does not exist",
+  instance: "/parameters/" ++ (attributes.uriParams.parameterId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\config-types\(configTypeId)\providers\(providerId):mulesoftforge-connector-playground-config">
+        <db:select doc:name="Select [returning join so need SELECT over a Single Query]" doc:id="e3c648d9-21d9-4866-a1cf-390b9750a59f" config-ref="Database_Config_Postgresql" target="get">
+            <db:sql><![CDATA[SELECT 
+  cp.id as provider_id,
+  cp.provider_key,
+  cp.display_name as provider_display_name,
+  cp.description as provider_description,
+  cp.created_at as provider_created_at,
+  cp.updated_at as provider_updated_at,
+  
+  ct.id as config_type_id,
+  ct.config_type_key,
+  ct.display_name as config_type_display_name,
+  
+
+  c.id as connector_id,
+  c.name as connector_name,
+  c.maven_artifact_id as connector_maven_artifact_id,
+  
+  cfp.id as parameter_id,
+  cfp.api_name,
+  cfp.display_name as parameter_display_name,
+  cfp.data_type,
+  cfp.is_required,
+  cfp.default_value,
+  cfp.description as parameter_description,
+  cfp.validation_rules,
+  cfp.parameter_order,
+  cfp.created_at as parameter_created_at,
+  cfp.updated_at as parameter_updated_at
+FROM config_providers cp
+INNER JOIN connector_config_types ct ON ct.id = cp.config_type_id
+INNER JOIN connectors c ON c.id = ct.connector_id
+LEFT JOIN config_parameters cfp ON cfp.provider_id = cp.id
+WHERE cp.id = :providerId AND ct.id = :configTypeId
+ORDER BY cfp.parameter_order;]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+	configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+	providerId: (attributes.uriParams.providerId as Number default 0)
+}]]]></db:input-parameters>
+        </db:select>
+        <choice doc:name="Choice" doc:id="7fdb2bde-fd7d-4dc3-87e7-f6997c1df0da">
+            <when expression="#[isEmpty(vars.get)]">
+                <set-variable value="404" doc:name="httpStatus-404" doc:id="95577bdb-c06a-4eae-9dc7-83d4b66a5095" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="8fc33537-1324-46f7-95a0-26eb3bc4a8eb">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+	"type": "https://api.myapp.com/docs/problems/not-found",
+	title: "Provider Not Found",
+	status: 404,
+	detail: "Provider with ID " ++ attributes.uriParams.providerId as String ++ " does not exist",
+	instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" doc:id="81d5f3f9-dd49-40ac-98a0-f66c6b389e53" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n&#x1f6a8; Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Response" doc:id="c6f81b49-f022-4312-a51c-2c7b24374d91">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+do {
+  var allRows = vars.get
+  var provider = allRows[0]
+  ---
+  {
+    id: provider.provider_id,
+    providerKey: provider.provider_key,
+    displayName: provider.provider_display_name,
+    description: provider.provider_description,
+    createdAt: provider.provider_created_at,
+    updatedAt: provider.provider_updated_at,
+    
+    configType: {
+      id: provider.config_type_id,
+      configTypeKey: provider.config_type_key,
+      displayName: provider.config_type_display_name
+    },
+    
+    connector: {
+      id: provider.connector_id,
+      name: provider.connector_name,
+      mavenArtifactId: provider.connector_maven_artifact_id
+    },
+    
+    parameters: (allRows
+      filter ($.parameter_id != null)
+      map {
+        id: $.parameter_id,
+        apiName: $.api_name,
+        displayName: $.parameter_display_name,
+        dataType: $.data_type,
+        isRequired: $.is_required,
+        defaultValue: $.default_value,
+        description: $.parameter_description,
+		validationRules: if ($.validation_rules != null) 
+                  (read($.validation_rules.value as String, "application/json")) 
+                  else null,
+        parameterOrder: $.parameter_order,
+        createdAt: $.parameter_created_at,
+        updatedAt: $.parameter_updated_at
+      }
+    )
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\runtime-configs:mulesoftforge-connector-playground-config">
+        <db:select doc:name="Select" doc:id="5b992bf5-ab26-4838-b083-ee5fc1038384" config-ref="Database_Config_Postgresql">
+            <db:sql><![CDATA[SELECT 
+    rc.id,
+    rc.name,
+    rc.description,
+    rc.is_active,
+    rc.created_at,
+    rc.updated_at,
+    ct.id as config_type_id,
+    ct.config_type_key,
+    ct.display_name as config_type_display_name,
+    c.id as connector_id,
+    c.name as connector_name,
+    c.maven_artifact_id as connector_maven_artifact_id,
+    cp.id as provider_id,
+    cp.provider_key,
+    cp.display_name as provider_display_name,
+    (SELECT COUNT(*) FROM runtime_config_values WHERE runtime_config_id = rc.id) as parameter_count
+  FROM runtime_configurations rc
+  INNER JOIN connector_config_types ct ON ct.id = rc.config_type_id
+  INNER JOIN connectors c ON c.id = ct.connector_id
+  INNER JOIN config_providers cp ON cp.id = rc.provider_id
+	WHERE 
+  (:configTypeId::INTEGER IS NULL OR ct.id = :configTypeId::INTEGER)
+  AND (:isActive::BOOLEAN IS NULL OR rc.is_active = :isActive::BOOLEAN)
+  ORDER BY rc.created_at DESC]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.queryParams.configTypeId default null),
+  isActive: (attributes.queryParams.isActive default null)
+}]]]></db:input-parameters>
+        </db:select>
+        <ee:transform doc:name="Response and outboundHeaders" doc:id="359d0ed6-178e-4875-a2e6-16d36e14db17">
+            <ee:message>
+                <ee:set-payload><![CDATA[output json
+---
+payload map {
+  id: $.id,
+  name: $.name,
+  description: $.description,
+  isActive: $.is_active,
+  createdAt: $.created_at,
+  updatedAt: $.updated_at,
+  configType: {
+    id: $.config_type_id,
+    configTypeKey: $.config_type_key,
+    displayName: $.config_type_display_name
+  },
+  connector: {
+    id: $.connector_id,
+    name: $.connector_name,
+    mavenArtifactId: $.connector_maven_artifact_id
+  },
+  provider: {
+    id: $.provider_id,
+    providerKey: $.provider_key,
+    displayName: $.provider_display_name
+  },
+  parameterCount: $.parameter_count
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable resource="dwl/outboundHeaders-xTotalCount.dwl" variableName="outboundHeaders" />
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="get:\runtime-configs\(configId):mulesoftforge-connector-playground-config">
+        <db:select doc:name="Select [returning join so need SELECT over a Single Query]" doc:id="448ee2e1-22e7-4835-8da0-5afc84756f7e" config-ref="Database_Config_Postgresql" target="get">
+            <db:sql><![CDATA[SELECT 
+    rc.id,
+    rc.name,
+    rc.description,
+    rc.is_active,
+    rc.created_at,
+    rc.updated_at,
+    ct.id as config_type_id,
+    ct.config_type_key,
+    ct.display_name as config_type_display_name,
+    c.id as connector_id,
+    c.name as connector_name,
+    c.maven_artifact_id,
+    cp.id as provider_id,
+    cp.provider_key,
+    cp.display_name as provider_display_name,
+    cp.description as provider_description,
+    
+    -- Add parameter fields
+    cfp.id as parameter_id,
+    cfp.api_name,
+    cfp.display_name as parameter_display_name,
+    cfp.data_type,
+    cfp.is_required,
+    cfp.default_value,
+    cfp.description as parameter_description,
+    cfp.validation_rules,
+    cfp.parameter_order,
+    
+    -- Add runtime config values
+    rcv.parameter_value,
+    rcv.is_encrypted,
+    rcv.created_at as value_created_at,
+    rcv.updated_at as value_updated_at
+    
+  FROM runtime_configurations rc
+  INNER JOIN connector_config_types ct ON ct.id = rc.config_type_id
+  INNER JOIN connectors c ON c.id = ct.connector_id
+  INNER JOIN config_providers cp ON cp.id = rc.provider_id
+  LEFT JOIN config_parameters cfp ON cfp.provider_id = cp.id
+  LEFT JOIN runtime_config_values rcv ON rcv.parameter_id = cfp.id AND rcv.runtime_config_id = rc.id
+  WHERE rc.id = :configId
+  ORDER BY cfp.parameter_order]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+	configId: (attributes.uriParams.configId as Number default 0)
+}]]]></db:input-parameters>
+        </db:select>
+        <choice doc:name="Choice" doc:id="6bfbe09f-c4ea-4931-b2d0-bbe1fa191c41">
+            <when expression="#[isEmpty(vars.get)]">
+                <set-variable value="404" doc:name="httpStatus-404" doc:id="68f8ea39-9958-4d19-9cb8-7b1499450dc1" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="e99147e1-1a5f-47fb-b100-991834e65f2f">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+	"type": "https://api.myapp.com/docs/problems/not-found",
+	title: "Runtime Configuration Not Found",
+	status: 404,
+	detail: "Runtime Configuration with Id " ++ attributes.uriParams.configId as String ++ " does not exist",
+	instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" doc:id="8a215f5b-34ab-4e03-9afc-8e01eba18b3c" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n&#x1f6a8; Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n &#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;&#x1f6a8;️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Response" doc:id="c513cd2a-c2ea-46b0-a9f4-fb42858a564e">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+do {
+  var allRows = vars.get
+  var config = allRows[0]
+  ---
+  {
+    id: config.id,
+    name: config.name,
+    description: config.description,
+    isActive: config.is_active,
+    createdAt: config.created_at,
+    updatedAt: config.updated_at,
+    
+    configType: {
+      id: config.config_type_id,
+      configTypeKey: config.config_type_key,
+      displayName: config.config_type_display_name
+    },
+    
+    connector: {
+      id: config.connector_id,
+      name: config.connector_name,
+      mavenArtifactId: config.maven_artifact_id
+    },
+    
+    provider: {
+      id: config.provider_id,
+      providerKey: config.provider_key,
+      displayName: config.provider_display_name,
+      description: config.provider_description
+    },
+    
+    parameters: (allRows
+      filter ($.parameter_id != null)
+      map {
+        id: $.parameter_id,
+        apiName: $.api_name,
+        displayName: $.parameter_display_name,
+        dataType: $.data_type,
+        isRequired: $.is_required,
+        defaultValue: $.default_value,
+        description: $.parameter_description,
+		validationRules: if ($.validation_rules != null) 
+                  (read($.validation_rules.value as String, "application/json")) 
+                  else null,
+        parameterOrder: $.parameter_order,
+        value: $.parameter_value,
+        isEncrypted: $.is_encrypted,
+        valueCreatedAt: $.value_created_at,
+        valueUpdatedAt: $.value_updated_at
+      }
+    )
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\runtime-configs:application\json:mulesoftforge-connector-playground-config">
+        <!-- Get provider and config_type_id -->
+        <db:query-single doc:name="Get Provider" config-ref="Database_Config_Postgresql" target="provider">
+            <db:sql><![CDATA[SELECT id, config_type_id FROM config_providers WHERE id = :providerId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (payload.providerId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.provider)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="51b83b9c-138e-4522-a583-123c8c0fa14a">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Provider Not Found",
+  status: 404,
+  detail: "Provider with ID " ++ (payload.providerId as String) ++ " does not exist",
+  instance: "/runtime-configs"
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-variable variableName="originalPayload" value="#[payload]" doc:name="Save Original Payload" />
+                <try transactionalAction="ALWAYS_BEGIN">
+                    <!-- Insert runtime configuration -->
+                    <db:insert doc:name="Insert Runtime Config" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                        <db:sql><![CDATA[INSERT INTO runtime_configurations (
+  config_type_id,
+  provider_id,
+  name,
+  description,
+  is_active
+) VALUES (
+  :configTypeId,
+  :providerId,
+  :name,
+  :description,
+  :isActive
+)]]></db:sql>
+                        <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (vars.provider.config_type_id as Number),
+  providerId: (vars.originalPayload.providerId as Number),
+  name: (vars.originalPayload.name as String),
+  description: (vars.originalPayload.description default null),
+  isActive: (vars.originalPayload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+                        <db:auto-generated-keys-column-names>
+                            <db:auto-generated-keys-column-name value="id" />
+                        </db:auto-generated-keys-column-names>
+                    </db:insert>
+                    <set-variable variableName="runtimeConfigId" value="#[payload.generatedKeys.id]" doc:name="Save Config ID" />
+                    <!-- Insert runtime config values for each parameter -->
+                    <foreach doc:name="For Each Parameter" collection="#[vars.originalPayload.parameters pluck {apiName: $$, value: $}]">
+                        <db:insert doc:name="Insert Config Value" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[INSERT INTO runtime_config_values (
+  runtime_config_id,
+  parameter_id,
+  parameter_value,
+  is_encrypted
+)
+SELECT 
+  :runtimeConfigId,
+  cp.id,
+  :parameterValue,
+  false
+FROM config_parameters cp
+WHERE cp.provider_id = :providerId
+  AND cp.api_name = :apiName]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  runtimeConfigId: (vars.runtimeConfigId as Number),
+  providerId: (vars.originalPayload.providerId as Number),
+  apiName: (payload.apiName as String),
+  parameterValue: (payload.value default null)
+}]]]></db:input-parameters>
+                        </db:insert>
+                    </foreach>
+                    <!-- Fetch created runtime config -->
+                    <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[SELECT * FROM runtime_configurations WHERE id = :id]]></db:sql>
+                        <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (vars.runtimeConfigId as Number default 0)
+}]]]></db:input-parameters>
+                    </db:query-single>
+                    <!-- Transform to RuntimeConfig schema -->
+                    <ee:transform doc:name="Response and outboundHeaders">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	name: payload.name,
+	description: payload.description,
+	isActive: payload.is_active,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                        </ee:message>
+                        <ee:variables>
+                            <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/runtime-configs/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                        </ee:variables>
+                    </ee:transform>
+                    <error-handler>
+                        <on-error-propagate type="ANY">
+                            <set-variable value="500" doc:name="httpStatus-500" variableName="httpStatus" />
+                            <ee:transform doc:name="Response RFC 9457" doc:id="cd115621-f1ca-42d3-8dc0-445ab2779121">
+                                <ee:message>
+                                    <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/internal-error",
+  title: "Internal Server Error",
+  status: 500,
+  detail: "Failed to create runtime configuration: " ++ (error.description default ""),
+  instance: "/runtime-configs"
+}]]></ee:set-payload>
+                                </ee:message>
+                            </ee:transform>
+                        </on-error-propagate>
+                    </error-handler>
+                </try>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\runtime-configs\(configId):application\json:mulesoftforge-connector-playground-config">
+        <set-variable variableName="originalPayload" value="#[payload]" doc:name="Save Original Payload" />
+        <set-variable variableName="configId" value="#[attributes.uriParams.configId as Number]" doc:name="Save Config ID" />
+        <try transactionalAction="ALWAYS_BEGIN">
+            <!-- Update runtime configuration -->
+            <db:update doc:name="Update Runtime Config" config-ref="Database_Config_Postgresql" target="update">
+                <db:sql><![CDATA[UPDATE runtime_configurations
+SET
+  name = :name,
+  description = :description,
+  provider_id = :providerId,
+  is_active = :isActive
+WHERE id = :configId]]></db:sql>
+                <db:input-parameters><![CDATA[#[output java ---
+{
+  configId: (vars.configId as Number default 0),
+  name: (vars.originalPayload.name as String),
+  description: (vars.originalPayload.description default null),
+  providerId: (vars.originalPayload.providerId as Number),
+  isActive: (vars.originalPayload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+            </db:update>
+            <choice doc:name="Choice">
+                <when expression="#[vars.update.affectedRows == 0]">
+                    <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                    <ee:transform doc:name="Response RFC 9457" doc:id="5cb8c8df-d060-4d6c-a25f-9a6bad727e89">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Runtime Config Not Found",
+  status: 404,
+  detail: "Runtime configuration with ID " ++ (vars.configId as String) ++ " does not exist",
+  instance: "/runtime-configs/" ++ (vars.configId as String)
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                    <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+                </when>
+                <otherwise>
+                    <!-- Get provider_id for this runtime config -->
+                    <db:query-single doc:name="Get Provider ID" config-ref="Database_Config_Postgresql" target="runtimeConfig">
+                        <db:sql><![CDATA[SELECT id, provider_id 
+  FROM runtime_configurations 
+  WHERE id = :configId]]></db:sql>
+                        <db:input-parameters><![CDATA[#[output java ---
+{
+  configId: (vars.configId as Number default 0)
+}]]]></db:input-parameters>
+                    </db:query-single>
+                    <!-- Delete existing parameter values -->
+                    <db:delete doc:name="Delete Old Values" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[DELETE FROM runtime_config_values WHERE runtime_config_id = :configId]]></db:sql>
+                        <db:input-parameters><![CDATA[#[output java ---
+{
+  configId: (vars.configId as Number default 0)
+}]]]></db:input-parameters>
+                    </db:delete>
+                    <!-- Insert new parameter values -->
+                    <foreach doc:name="For Each Parameter" collection="#[vars.originalPayload.parameters pluck {apiName: $$, value: $}]">
+                        <db:insert doc:name="Insert Config Value" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[INSERT INTO runtime_config_values (
+  runtime_config_id,
+  parameter_id,
+  parameter_value,
+  is_encrypted
+)
+SELECT 
+  :runtimeConfigId,
+  cp.id,
+  :parameterValue,
+  false
+FROM config_parameters cp
+WHERE cp.provider_id = :providerId
+  AND cp.api_name = :apiName]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  runtimeConfigId: (vars.configId as Number),
+  providerId: (vars.runtimeConfig.provider_id as Number),
+  apiName: (payload.apiName as String),
+  parameterValue: (payload.value default null)
+}]]]></db:input-parameters>
+                        </db:insert>
+                    </foreach>
+                    <!-- Fetch updated runtime config -->
+                    <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                        <db:sql><![CDATA[SELECT * FROM runtime_configurations WHERE id = :configId]]></db:sql>
+                        <db:input-parameters><![CDATA[#[output java ---
+{
+  configId: (vars.configId as Number default 0)
+}]]]></db:input-parameters>
+                    </db:query-single>
+                    <!-- Transform to RuntimeConfig schema -->
+                    <ee:transform doc:name="Response">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	name: payload.name,
+	description: payload.description,
+	isActive: payload.is_active,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                </otherwise>
+            </choice>
+            <error-handler>
+                <on-error-propagate type="ANY">
+                    <set-variable value="500" doc:name="httpStatus-500" variableName="httpStatus" />
+                    <ee:transform doc:name="Response RFC 9457" doc:id="53883856-e426-411a-ad49-9a30852e5356">
+                        <ee:message>
+                            <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/internal-error",
+  title: "Internal Server Error",
+  status: 500,
+  detail: "Failed to update runtime configuration: " ++ (error.description default ""),
+  instance: "/runtime-configs/" ++ (vars.configId as String)
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </flow>
+    <flow name="delete:\runtime-configs\(configId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM runtime_configurations WHERE id = :configId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  configId: (attributes.uriParams.configId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="ed4975f2-8696-46e1-91e4-41712e099f75">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Runtime Config Not Found",
+  status: 404,
+  detail: "Runtime configuration with ID " ++ (attributes.uriParams.configId as String) ++ " does not exist",
+  instance: "/runtime-configs/" ++ (attributes.uriParams.configId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\config-types\(configTypeId)\providers\(providerId):application\json:mulesoftforge-connector-playground-config">
+        <db:update doc:name="Update" config-ref="Database_Config_Postgresql" target="update">
+            <db:sql><![CDATA[UPDATE config_providers
+SET
+  display_name = :displayName,
+  description = :description
+WHERE id = :providerId AND config_type_id = :configTypeId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0),
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null)
+}]]]></db:input-parameters>
+        </db:update>
+        <choice doc:name="Choice">
+            <when expression="#[vars.update.affectedRows == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="d553eb9b-0c02-4eb6-8001-85a33ee07906">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Provider Not Found",
+  status: 404,
+  detail: "Provider with ID " ++ (attributes.uriParams.providerId as String) ++ " does not exist for config type " ++ (attributes.uriParams.configTypeId as String),
+  instance: "/config-types/" ++ (attributes.uriParams.configTypeId as String) ++ "/providers/" ++ (attributes.uriParams.providerId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * FROM config_providers WHERE id = :providerId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+	providerKey: payload.provider_key,
+	displayName: payload.display_name,
+	description: payload.description,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\config-parameters\(parameterId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM config_parameters WHERE id = :parameterId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  parameterId: (attributes.uriParams.parameterId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="9cf64fe0-7890-4cd6-9bd3-afa2e617a393">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Config Parameter Not Found",
+  status: 404,
+  detail: "Config parameter with ID " ++ (attributes.uriParams.parameterId as String) ++ " does not exist",
+  instance: "/config-parameters/" ++ (attributes.uriParams.parameterId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\config-types\(configTypeId)\providers\(providerId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM config_providers WHERE id = :providerId AND config_type_id = :configTypeId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  providerId: (attributes.uriParams.providerId as Number default 0),
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="6f91888e-967a-48e1-9967-541d24a5b94a">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Provider Not Found",
+  status: 404,
+  detail: "Provider with ID " ++ (attributes.uriParams.providerId as String) ++ " does not exist for config type " ++ (attributes.uriParams.configTypeId as String),
+  instance: "/config-types/" ++ (attributes.uriParams.configTypeId as String) ++ "/providers/" ++ (attributes.uriParams.providerId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\connectors\(connectorId)\operations\(operationId)\parameters:mulesoftforge-connector-playground-config">
+        <!-- 1. Check if connector exists -->
+        <db:query-single doc:name="Check Connector Exists" config-ref="Database_Config_Postgresql" target="connectorExists">
+            <db:sql><![CDATA[SELECT id FROM connectors WHERE id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice - Connector Exists?">
+            <when expression="#[isEmpty(vars.connectorExists)]">
+                <!-- Connector not found - return 404 -->
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="c319ec9a-f0a2-421d-a7be-b20983fc4162">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with Id " ++ attributes.uriParams.connectorId as String ++ " does not exist",
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <!-- 2. Check if operation exists and belongs to this connector -->
+                <db:query-single doc:name="Check Operation Exists" config-ref="Database_Config_Postgresql" target="operationExists">
+                    <db:sql><![CDATA[SELECT id FROM operations WHERE id = :operationId AND connector_id = :connectorId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice - Operation Exists?">
+                    <when expression="#[isEmpty(vars.operationExists)]">
+                        <!-- Operation not found - return 404 -->
+                        <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="559fc606-df9d-43c7-97b2-095362c1bc4f">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Operation Not Found",
+  status: 404,
+  detail: "Operation with Id " ++ attributes.uriParams.operationId as String ++ " does not exist for Connector " ++ attributes.uriParams.connectorId as String,
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <!-- 3. Query parameters for the operation -->
+                        <db:select doc:name="Select Parameters" config-ref="Database_Config_Postgresql">
+                            <db:sql><![CDATA[SELECT 
+  id,
+  api_name,
+  display_name,
+  data_type,
+  is_required,
+  default_value,
+  description,
+  validation_rules,
+  example_value,
+  parameter_order,
+  created_at,
+  updated_at
+FROM operation_parameters
+WHERE operation_id = :operationId
+ORDER BY parameter_order]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0)
+}]]]></db:input-parameters>
+                        </db:select>
+                        <!-- 4. Transform to JSON -->
+                        <ee:transform doc:name="Response">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+  id: $.id,
+  apiName: $.api_name,
+  displayName: $.display_name,
+  dataType: $.data_type,
+  isRequired: $.is_required,
+  defaultValue: $.default_value,
+  description: $.description,
+  validationRules: if ($.validation_rules != null) 
+                  (read($.validation_rules.value as String, "application/json")) 
+                  else null,
+  exampleValue: $.example_value,
+  parameterOrder: $.parameter_order,
+  createdAt: $.created_at as String,
+  updatedAt: $.updated_at as String
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="post:\connectors\(connectorId)\operations\(operationId)\parameters:application\json:mulesoftforge-connector-playground-config">
+        <!-- 1. Check if connector exists -->
+        <db:query-single doc:name="Check Connector Exists" config-ref="Database_Config_Postgresql" target="connectorExists">
+            <db:sql><![CDATA[SELECT id FROM connectors WHERE id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice - Connector Exists?">
+            <when expression="#[isEmpty(vars.connectorExists)]">
+                <!-- Connector not found - return 404 -->
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="e1778025-e090-4128-9723-f857f91386f3">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with Id " ++ attributes.uriParams.connectorId as String ++ " does not exist",
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <!-- 2. Check if operation exists and belongs to this connector -->
+                <db:query-single doc:name="Check Operation Exists" config-ref="Database_Config_Postgresql" target="operationExists">
+                    <db:sql><![CDATA[SELECT id FROM operations WHERE id = :operationId AND connector_id = :connectorId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <choice doc:name="Choice - Operation Exists?">
+                    <when expression="#[isEmpty(vars.operationExists)]">
+                        <!-- Operation not found - return 404 -->
+                        <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                        <ee:transform doc:name="Response RFC 9457" doc:id="208ab153-dd33-46d7-bcd9-7be42cffb308">
+                            <ee:message>
+                                <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Operation Not Found",
+  status: 404,
+  detail: "Operation with Id " ++ attributes.uriParams.operationId as String ++ " does not exist for Connector " ++ attributes.uriParams.connectorId as String,
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <!-- 3. Check if parameter with same apiName already exists for this 
+							operation -->
+                        <db:query-single doc:name="Check Parameter apiName Exists" config-ref="Database_Config_Postgresql" target="parameterExists">
+                            <db:sql><![CDATA[SELECT id FROM operation_parameters WHERE operation_id = :operationId AND api_name = :apiName]]></db:sql>
+                            <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  apiName: (payload.apiName as String default "")
+}]]]></db:input-parameters>
+                        </db:query-single>
+                        <choice doc:name="Choice - Parameter Exists?">
+                            <when expression="#[!isEmpty(vars.parameterExists)]">
+                                <!-- Parameter already exists - return 409 Conflict -->
+                                <set-variable value="409" doc:name="httpStatus-409" variableName="httpStatus" />
+                                <ee:transform doc:name="Response RFC 9457" doc:id="705edb63-de63-4f0c-89a5-45f7f39a5fbf">
+                                    <ee:message>
+                                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/conflict",
+  title: "Parameter Already Exists",
+  status: 409,
+  detail: "A parameter with apiName '" ++ payload.apiName ++ "' already exists for this operation",
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                                    </ee:message>
+                                </ee:transform>
+                            </when>
+                            <otherwise>
+                                <!-- 4. Insert new parameter -->
+                                <db:insert doc:name="Insert Parameter" config-ref="Database_Config_Postgresql" autoGenerateKeys="true">
+                                    <db:sql><![CDATA[INSERT INTO operation_parameters (
+  operation_id,
+  api_name,
+  display_name,
+  data_type,
+  is_required,
+  default_value,
+  description,
+  validation_rules,
+  example_value,
+  parameter_order
+) VALUES (
+  :operationId,
+  :apiName,
+  :displayName,
+  :dataType::parameter_data_type,
+  :isRequired,
+  :defaultValue,
+  :description,
+  :validationRules::jsonb,
+  :exampleValue,
+  :parameterOrder
+)]]></db:sql>
+                                    <db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: (attributes.uriParams.operationId as Number default 0),
+  apiName: payload.apiName,
+  displayName: payload.displayName,
+  dataType: payload.dataType,
+  isRequired: (payload.isRequired as Boolean default false),
+  defaultValue: (payload.defaultValue default null),
+  description: (payload.description default null),
+  validationRules: if (payload.validationRules != null) write(payload.validationRules, "application/json") else null,
+  exampleValue: (payload.exampleValue default null),
+  parameterOrder: (payload.parameterOrder as Number default 0)
+}]]]></db:input-parameters>
+                                    <db:auto-generated-keys-column-names>
+                                        <db:auto-generated-keys-column-name value="id" />
+                                    </db:auto-generated-keys-column-names>
+                                </db:insert>
+                                <!-- 5. Query the newly created parameter -->
+                                <db:query-single doc:name="Query Created Parameter" config-ref="Database_Config_Postgresql">
+                                    <db:sql><![CDATA[SELECT * FROM operation_parameters WHERE id = :id]]></db:sql>
+                                    <db:input-parameters><![CDATA[#[output java ---
+{
+  id: (payload.generatedKeys.id as Number default 0)
+}]]]></db:input-parameters>
+                                </db:query-single>
+                                <!-- 6. Transform response and set Location header -->
+                                <ee:transform doc:name="Response and Location Header" doc:id="67b7bbba-f9b6-4b97-826f-88712a9bd62c">
+                                    <ee:message>
+                                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: payload.id,
+  apiName: payload.api_name,
+  displayName: payload.display_name,
+  dataType: payload.data_type,
+  isRequired: payload.is_required,
+  defaultValue: payload.default_value,
+  description: payload.description,
+  validationRules: if (payload.validation_rules != null) 
+                  (read(payload.validation_rules.value as String, "application/json")) 
+                  else null,
+  exampleValue: payload.example_value,
+  parameterOrder: payload.parameter_order,
+  createdAt: payload.created_at as String,
+  updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                                    </ee:message>
+                                    <ee:variables>
+                                        <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/java
+---
+{
+  "Location": "/parameters/" ++ (payload.id as String)
+}]]></ee:set-variable>
+                                        <ee:set-variable variableName="httpStatus"><![CDATA[201]]></ee:set-variable>
+                                    </ee:variables>
+                                </ee:transform>
+                            </otherwise>
+                        </choice>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="put:\connectors\(connectorId)\config-types\(configTypeId):application\json:mulesoftforge-connector-playground-config">
+        <db:update doc:name="Update" config-ref="Database_Config_Postgresql" target="update">
+            <db:sql><![CDATA[UPDATE connector_config_types
+SET
+  display_name = :displayName,
+  description = :description
+WHERE id = :configTypeId AND connector_id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0),
+  displayName: (payload.displayName as String),
+  description: (payload.description default null)
+}]]]></db:input-parameters>
+        </db:update>
+        <choice doc:name="Choice">
+            <when expression="#[vars.update.affectedRows == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="38fa10a4-8084-4c6e-a0e8-b2289354a1ec">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Config Type Not Found",
+  status: 404,
+  detail: "Config type with ID " ++ (attributes.uriParams.configTypeId as String) ++ " does not exist for connector " ++ (attributes.uriParams.connectorId as String),
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/config-types/" ++ (attributes.uriParams.configTypeId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT * FROM connector_config_types WHERE id = :configTypeId]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0)
+}]]]></db:input-parameters>
+                </db:query-single>
+                <ee:transform doc:name="Response" doc:id="09fbe38a-1ab4-47d2-b05b-761d7f6426f5">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: payload.id,
+  configTypeKey: payload.config_type_key,
+  displayName: payload.display_name,
+  description: payload.description,
+  createdAt: payload.created_at as String,
+  updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="delete:\connectors\(connectorId)\config-types\(configTypeId):mulesoftforge-connector-playground-config">
+        <db:delete doc:name="Delete" config-ref="Database_Config_Postgresql" target="delete">
+            <db:sql><![CDATA[DELETE FROM connector_config_types WHERE id = :configTypeId AND connector_id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  configTypeId: (attributes.uriParams.configTypeId as Number default 0),
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:delete>
+        <choice doc:name="Choice">
+            <when expression="#[vars.delete == 0]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="1c04f1a1-8eec-4587-8791-77e17184865a">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Config Type Not Found",
+  status: 404,
+  detail: "Config type with ID " ++ (attributes.uriParams.configTypeId as String) ++ " does not exist for connector " ++ (attributes.uriParams.connectorId as String),
+  instance: "/connectors/" ++ (attributes.uriParams.connectorId as String) ++ "/config-types/" ++ (attributes.uriParams.configTypeId as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <!-- Return 204 No Content (empty payload) -->
+                <set-payload value="#[null]" doc:name="Set Empty Payload" />
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\runtime-configs\(configId)\idp\actions:mulesoftforge-connector-playground-config">
+		<flow-ref doc:name="webapp-getIDPActions" doc:id="6778017b-9a3c-418c-9a7c-8e04f2adddef" name="webapp-getIDPActions" />
+    </flow>
+    <flow name="get:\runtime-configs\(configId)\idp\actions\(actionId)\versions:mulesoftforge-connector-playground-config">
+		<flow-ref doc:name="webapp-getIDPActionVersions" doc:id="acc98dd9-7748-4f02-acaf-cc5c2ddd2dc9" name="webapp-getIDPActionVersions" />
+    </flow>
+    <flow name="get:\parameters\(parameterId):mulesoftforge-connector-playground-config">
+        <db:query-single doc:name="Query single" config-ref="Database_Config_Postgresql">
+            <db:sql><![CDATA[SELECT * FROM operation_parameters WHERE id = :parameterId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  parameterId: (attributes.uriParams.parameterId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(payload)]">
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="e88fe7f8-161b-4ed0-b0e6-26a4d8cd1118">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Parameter Not Found",
+  status: 404,
+  detail: "Parameter with ID " ++ (attributes.uriParams.parameterId default 0 as String) ++ " does not exist",
+  instance: "/parameters/" ++ (attributes.uriParams.parameterId default 0 as String)
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <logger level="INFO" doc:name="INFO Soft Error" message="#[%dw 2.0&#xA;output text&#xA;---&#xA;&quot;\n\n &quot; &#xA;++ &quot;\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄&quot;&#xA;++ &quot;\n\n Payload: &quot; ++ (write(payload, &quot;application/json&quot;)) as String&#xA;++ &quot;\n\n^^^^^^^^^^^^^^^^^^^^&quot;&#xA;++ &quot;\n\n ️&quot; &#xA;++ &quot;\n\n&quot;]" />
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Response" doc:id="df98b156-bf34-47ff-b3ce-c3c7c0b67d13">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output json
+---
+{
+	id: payload.id,
+	apiName: payload.api_name,
+	validationRules: if ( payload.validation_rules != null ) (read(payload.validation_rules.value as String, "application/json")) 
+                  else null,
+	displayName: payload.display_name,
+	dataType: payload.data_type,
+	isRequired: payload.is_required,
+	defaultValue: payload.default_value,
+	description: payload.description,
+	exampleValue: payload.example_value,
+	parameterOrder: payload.parameter_order,
+	createdAt: payload.created_at as String,
+	updatedAt: payload.updated_at as String
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\connectors\(connectorId)\config-types:mulesoftforge-connector-playground-config">
+        <!-- 1. Check if connector exists -->
+        <db:query-single doc:name="Check Connector Exists" config-ref="Database_Config_Postgresql" target="connectorExists">
+            <db:sql><![CDATA[SELECT id FROM connectors WHERE id = :connectorId]]></db:sql>
+            <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+        </db:query-single>
+        <choice doc:name="Choice">
+            <when expression="#[isEmpty(vars.connectorExists)]">
+                <!-- Connector not found - return 404 -->
+                <set-variable value="404" doc:name="httpStatus-404" variableName="httpStatus" />
+                <ee:transform doc:name="Response RFC 9457" doc:id="9fd9443f-751b-451d-991c-74969345693d">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[output application/json
+
+---
+{
+  "type": "https://api.myapp.com/docs/problems/not-found",
+  title: "Connector Not Found",
+  status: 404,
+  detail: "Connector with Id " ++ attributes.uriParams.connectorId as String ++ " does not exist",
+  instance: attributes.requestPath
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <!-- 2. Query config types WITH providers (LEFT JOIN) -->
+                <db:select doc:name="Select Config Types with Providers" config-ref="Database_Config_Postgresql">
+                    <db:sql><![CDATA[SELECT 
+  ct.id as config_type_id,
+  ct.config_type_key,
+  ct.display_name as config_type_display_name,
+  ct.description as config_type_description,
+  
+  -- Provider fields (will be null if no providers)
+  cp.id as provider_id,
+  cp.provider_key,
+  cp.display_name as provider_display_name,
+  cp.description as provider_description
+  
+FROM connector_config_types ct
+LEFT JOIN config_providers cp ON cp.config_type_id = ct.id
+WHERE ct.connector_id = :connectorId
+ORDER BY ct.display_name, cp.display_name]]></db:sql>
+                    <db:input-parameters><![CDATA[#[output java ---
+{
+  connectorId: (attributes.uriParams.connectorId as Number default 0)
+}]]]></db:input-parameters>
+                </db:select>
+                <!-- 3. Transform to nested JSON with providers array -->
+                <ee:transform doc:name="Response">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+// Group by config type, nest providers
+(payload groupBy $.config_type_id) pluck {
+  id: $[0].config_type_id,
+  configTypeKey: $[0].config_type_key,
+  displayName: $[0].config_type_display_name,
+  description: $[0].config_type_description,
+  providers: $ filter ($.provider_id != null) map {
+    id: $.provider_id,
+    providerKey: $.provider_key,
+    displayName: $.provider_display_name,
+    description: $.provider_description
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="get:\execution-logs:mulesoftforge-connector-playground-config">
+        <!-- Call stored procedure to get execution history -->
+        <!-- Transform response -->
+        <db:select doc:name="Get Execution History" doc:id="5d6ac3f8-330a-409a-b7a7-f9c2628444a9" config-ref="Database_Config_Postgresql" target="getExecutionHistory">
+            <db:sql><![CDATA[SELECT * FROM sp_get_execution_history(
+                CAST(:operationId AS INTEGER),
+                CAST(:connectorId AS INTEGER),
+                :mavenArtifactId,
+                :status,
+                CAST(:startDate AS TIMESTAMP WITH TIME ZONE),
+                CAST(:endDate AS TIMESTAMP WITH TIME ZONE),
+                CAST(:limit AS INTEGER),
+                CAST(:offset AS INTEGER)
+            )]]></db:sql>
+            <db:input-parameters><![CDATA[#[{
+                operationId: attributes.queryParams.operationId default null,
+                connectorId: attributes.queryParams.connectorId default null,
+                mavenArtifactId: attributes.queryParams.mavenArtifactId default null,
+                status: attributes.queryParams.status default null,
+                startDate: attributes.queryParams.startDate default null,
+                endDate: attributes.queryParams.endDate default null,
+                limit: attributes.queryParams.limit default 100,
+                offset: ((attributes.queryParams.page default 1) - 1) * (attributes.queryParams.limit default 100)
+}]]]></db:input-parameters>
+        </db:select>
+        <ee:transform doc:name="Transform Response" doc:id="0d510cc7-5c95-41d6-8be4-c57affee7483">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.getExecutionHistory map {
+    executionId: $.execution_id,
+    operationId: $.operation_id,
+    operationKey: $.operation_key,
+    connectorId: $.connector_id,
+    connectorName: $.connector_name,
+    mavenArtifactId: $.maven_artifact_id,
+    runtimeConfigId: $.runtime_config_id,
+    runtimeConfigName: $.runtime_config_name,
+    status: $.status,
+    executionStartedAt: $.execution_started_at as String,
+    executionCompletedAt: if ($.execution_completed_at != null) $.execution_completed_at as String else null,
+    durationMs: $.duration_ms,
+    httpStatusCode: $.http_status_code,
+    sourceIp: $.source_ip
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="outboundHeaders"><![CDATA[output java
+
+// Define variables with explicit types and defaults first
+var page = attributes.queryParams.page as Number default 1
+var limit = attributes.queryParams.limit as Number default 100
+---
+{
+    "X-Total-Count": sizeOf(vars.getExecutionHistory) as String,
+    
+    // Use the 'limit' variable for consistency
+    "X-Limit": limit as String, 
+    
+    // Perform math using the number variables
+    "X-Offset": ((page - 1) * limit) as String
+}]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="get:\execution-logs\(executionId):mulesoftforge-connector-playground-config">
+        <!-- Call stored procedure to get execution detail -->
+        <!-- Check if execution exists -->
+		<db:query-single doc:name="Get Execution Detail" doc:id="c6d7c40c-15cc-4d00-937d-83e8096d0c88" config-ref="Database_Config_Postgresql" target="execution">
+			<db:sql ><![CDATA[SELECT * FROM sp_get_execution_detail(
+                CAST(:executionId AS UUID)
+            )]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  executionId: attributes.uriParams.executionId
+}]]]></db:input-parameters>
+		</db:query-single>
+		<choice doc:name="Check if exists" doc:id="ce96ebec-3f8b-429f-8f4c-40c2e2dfb594" >
+			<when expression="#[isEmpty(vars.execution)]" >
+				<set-variable value="404" doc:name="httpStatus-404" doc:id="2f895c4d-133b-4009-9ea6-6b74b7cc4261" variableName="httpStatus" />
+				<ee:transform doc:name="404 Response" doc:id="1aec1ebe-50ac-4618-ade6-083a64b28837" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "type": "about:blank",
+    title: "Execution Not Found",
+    status: 404,
+    detail: "Execution with ID " ++ attributes.uriParams.executionId ++ " does not exist",
+    instance: attributes.requestPath
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Response" doc:id="5e7d09f2-4946-4035-ac2e-48869779b196" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    executionId: vars.execution.execution_id,
+    operationId: vars.execution.operation_id,
+    operationKey: vars.execution.operation_key,
+    operationName: vars.execution.operation_name,
+    connectorId: vars.execution.connector_id,
+    connectorName: vars.execution.connector_name,
+    mavenArtifactId: vars.execution.maven_artifact_id,
+    runtimeConfigId: vars.execution.runtime_config_id,
+    runtimeConfigName: vars.execution.runtime_config_name,
+    status: vars.execution.status,
+    executionStartedAt: if (vars.execution.execution_started_at != null) vars.execution.execution_started_at as String else null,
+    executionCompletedAt: if (vars.execution.execution_completed_at != null) vars.execution.execution_completed_at as String else null,
+    durationMs: vars.execution.duration_ms,
+    httpStatusCode: vars.execution.http_status_code,
+    sourceIp: vars.execution.source_ip,
+    userAgent: vars.execution.user_agent,
+    requestPayload: if (vars.execution.request_payload != null) 
+                    read(vars.execution.request_payload.value as String, "application/json") 
+                    else null,
+    responsePayload: if (vars.execution.response_payload != null) 
+                     read(vars.execution.response_payload.value as String, "application/json") 
+                     else null,
+    errorType: vars.execution.error_type,
+    errorMessage: vars.execution.error_message,
+    errorCode: vars.execution.error_code,
+    errorDescription: vars.execution.error_description,
+    createdAt: if (vars.execution.created_at != null) vars.execution.created_at as String else null,
+    updatedAt: if (vars.execution.updated_at != null) vars.execution.updated_at as String else null
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+    </flow>
+    <flow name="get:\execution-stats:mulesoftforge-connector-playground-config">
+        <!-- Call stored procedure to get execution statistics -->
+        <!-- Transform response -->
+		<db:query-single doc:name="Get Execution Stats" doc:id="a92e13d8-4286-4e22-a6c1-c19096433b4c" config-ref="Database_Config_Postgresql" >
+			<db:sql ><![CDATA[SELECT sp_get_execution_stats(
+                CAST(:operationIdFilter AS INTEGER),
+                CAST(:connectorIdFilter AS INTEGER),
+                CAST(:startDate AS TIMESTAMP WITH TIME ZONE),
+                CAST(:endDate AS TIMESTAMP WITH TIME ZONE)
+            ) as stats]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	operationIdFilter: attributes.queryParams.operationId default null,
+	connectorIdFilter: attributes.queryParams.connectorId default null,
+	startDate: attributes.queryParams.startDate default null,
+	endDate: attributes.queryParams.endDate default null
+}]]]></db:input-parameters>
+		</db:query-single>
+		<ee:transform doc:name="Transform Response" doc:id="932c75dc-01cd-47dd-9853-4b923ed1fec1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.stats.value as String, "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+    </flow>
+</mule>

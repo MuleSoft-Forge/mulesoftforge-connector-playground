@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetTaskPushNotificationConfigParams",
+  "description": "Parameters for querying a task in A2A protocol",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier of the task to query"
+    },
+    "pushNotificationConfigId": {
+      "type": "string",
+      "description": "Server generated id of the push notification config"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the query",
+      "additionalProperties": true
+    }
+  },
+  "required": ["id"]
+}

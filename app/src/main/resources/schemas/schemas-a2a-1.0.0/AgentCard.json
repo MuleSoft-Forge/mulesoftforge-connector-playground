@@ -1,0 +1,466 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "AgentCard",
+    "description": "JSON Schema for an AgentCard representing agent capabilities and configuration.",
+    "type": "object",
+    "required": ["name", "description", "url", "version", "capabilities", "defaultInputModes", "defaultOutputModes", "skills"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "title": "Agent Name",
+        "description": "Human readable name of the agent"
+      },
+      "description": {
+        "type": "string",
+        "title": "Description",
+        "description": "A human-readable description of the agent"
+      },
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "title": "Agent URL",
+        "description": "URL where the agent is hosted"
+      },
+      "iconUrl": {
+        "type": "string",
+        "format": "uri",
+        "title": "Icon URL",
+        "description": "A URL to an icon for the agent"
+      },
+      "provider": {
+        "$ref": "#/$defs/AgentProvider"
+      },
+      "version": {
+        "type": "string",
+        "title": "Version",
+        "description": "Version of the agent"
+      },
+      "protocolVersion": {
+        "type": "string",
+        "title": "Protocol Version",
+        "description": "A2A Protocol Spec Version, the agent is running at"
+      },
+      "documentationUrl": {
+        "type": "string",
+        "format": "uri",
+        "title": "Documentation URL",
+        "description": "A URL to documentation for the agent"
+      },
+      "capabilities": {
+        "$ref": "#/$defs/AgentCapabilities"
+      },
+      "securitySchemes": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/$defs/SecurityScheme"
+        },
+        "title": "Security Schemes"
+      },
+      "security": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "title": "Security Requirements"
+      },
+      "defaultInputModes": {
+        "type": "array",
+        "items": {"type": "string"},
+        "title": "Default Input Modes"
+      },
+      "defaultOutputModes": {
+        "type": "array",
+        "items": {"type": "string"},
+        "title": "Default Output Modes"
+      },
+      "skills": {
+        "type": "array",
+        "items": {"$ref": "#/$defs/AgentSkill"},
+        "title": "Skills"
+      },
+      "supportsAuthenticatedExtendedCard": {
+        "type": "boolean",
+        "default": false,
+        "title": "Supports Authenticated Extended Card"
+      }
+    },
+    "$defs": {
+      "AgentProvider": {
+        "type": "object",
+        "required": ["organization", "url"],
+        "properties": {
+          "organization": {"type": "string"},
+          "url": {"type": "string", "format": "uri"}
+        }
+      },
+      "AgentCapabilities": {
+        "type": "object",
+        "properties": {
+          "streaming": {"type": "boolean"},
+          "pushNotifications": {"type": "boolean"},
+          "stateTransitionHistory": {"type": "boolean"},
+          "extensions": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/AgentExtension"}
+          }
+        }
+      },
+      "AgentExtension": {
+        "type": "object",
+        "required": ["uri"],
+        "properties": {
+          "uri": {"type": "string", "format": "uri"},
+          "description": {"type": "string"},
+          "required": {"type": "boolean"},
+          "params": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "AgentSkill": {
+        "type": "object",
+        "required": ["id", "name", "description", "tags"],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "tags": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "examples": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "inputModes": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "outputModes": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      },
+      "SecurityScheme": {
+        "type": "object",
+        "anyOf": [
+          { "$ref": "#/$defs/APIKeySecurityScheme" },
+          { "$ref": "#/$defs/HTTPAuthSecurityScheme" },
+          { "$ref": "#/$defs/OAuth2SecurityScheme" },
+          { "$ref": "#/$defs/OpenIDConnectSecurityScheme" }
+        ],
+        "description": "Mirrors the OpenAPI Security Scheme Object (https://swagger.io/specification/#security-scheme-object)"
+      },
+      "APIKeySecurityScheme": {
+        "type": "object",
+        "title": "API Key Security Scheme",
+        "description": "API Key security scheme.",
+        "properties": {
+          "type": {
+            "const": "apiKey",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the header, query or cookie parameter to be used.",
+            "type": "string"
+          },
+          "in": {
+            "description": "The location of the API key. Valid values are \"query\", \"header\", or \"cookie\".",
+            "enum": [
+              "query",
+              "header",
+              "cookie"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "name",
+          "in"
+        ]
+      },
+      "HTTPAuthSecurityScheme": {
+        "type": "object",
+        "title": "HTTP Authentication Security Scheme",
+        "description": "HTTP Authentication security scheme.",
+        "properties": {
+          "type": {
+            "const": "http",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          },
+          "scheme": {
+            "description": "The name of the HTTP Authentication scheme to be used in the Authorization header as defined\nin RFC7235. The values used SHOULD be registered in the IANA Authentication Scheme registry.\nThe value is case-insensitive, as defined in RFC7235.",
+            "type": "string"
+          },
+          "bearerFormat": {
+            "description": "A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually\ngenerated by an authorization server, so this information is primarily for documentation\npurposes.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "scheme"
+        ]
+      },
+      "OAuth2SecurityScheme": {
+        "type": "object",
+        "title": "OAuth2 Security Scheme",
+        "description": "OAuth2 security scheme with flows.",
+        "properties": {
+          "type": {
+            "const": "oauth2",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          },
+          "flows": {
+            "type": "object",
+            "properties": {
+              "implicit": { "$ref": "#/$defs/OAuth2ImplicitFlow" },
+              "password": { "$ref": "#/$defs/OAuth2PasswordFlow" },
+              "clientCredentials": { "$ref": "#/$defs/OAuth2ClientCredentialsFlow" },
+              "authorizationCode": { "$ref": "#/$defs/OAuth2AuthorizationCodeFlow" }
+            }
+          }
+        },
+        "required": [
+          "type",
+          "flows"
+        ]
+      },
+      "OAuth2Flow": {
+        "type": "object",
+        "properties": {
+          "authorizationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tokenUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refreshUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "OAuth2ImplicitFlow": {
+        "type": "object",
+        "properties": {
+          "authorizationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refreshUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "authorizationUrl",
+          "scopes"
+        ]
+      },
+      "OAuth2PasswordFlow": {
+        "type": "object",
+        "properties": {
+          "tokenUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refreshUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "tokenUrl",
+          "scopes"
+        ]
+      },
+      "OAuth2ClientCredentialsFlow": {
+        "type": "object",
+        "properties": {
+          "tokenUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refreshUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "tokenUrl",
+          "scopes"
+        ]
+      },
+      "OAuth2AuthorizationCodeFlow": {
+        "type": "object",
+        "properties": {
+          "authorizationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tokenUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refreshUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "authorizationUrl",
+          "tokenUrl",
+          "scopes"
+        ]
+      },
+      "BearerSecurityScheme": {
+        "type": "object",
+        "title": "Bearer Security Scheme",
+        "description": "Bearer token security scheme.",
+        "properties": {
+          "type": {
+            "const": "http",
+            "type": "string"
+          },
+          "scheme": {
+            "const": "bearer",
+            "type": "string"
+          },
+          "bearerFormat": {
+            "description": "A hint to the client to identify how the bearer token is formatted.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "scheme"
+        ]
+      },
+      "BasicSecurityScheme": {
+        "type": "object",
+        "title": "Basic Security Scheme",
+        "description": "HTTP Basic authentication security scheme.",
+        "properties": {
+          "type": {
+            "const": "http",
+            "type": "string"
+          },
+          "scheme": {
+            "const": "basic",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "scheme"
+        ]
+      },
+      "DigestSecurityScheme": {
+        "type": "object",
+        "title": "Digest Security Scheme",
+        "description": "HTTP Digest authentication security scheme.",
+        "properties": {
+          "type": {
+            "const": "http",
+            "type": "string"
+          },
+          "scheme": {
+            "const": "digest",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "scheme"
+        ]
+      },
+      "OpenIDConnectSecurityScheme": {
+        "type": "object",
+        "title": "OpenID Connect Security Scheme",
+        "description": "OpenID Connect security scheme.",
+        "properties": {
+          "type": {
+            "const": "openIdConnect",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of this security scheme.",
+            "type": "string"
+          },
+          "openIdConnectUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "type",
+          "openIdConnectUrl"
+        ]
+      }
+    }
+}
+  

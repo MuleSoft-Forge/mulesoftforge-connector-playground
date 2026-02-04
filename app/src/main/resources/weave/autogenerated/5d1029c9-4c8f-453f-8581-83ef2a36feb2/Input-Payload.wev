@@ -1,0 +1,40 @@
+%dw 2.0
+
+type auto_5d1029c9_4c8f_453f_8581_83ef2a36feb2_Input_Payload = {
+  metadata?: { _?: Any } {"description": "Additional metadata for the task"}, 
+  configuration?: {
+    blocking?: Boolean, 
+    acceptedOutputModes: Array<String>, 
+    historyLength?: Number, 
+    pushNotificationConfig?: {
+      id?: String, 
+      url: String, 
+      token?: String, 
+      authentication?: {
+        credentials?: String, 
+        schemes: Array<String>, 
+        _?: Any
+      } {"description": "Supported authentication schemes - e.g. Basic, Bearer"}, 
+      _?: Any
+    } {"description": "Configuration for setting up push notifications for task updates."}, 
+    _?: Any
+  } {"description": "Configuration for sending a message"}, 
+  message: {
+    metadata?: { _?: Any } {"description": "Additional metadata for the message"}, 
+    extensions?: Array<String> {"label": "Extensions",
+    "description": "The URIs of extensions that are present or contributed to this Message."}, 
+    role: "agent" | "user", 
+    kind: Any & String, 
+    referenceTaskIds?: Array<String> {"label": "Reference Task Ids",
+    "description": "A list of other task IDs that this message references for additional context."}, 
+    parts: Array<{      metadata?: { _?: Any },       file?: {        bytes?: String,         name?: String,         mimeType?: String,         uri?: String,         _?: Any      } {"description": "Contains the file details and data/reference."},       data?: { _?: Any },       kind?: "file" | "data" | "text",       text?: String,       _?: Any    } {"label": "Part"}> {"label": "Parts"}, 
+    messageId: String, 
+    contextId?: String, 
+    taskId?: String, 
+    _?: Any
+  } {"description": "Message containing task content"}, 
+  _?: Any
+} {"label": "MessageSendParams",
+"description": "Parameters for sending a task in A2A protocol",
+"class": "java.lang.String"}
+

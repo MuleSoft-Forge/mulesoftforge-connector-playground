@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>mulesoft-connector-playground-app · Anypoint Studio Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/bootstrap.css" rel="stylesheet">
+    <link href="assets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/docs.css" rel="stylesheet">
+    <link href="assets/prettify.css" rel="stylesheet">
+    <link href="assets/scroller.css" rel="stylesheet">
+
+  </head>
+
+  <body data-twttr-rendered="true" data-spy="scroll" data-target=".bs-docs-sidebar"><iframe style="display: none;" id="rufous-sandbox" name="uid13460061790411"></iframe>
+
+    <!-- Navbar
+    ================================================== -->
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <p class="navbar-text pull-right">
+              <a href="https://www.mulesoft.com" class="navbar-link">
+                <img src="./assets/images/mulesoft-logo-final.png" alt="MuleSoft" id="mulesoftlogo">
+              </a>
+          </p>
+          <div class="scroller scroller-left"><img src="./assets/icons/glyphicons_chevron-left.png" alt="scrollLeft"></div>
+          <div class="scroller scroller-right"><img src="./assets/icons/glyphicons_chevron-right.png" alt="scrollRight"></div>
+          <div class="wrapper">
+            <ul class="nav nav-tabs list" id="myTab">
+                    <li><a href="./index.html">vectors</a></li>
+                      <li><a href="./einsteinai.html">einsteinai</a></li>
+                      <li class="active"><a href="./gemini.html">gemini</a></li>
+                      <li><a href="./a2a.html">a2a</a></li>
+                      <li><a href="./openai.html">openai</a></li>
+                      <li><a href="./mcp.html">mcp</a></li>
+                      <li><a href="./global-elements.html">global-elements</a></li>
+                      <li><a href="./agentforce.html">agentforce</a></li>
+                      <li><a href="./idp.html">idp</a></li>
+                      <li><a href="./bedrock.html">bedrock</a></li>
+                      <li><a href="./mulesoft-connector-playground.html">mulesoft-connector-playground</a></li>
+                      <li><a href="./inference.html">inference</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+  <header class="jumbotron subhead" id="overview">
+    <div class="container">
+      <h1>mulesoft-connector-playground-app</h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav affix">
+          <li class="nav-header">Flows</li>
+            <li data-toggle="collapse" data-target="#_execute_geminiNav"><a href="#_execute_gemini"><i class="icon-chevron-right"></i> execute-gemini</a>
+            </li>
+            <div id="_execute_geminiNav" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <ul>
+                </ul>
+              </div>
+            </div>
+        </ul>
+      </div>
+      <div class="span9">
+
+        <!-- Elements and their descriptions
+        ================================================== -->
+        <div style="max-height: 640px;width:100%;overflow:auto;">
+            <img src="img/gemini.png" usemap="#mFlowMap" alt="Mule Configuration Image">
+            <map name="mFlowMap">
+          </map>
+        </div>
+        <!--Mule configuration xml code-->
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" href="#collapseMuleConfiguration">
+            Show Mule Configuration XML code...
+          </a>
+        </div>
+        <div id="collapseMuleConfiguration" class="accordion-body collapse" style="height: 0px;">
+          <div class="accordion-inner">
+              <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-agentforce="http://www.mulesoft.org/schema/mule/ms-agentforce" xmlns:gemini="http://www.mulesoft.org/schema/connectivity/gemini" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/connectivity/gemini http://www.mulesoft.org/schema/connectivity/gemini/current/mule-gemini.xsd
+http://www.mulesoft.org/schema/mule/ms-agentforce http://www.mulesoft.org/schema/mule/ms-agentforce/current/mule-ms-agentforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"&gt;
+    &lt;gemini:config name="Gemini_config" doc:name="Gemini config" doc:id="cd4e5fd8-6484-4a8b-bff0-fb9f7e21e286"&gt; 
+        &lt;gemini:api-key-connection apiKey="${google.gemini.apiKey}" baseUri="${google.gemini.baseUri}"/&gt; 
+    &lt;/gemini:config&gt;  
+    &lt;sub-flow name="execute-gemini" doc:id="c81da342-eb2e-49aa-888e-184cbfeeb937"&gt; 
+        &lt;choice doc:name="Choice" doc:id="4ccd0e38-9352-4a38-ac2f-47bd3744f54c"&gt; 
+            &lt;when expression="#[&amp;quot;gemini:list-models&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;gemini:list-models doc:name="List Models" doc:id="98828939-0cf6-44df-9a53-12bcd41563c1" config-ref="Gemini_config"/&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;gemini:get-model&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;gemini:get-model doc:name="Get Model" doc:id="df13e8c9-a73a-4698-8ab9-b2719f2bde05" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]"/&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;gemini:generate-content&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;gemini:generate-content doc:name="Generate Content" doc:id="cf126d0e-5750-4c0d-90a6-69d4c77039d7" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]"&gt; 
+                    &lt;gemini:generate-content--body&gt;&lt;![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]&gt;    &lt;/gemini:generate-content--body&gt; 
+                &lt;/gemini:generate-content&gt; 
+            &lt;/when&gt;  
+            &lt;otherwise&gt; 
+                &lt;raise-error doc:name="Raise error" doc:id="8867e8a3-cf19-463b-8632-6a73f81bdde7" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+            &lt;/otherwise&gt; 
+        &lt;/choice&gt;  
+        &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="39822a09-d7c7-408b-9ad7-076b41748972"&gt; 
+            &lt;ee:message&gt; 
+                &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+            &lt;/ee:message&gt; 
+        &lt;/ee:transform&gt; 
+    &lt;/sub-flow&gt; 
+&lt;/mule&gt;
+</code></pre>
+
+          </div>
+        </div>
+
+          <section id="_execute_gemini">
+            <div class="page-header">
+                <h1>execute-gemini <img src="./assets/icons/flow.png"></h1>
+            </div>
+            <div class="documentation-indented" style="height:100%;width:100%;overflow:auto;">
+                <img src="img/execute_gemini.png" usemap="#flowMapexecute_gemini" alt="execute_gemini image">
+                <map name="flowMapexecute_gemini">
+                </map>
+            </div>
+            <div class="documentation-indented">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#_execute_geminixml_code">
+                  Show configuration XML code of the flow execute-gemini...
+                </a>
+              </div>
+              <div id="_execute_geminixml_code" class="accordion-body collapse" style="height: 0px;">
+                <div class="accordion-inner">
+                    <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;sub-flow name="execute-gemini" doc:id="c81da342-eb2e-49aa-888e-184cbfeeb937"&gt;  
+    &lt;choice doc:name="Choice" doc:id="4ccd0e38-9352-4a38-ac2f-47bd3744f54c"&gt; 
+        &lt;when expression="#[&amp;quot;gemini:list-models&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;gemini:list-models doc:name="List Models" doc:id="98828939-0cf6-44df-9a53-12bcd41563c1" config-ref="Gemini_config"&gt;    &lt;/gemini:list-models&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;gemini:get-model&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;gemini:get-model doc:name="Get Model" doc:id="df13e8c9-a73a-4698-8ab9-b2719f2bde05" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]"&gt;    &lt;/gemini:get-model&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;gemini:generate-content&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;gemini:generate-content doc:name="Generate Content" doc:id="cf126d0e-5750-4c0d-90a6-69d4c77039d7" config-ref="Gemini_config" modelName="#[payload.parameters.modelName]"&gt;  
+                &lt;gemini:generate-content--body&gt;&lt;![CDATA[#[read(payload.parameters.body default "{}", "application/json")]]]&gt;    &lt;/gemini:generate-content--body&gt; 
+            &lt;/gemini:generate-content&gt; 
+        &lt;/when&gt;  
+        &lt;otherwise&gt; 
+            &lt;raise-error doc:name="Raise error" doc:id="8867e8a3-cf19-463b-8632-6a73f81bdde7" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+        &lt;/otherwise&gt; 
+    &lt;/choice&gt;  
+    &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="39822a09-d7c7-408b-9ad7-076b41748972"&gt;  
+        &lt;ee:message&gt; 
+            &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+        &lt;/ee:message&gt; 
+    &lt;/ee:transform&gt; 
+&lt;/sub-flow&gt;
+</code></pre>
+
+                </div>
+              </div>
+              <p></p>
+            </div>
+          </section>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>Designed and built with <a href="https://www.mulesoft.com/platform/studio" target="_blank">Anypoint Studio</a>.</p>
+        <p>Code licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <p>Icons from <a href="https://glyphicons.com/">Glyphicons Free</a>, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+          <li><a href="https://blogs.mulesoft.com/bloghome/">Read the blog</a></li>
+          <li><a href="https://www.mulesoft.org/jira/issues/">Submit issues</a></li>
+        </ul>
+      </div>
+    </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/widgets.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="assets/prettify.js"></script>
+    <script src="assets/bootstrap-transition.js"></script>
+    <script src="assets/bootstrap-alert.js"></script>
+    <script src="assets/bootstrap-modal.js"></script>
+    <script src="assets/bootstrap-dropdown.js"></script>
+    <script src="assets/bootstrap-scrollspy.js"></script>
+    <script src="assets/bootstrap-tab.js"></script>
+    <script src="assets/bootstrap-tooltip.js"></script>
+    <script src="assets/bootstrap-popover.js"></script>
+    <script src="assets/bootstrap-button.js"></script>
+    <script src="assets/bootstrap-collapse.js"></script>
+    <script src="assets/bootstrap-carousel.js"></script>
+    <script src="assets/bootstrap-typeahead.js"></script>
+    <script src="assets/bootstrap-affix.js"></script>
+    <script src="assets/scroller.js"></script>
+    <script src="assets/application.js"></script>
+
+</body>
+</html>

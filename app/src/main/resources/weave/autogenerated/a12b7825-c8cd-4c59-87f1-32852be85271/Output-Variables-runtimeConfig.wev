@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_a12b7825_c8cd_4c59_87f1_32852be85271_Output_Variables_runtimeConfig = {|
+  config_type_id?: Number, 
+  execution_id?: Any, 
+  id?: Number, 
+  is_active?: Boolean, 
+  name?: String, 
+  provider_id?: Number, 
+  provider_key?: String
+|}
+

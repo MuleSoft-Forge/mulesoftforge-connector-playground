@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_8cfa60a5_efd9_4080_81da_7d5f8837ab2e_Output_Variables_validate = Any
+

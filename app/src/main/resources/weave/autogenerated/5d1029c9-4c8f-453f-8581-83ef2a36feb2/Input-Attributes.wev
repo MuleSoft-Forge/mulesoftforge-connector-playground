@@ -1,0 +1,117 @@
+%dw 2.0
+
+type auto_5d1029c9_4c8f_453f_8581_83ef2a36feb2_Input_Attributes = {|
+  taskId: String, 
+  contextId: String, 
+  queryParams: { _?: String }, 
+  headers: { _?: String }, 
+  version: String, 
+  scheme: String, 
+  method: String, 
+  localAddress: String, 
+  remoteAddress: String, 
+  clientCertificate?: com_mulesoft_connectors_a2a_api_certificate_CertificateData {"typeId": "com.mulesoft.connectors.a2a.api.certificate.CertificateData",
+  "typeAlias": "CertificateData"}
+|} {"typeId": "com.mulesoft.connectors.a2a.api.listener.RequestAttributes",
+"typeAlias": "RequestAttributes"}
+type com_mulesoft_connectors_a2a_api_certificate_CertificateData = {|
+  basicConstraints?: Number, 
+  criticalExtensionOIDs?: Array<String>, 
+  encoded?: Binary, 
+  extendedKeyUsage?: Array<String>, 
+  extensions?: Array<com_mulesoft_connectors_a2a_api_certificate_CertificateExtension {"typeAlias": "CertificateExtension",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.CertificateExtension"}>, 
+  issuerAlternativeNames?: Array<com_mulesoft_connectors_a2a_api_certificate_AlternativeNameData {"typeAlias": "AlternativeNameData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.AlternativeNameData"}>, 
+  issuerDN?: com_mulesoft_connectors_a2a_api_certificate_PrincipalData {"typeAlias": "PrincipalData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.PrincipalData"}, 
+  issuerUniqueID?: Array<Boolean {"typeId": "boolean"}>, 
+  issuerX500Principal?: com_mulesoft_connectors_a2a_api_certificate_X500PrincipalData {"typeAlias": "X500PrincipalData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.X500PrincipalData"}, 
+  keyUsage?: Array<Boolean {"typeId": "boolean"}>, 
+  name?: String, 
+  nonCriticalExtensionOIDs?: Array<String>, 
+  notAfter?: Date {"class": "java.util.Date",
+  "typeId": "java.util.Date"}, 
+  notBefore?: Date {"class": "java.util.Date",
+  "typeId": "java.util.Date"}, 
+  publicKey?: com_mulesoft_connectors_a2a_api_certificate_PublicKeyData {"typeId": "com.mulesoft.connectors.a2a.api.certificate.PublicKeyData",
+  "typeAlias": "PublicKeyData"}, 
+  serialNumber?: Number, 
+  serialNumberObject?: com_mulesoft_connectors_a2a_api_certificate_SerialNumberData {"typeAlias": "SerialNumberData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.SerialNumberData"}, 
+  sigAlgName?: String, 
+  sigAlgOID?: String, 
+  sigAlgParams?: Binary, 
+  signature?: Binary, 
+  subjectAlternativeNames?: Array<com_mulesoft_connectors_a2a_api_certificate_AlternativeNameData_46 {"typeAlias": "AlternativeNameData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.AlternativeNameData"}>, 
+  subjectDN?: com_mulesoft_connectors_a2a_api_certificate_PrincipalData_49 {"typeAlias": "PrincipalData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.PrincipalData"}, 
+  subjectX500Principal?: com_mulesoft_connectors_a2a_api_certificate_X500PrincipalData_52 {"typeAlias": "X500PrincipalData",
+  "typeId": "com.mulesoft.connectors.a2a.api.certificate.X500PrincipalData"}, 
+  "type"?: String, 
+  version?: Number
+|} {"typeId": "com.mulesoft.connectors.a2a.api.certificate.CertificateData",
+"typeAlias": "CertificateData"}
+type com_mulesoft_connectors_a2a_api_certificate_AlternativeNameData_46 = {|
+  name?: String, 
+  "type"?: Number
+|} {"typeAlias": "AlternativeNameData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.AlternativeNameData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_AlternativeNameData = {|
+  name?: String, 
+  "type"?: Number
+|} {"typeAlias": "AlternativeNameData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.AlternativeNameData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_CertificateExtension = {|
+  criticality?: Boolean {"typeId": "boolean"}, 
+  oid?: String, 
+  value?: Binary
+|} {"typeAlias": "CertificateExtension",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.CertificateExtension"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_X500PrincipalData = {| name?: String |} {"typeAlias": "X500PrincipalData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.X500PrincipalData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_PrincipalData_49 = {|
+  commonName?: String, 
+  name?: String
+|} {"typeAlias": "PrincipalData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.PrincipalData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_PrincipalData = {|
+  commonName?: String, 
+  name?: String
+|} {"typeAlias": "PrincipalData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.PrincipalData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_X500PrincipalData_52 = {| name?: String |} {"typeAlias": "X500PrincipalData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.X500PrincipalData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_SerialNumberData = {| serialNumber?: Number |} {"typeAlias": "SerialNumberData",
+"typeId": "com.mulesoft.connectors.a2a.api.certificate.SerialNumberData"}
+
+
+type com_mulesoft_connectors_a2a_api_certificate_PublicKeyData = {|
+  algorithm?: String, 
+  encoded?: Binary, 
+  modulus?: Number, 
+  params?: Number, 
+  publicKey?: String
+|} {"typeId": "com.mulesoft.connectors.a2a.api.certificate.PublicKeyData",
+"typeAlias": "PublicKeyData"}
+
+
+
+
+

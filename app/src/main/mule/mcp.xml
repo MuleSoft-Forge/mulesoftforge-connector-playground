@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd">
+
+
+	
+	<mcp:server-config name="MCP_Server_StreamableHttp_MCPG" 
+	doc:name="MCP Server MCPG" 
+	doc:id="005feda7-e3b4-408f-8aa0-1ba5cbc8e113" 
+	serverName="mcpg-mcp-server" 
+	serverVersion="1.0.0" >
+		<mcp:streamable-http-server-connection 
+		listenerConfig="mulesoftforge-connector-playground-httpListenerConfig" 
+		responseContentType="JSON" />
+	</mcp:server-config>
+
+
+	<!-- MCP Client Config: No Authentication -->
+	<mcp:client-config name="MCP_Client" 
+			doc:name="MCP Client None" 
+			doc:id="9ab2d1ab-098a-4110-af04-b58653754a10" 
+			clientName="MuleSoftForge Connector Playground" 
+			clientVersion="1.0.0">
+		<mcp:streamable-http-client-connection 
+		serverUrl="#[(vars.runtimeConfigForConnector.serverUrl default p('mcpg.mcp.serverUrl'))]" 
+		requestTimeout="#[(vars.runtimeConfigForConnector.requestTimeout default 30)]" 
+		requestTimeoutUnit='#[(vars.runtimeConfigForConnector.requestTimeoutUnit default "SECONDS")]'>
+		</mcp:streamable-http-client-connection>
+	</mcp:client-config>
+	
+	<!-- MCP Client Config: Basic Authentication -->
+	<mcp:client-config name="MCP_Client_Basic" 
+			doc:name="MCP Client Basic" 
+			doc:id="3667bf94-d960-4701-a383-e20b6d42f6ad" 
+			clientName="MuleSoftForge Connector Playground" 
+			clientVersion="1.0.0">
+		<mcp:streamable-http-client-connection 
+		serverUrl="#[(vars.runtimeConfigForConnector.serverUrl default p('mcpg.mcp.serverUrl'))]" 
+		requestTimeout="#[(vars.runtimeConfigForConnector.requestTimeout default 30)]" 
+		requestTimeoutUnit='#[(vars.runtimeConfigForConnector.requestTimeoutUnit default "SECONDS")]'>
+			<mcp:authentication>
+				<http:basic-authentication 
+					username="#[vars.runtimeConfigForConnector.basicUsername]" 
+					password="#[vars.runtimeConfigForConnector.basicPassword]" />
+			</mcp:authentication>
+		</mcp:streamable-http-client-connection>
+	</mcp:client-config>
+	
+	
+	<!-- MCP Client Config: OAuth 2.0 Client Credentials -->
+	<mcp:client-config name="MCP_Client_OAuth2_ClientCredentials" 
+			doc:name="MCP Client OAuth2" 
+			doc:id="78383259-0b04-4571-ac32-1c070279cf86" 
+			clientName="MuleSoftForge Connector Playground" 
+			clientVersion="1.0.0">
+		<mcp:streamable-http-client-connection 
+		serverUrl="#[(vars.runtimeConfigForConnector.serverUrl default p('mcpg.mcp.serverUrl'))]" 
+		requestTimeout="#[(vars.runtimeConfigForConnector.requestTimeout default 30)]" 
+		requestTimeoutUnit='#[(vars.runtimeConfigForConnector.requestTimeoutUnit default "SECONDS")]'>
+			<mcp:authentication>
+				<oauth:client-credentials-grant-type 
+					clientId="#[vars.runtimeConfigForConnector.oauthClientId]" 
+					clientSecret="#[vars.runtimeConfigForConnector.oauthClientSecret]" 
+					tokenUrl="#[vars.runtimeConfigForConnector.oauthTokenUrl]" 
+					scopes="#[vars.runtimeConfigForConnector.oauthScopes]" />
+			</mcp:authentication>
+		</mcp:streamable-http-client-connection>
+	</mcp:client-config>
+	
+	
+	
+		<!-- MCP Client Config: OAuth 2.0 Client Credentials -->
+	<mcp:client-config name="MCP_Client_OAuth2_ClientCredentials_Salesforce" 
+			doc:name="MCP Client OAuth2" 
+			doc:id="99e68d49-e208-4a0d-8b02-3cfaddcfa0dd" 
+			clientName="MuleSoftForge Connector Playground" 
+			clientVersion="1.0.0">
+		<mcp:streamable-http-client-connection 
+		serverUrl="#[(vars.runtimeConfigForConnector.serverUrl)]" 
+		requestTimeout="#[(vars.runtimeConfigForConnector.requestTimeout default 30)]" 
+		requestTimeoutUnit='#[(vars.runtimeConfigForConnector.requestTimeoutUnit default "SECONDS")]' mcpEndpointPath="/mcp/v1-beta.2/sobject-all">
+			<mcp:authentication>
+				<oauth:client-credentials-grant-type 
+					clientId="#[vars.runtimeConfigForConnector.oauthClientId]" 
+					clientSecret="#[vars.runtimeConfigForConnector.oauthClientSecret]" 
+					tokenUrl="#[vars.runtimeConfigForConnector.oauthTokenUrl]" 
+					scopes="#[vars.runtimeConfigForConnector.oauthScopes]" />
+			</mcp:authentication>
+		</mcp:streamable-http-client-connection>
+	</mcp:client-config>
+	
+	
+	
+	
+	
+	
+	
+	
+	<mcp:client-config name="MCP_Client_StreamableHttp_MCPG" 
+	doc:name="MCP Client StreamableHttp MCPG" 
+	doc:id="b4ae6235-e6d0-4e0a-9b4f-b12e8f17f692" 
+	clientName="MuleSoftForge Connector Playground" 
+	clientVersion="1.0.0">
+		<mcp:streamable-http-client-connection serverUrl="${mcpg.mcp.serverUrl}"/>
+	</mcp:client-config>
+	<sub-flow name="execute-mcp" doc:id="cd3a7cd9-a5d0-4feb-9ba3-c4947aa5bfbe" >
+		<logger level="INFO" doc:name="Logger" doc:id="7a4782f2-d041-49c6-aef9-e467e9972457" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n ⭐⭐⭐⭐ execute-mcp" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ serverUrl: " ++ vars.runtimeConfigForConnector.serverUrl as String&#10;++ "\n\n✅ authType: " ++ (vars.runtimeConfigForConnector.authType default "none") as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n ⭐⭐⭐⭐ execute-mcp" &#10;++ "\n\n"]'/>
+		<choice doc:name="Choice" doc:id="4c2aa42b-9e86-428b-a1f1-3561044d103f">
+					<when expression='#["mcp:call-tool" == vars.operation.operation_key]'>
+						<choice doc:name="Auth Type Router" doc:id="15b6078c-bc19-47b4-bf5a-9b22f77bcee2">
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+								<mcp:call-tool toolName="#[payload.parameters.toolName as String]" doc:name="MCP Client - Call Tool (Basic)" doc:id="2c42931d-b382-4224-9ec3-ea1821bc56c0" config-ref="MCP_Client_Basic">
+									<mcp:arguments><![CDATA[#[if (!isEmpty(payload.parameters.arguments)) read(payload.parameters.arguments, "application/json") else {}]]]></mcp:arguments>
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:call-tool>
+							</when>
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+								<mcp:call-tool toolName="#[payload.parameters.toolName as String]" doc:name="MCP Client - Call Tool (OAuth2)" doc:id="558f8ca1-4352-4a27-8a8e-27cfb18979ac" config-ref="MCP_Client_OAuth2_ClientCredentials">
+									<mcp:arguments><![CDATA[#[if (!isEmpty(payload.parameters.arguments)) read(payload.parameters.arguments, "application/json") else {}]]]></mcp:arguments>
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:call-tool>
+							</when>
+					<otherwise>
+								<mcp:call-tool toolName="#[payload.parameters.toolName as String]" doc:name="MCP Client - Call Tool (None)" doc:id="9f015007-1b2d-4092-94bb-3d3c57614804" config-ref="MCP_Client">
+									<mcp:arguments><![CDATA[#[if (!isEmpty(payload.parameters.arguments)) read(payload.parameters.arguments, "application/json") else {}]]]></mcp:arguments>
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:call-tool>
+							</otherwise>
+						</choice>
+					</when>
+					<when expression='#["mcp:list-resources" == vars.operation.operation_key]'>
+						<choice doc:name="Auth Type Router" doc:id="c3c4c746-75e0-4a03-98d5-6358d2d3fee4">
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+								<mcp:list-resources doc:name="MCP Client - List Resources (Basic)" doc:id="54a5d26a-5043-4188-92b1-471d4e754a6d" config-ref="MCP_Client_Basic" />
+							</when>
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+								<mcp:list-resources doc:name="MCP Client - List Resources (OAuth2)" doc:id="c5b9a278-aaa9-4d8e-bd4b-a80712041c1e" config-ref="MCP_Client_OAuth2_ClientCredentials" />
+							</when>
+							<otherwise>
+								<mcp:list-resources doc:name="MCP Client - List Resources (None)" doc:id="5623ef70-4322-4900-81c4-5bfc17f27aae" config-ref="MCP_Client" />
+							</otherwise>
+						</choice>
+					</when>
+					<when expression='#["mcp:list-tools" == vars.operation.operation_key]'>
+						<choice doc:name="Auth Type Router" doc:id="9e149052-ae4a-4226-bee3-e750b3d07468">
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+								<mcp:list-tools doc:name="MCP Client - List Tools (Basic)" doc:id="2451f8df-974d-413a-88da-3bae1e7f505f" config-ref="MCP_Client_Basic" />
+							</when>
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+								<mcp:list-tools doc:name="MCP Client - List Tools (OAuth2)" doc:id="852374ea-a515-4449-bade-b7878f2fb184" config-ref="MCP_Client_OAuth2_ClientCredentials" />
+							</when>
+							<otherwise>
+								<mcp:list-tools doc:name="MCP Client - List Tools (None)" doc:id="e63a3f09-3cc2-41d8-8401-32135aae4ba4" config-ref="MCP_Client" />
+							</otherwise>
+						</choice>
+					</when>
+					<when expression='#["mcp:ping" == vars.operation.operation_key]'>
+						<choice doc:name="Auth Type Router" doc:id="19bc431d-3ea8-4b97-a139-eebfb7b86851">
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+								<mcp:ping doc:name="MCP Client - Ping (Basic)" doc:id="2cc649b4-e2c2-4f85-a68c-9dc0feea0213" config-ref="MCP_Client_Basic" />
+							</when>
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+								<mcp:ping doc:name="MCP Client - Ping (OAuth2)" doc:id="bc78ab10-2829-40ff-8927-f73ad19bd876" config-ref="MCP_Client_OAuth2_ClientCredentials" />
+							</when>
+							<otherwise>
+								<mcp:ping doc:name="MCP Client - Ping (None)" doc:id="02571a7a-e38f-4c74-b79b-7484391c1a3a" config-ref="MCP_Client" />
+							</otherwise>
+						</choice>
+						<ee:transform doc:name="Null Attributes &amp; Payload" doc:id="b9a1872f-0a9c-4536-bdb6-11145ac438e3">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+"success - Ping returns null if successfull"]]></ee:set-payload>
+								<ee:set-attributes><![CDATA[%dw 2.0
+output application/java
+---
+null]]></ee:set-attributes>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<when expression='#["mcp:read-resource" == vars.operation.operation_key]'>
+						<choice doc:name="Auth Type Router" doc:id="98524d2e-b828-41ec-a21c-0927556aeadf">
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+								<mcp:read-resource uri="#[payload.parameters.uri as String]" doc:name="MCP Client - Read Resource (Basic)" doc:id="4d30e88d-9691-4ad0-91e1-739337bd9de9" config-ref="MCP_Client_Basic">
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:read-resource>
+							</when>
+							<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+								<mcp:read-resource uri="#[payload.parameters.uri as String]" doc:name="MCP Client - Read Resource (OAuth2)" doc:id="559291fb-8a0e-42aa-8fec-9ab0d92f0116" config-ref="MCP_Client_OAuth2_ClientCredentials">
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:read-resource>
+							</when>
+							<otherwise>
+								<mcp:read-resource uri="#[payload.parameters.uri as String]" doc:name="MCP Client - Read Resource (None)" doc:id="bdf7d256-7cfb-4de0-9397-b50aaa6c16e9" config-ref="MCP_Client">
+									<mcp:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></mcp:additional-properties>
+								</mcp:read-resource>
+							</otherwise>
+						</choice>
+					</when>
+			<otherwise>
+						<raise-error doc:name="Raise error" doc:id="6a6b495e-cd4a-4e04-b950-6c96b4e6a8a7" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported" />
+					</otherwise>
+				</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse" doc:id="61a5a3c3-06de-4e40-ab10-bd9683ac6dfa">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+	</sub-flow>
+	<flow name="mcp-server-newSession" doc:id="74686bec-b3c6-4dc9-8dc5-66c435d7caf2">
+		<mcp:on-new-session-listener doc:name="MCP Server - On New Session Listener" doc:id="e5573b4b-5309-405f-9edc-4101fa8a5663" config-ref="MCP_Server_StreamableHttp_MCPG">
+			<mcp:rejection rejectWithStatusCode="#[vars.rejectWithStatusCode]" />
+		</mcp:on-new-session-listener>
+		<logger level="INFO" doc:name="📋📋📋 Logger mcp-server-newSession" doc:id="90da7328-39c0-4347-92e8-7770c42ad232" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n ⭐⭐⭐⭐ mcp-server-newSession" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n✅ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n ⭐⭐⭐⭐ mcp-server-newSession" &#10;++ "\n\n"]' />
+	</flow>
+	<flow name="mcp-server-tool-connectorStatus" doc:id="a46c2e22-b3aa-4111-95b4-6ff85610fee1">
+		<mcp:tool-listener doc:name="MCP Server - Tool Listener - connectorStatus" doc:id="788bf9cd-75aa-46c3-9800-2c55b77da256" config-ref="MCP_Server_StreamableHttp_MCPG" name="connectorStatus">
+			<mcp:description><![CDATA[Enable or disable a connector by its Maven Artifact ID
+  example utternaces:
+    "Disable connector mule4-agentforce-connector",
+    "Enable mule4-einstein-ai-connector",
+    "Deactivate the connector mule4-salesforce-connector",
+    "Turn on mule4-mongodb-connector"
+Returns text "success" or "error message"]]></mcp:description>
+			<mcp:parameters-schema ><![CDATA[{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/rfc9457-problem-details.json",
+  "title": "mcp-server-tool-connectorStatus",
+  "description": "A JSON schema for MuleSoft Connector Explorer MCP tool called connectorStatus",
+  "type": "object",
+  "properties": {
+    "mavenArtifactId": {
+      "type": "string",
+      "description": "Identify connector record by its Maven Artifact Id like: mule4-agentforce-connector"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Boolean flag recording if a connector is active or not"
+    }
+  },
+  "required": [
+    "mavenArtifactId",
+    "isActive"
+  ]
+}]]></mcp:parameters-schema>
+			<mcp:responses>
+				<mcp:text-tool-response-content text="#[payload.^raw]" />
+			</mcp:responses>
+		</mcp:tool-listener>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="JSON for Validation" doc:id="6de91ac8-ffdd-48d0-adbb-893df584a1a8" mimeType="application/json"/>
+		<logger level="INFO" doc:name="📋📋📋 Logger" doc:id="f284ef7e-5af5-4dbd-865d-1ae18df18f32" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📋📋📋 mcp-server-tool-connectorStatus" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 📋📋📋 mcp-server-tool-connectorStatus" &#10;++ "\n\n"]' />
+		<json:validate-schema doc:name="Validate schema" doc:id="c53b85e0-f183-48ba-a10a-68eea90310a2" schema="schemas/mcp-server-tool-connectorStatus.json" />
+		<db:update doc:name="Update" doc:id="5e78969e-f084-4791-9792-7f87e4c95716" config-ref="Database_Config_Postgresql" target="update">
+			<db:sql><![CDATA[UPDATE connectors
+SET
+  is_active = :isActive
+WHERE maven_artifact_id = :mavenArtifactId]]></db:sql>
+			<db:input-parameters><![CDATA[#[output java ---
+{
+  mavenArtifactId: (payload.mavenArtifactId as String default ""),
+  isActive: (payload.isActive as Boolean default false)
+}]]]></db:input-parameters>
+		</db:update>
+		<choice doc:name="Choice" doc:id="e93b8173-930a-490c-9fc3-e215236dbce1">
+			<when expression="#[vars.update.affectedRows == 0]">
+				<set-variable value='#["Connector not found with Maven Artifcat Id:" ++ payload.mavenArtifactId]' doc:name="responseContentText" doc:id="0605b85e-43ec-4697-8d8d-e16b956d8ea0" variableName="responseContentText" />
+				<set-variable value="404" doc:name="rejectWithStatusCode 404" doc:id="dcd7438b-ecec-4613-afec-b9b1e19784ce" variableName="rejectWithStatusCode" />
+				<raise-error doc:name="Raise error" doc:id="e5ac3e7c-212d-417d-a123-e6571ea28b81" type="CUSTOM:CONNECTOR_NOT_FOUND" description='#[vars.responseContentText default ""]' />
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Response" doc:id="371d05bf-497d-4ac8-9455-d935f06ef0ef">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output text
+---
+"success"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	
+	<flow name="mcp-server-tool-searchOperations" doc:id="ae659b5f-4912-448e-b8eb-7781e381a66f">
+		<mcp:tool-listener doc:name="MCP Server - Tool Listener - searchOperations" doc:id="6eace4fc-d6ef-4997-8730-961c0469b9a8" config-ref="MCP_Server_StreamableHttp_MCPG" name="searchOperations" doc:description='New MCP Tool: searchOperations&#10;Purpose: Discover operations by keyword, category, or connector name&#10;Required Parameter: searchTerm (string)&#10;Optional Parameters:&#10;category (Chat, Agent, Tools, Vision, Image, Moderation, General, Resources)&#10;connectorName (e.g., "MCP", "Einstein AI", "Agentforce")&#10;Features:&#10;Searches operation names, descriptions, and operation keys&#10;Returns up to 50 matching operations&#10;Includes full details: operationKey, displayName, category, connector info, help URLs&#10;Only shows active operations from active connectors&#10;Results formatted as JSON with resultsCount + operations array&#10;Example AI queries this enables:&#10;"Find chat operations"&#10;"Search for MCP tools"&#10;"Show me all Agentforce operations"&#10;"What operations are available for image generation?"&#10;This is the discovery tool that starts MCP chaining! An AI can now search → understand schema → execute operations. '>
+			<mcp:description><![CDATA[Search for connector operations by keyword, category, 
+or connector name. Returns operation details including operation keys, 
+descriptions, categories, and connector information. 
+Use this to discover what operations are available.
+
+Example utterances:
+  "Find chat operations"
+  "Search for MCP tools"
+  "Show me all Agentforce operations"
+  "What operations are available for Einstein AI?"
+  "Find operations related to image generation"
+
+Returns JSON array of matching operations with full details.]]></mcp:description>
+			<mcp:parameters-schema><![CDATA[{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-searchOperations.json",
+  "title": "mcp-server-tool-searchOperations",
+  "description": "Search for connector operations by keyword, category, or connector name",
+  "type": "object",
+  "properties": {
+    "searchTerm": {
+      "type": "string",
+      "description": "Keyword to search in operation names and descriptions (e.g., 'chat', 'image', 'tool', 'agent')"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["Chat", "Agent", "Tools", "Vision", "Image", "Moderation", "General", "Resources"],
+      "description": "Optional: Filter by operation category"
+    },
+    "connectorName": {
+      "type": "string",
+      "description": "Optional: Filter by connector name (e.g., 'MCP', 'Einstein AI', 'Agentforce', 'MuleSoft Inference')"
+    }
+  },
+  "required": ["searchTerm"]
+}]]></mcp:parameters-schema>
+			<mcp:responses>
+				<mcp:text-tool-response-content text="#[payload.^raw]" />
+			</mcp:responses>
+		</mcp:tool-listener>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="JSON for Validation" doc:id="271ec5f1-2f14-47cf-bd4c-633f89ce94e9" mimeType="application/json"/>
+		<logger level="INFO" doc:name="📋📋📋 Logger" doc:id="6a03715f-ce34-495e-8db9-62c1b905c5bd" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 🔍🔍🔍 mcp-server-tool-searchOperations" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🔍🔍🔍 mcp-server-tool-searchOperations" &#10;++ "\n\n"]' />
+		<json:validate-schema doc:name="Validate schema" doc:id="fb359e36-eb93-45ee-8134-532e6d33622a" schema="schemas/mcp-server-tool-searchOperations.json" />
+		<db:select doc:name="Search Operations" doc:id="3336fa57-4cba-4795-abd6-f4fdd039421f" config-ref="Database_Config_Postgresql">
+			<db:sql><![CDATA[SELECT 
+    o.id,
+    o.operation_key,
+    o.display_name,
+    o.description,
+    o.category,
+    o.help_url,
+    o.is_active,
+    c.name as connector_name,
+    c.maven_artifact_id,
+    c.version as connector_version
+FROM operations o
+JOIN connectors c ON o.connector_id = c.id
+WHERE 
+    o.is_active = true
+    AND c.is_active = true
+    AND (
+        o.display_name ILIKE '%' || :searchTerm || '%' 
+        OR o.description ILIKE '%' || :searchTerm || '%'
+        OR o.operation_key ILIKE '%' || :searchTerm || '%'
+        OR c.name ILIKE '%' || :searchTerm || '%'
+        OR c.description ILIKE '%' || :searchTerm || '%'
+    )
+    AND (CAST(:category AS TEXT) IS NULL OR CAST(o.category AS TEXT) = CAST(:category AS TEXT))
+    AND (CAST(:connectorName AS TEXT) IS NULL OR c.name ILIKE '%' || CAST(:connectorName AS TEXT) || '%')
+ORDER BY 
+    c.name, o.operation_order
+LIMIT 50;]]></db:sql>
+			<db:input-parameters><![CDATA[#[output java ---
+{
+  searchTerm: (payload.searchTerm as String default ""),
+  category: (payload.category default null),
+  connectorName: (payload.connectorName default null)
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Format Results" doc:id="8aacb10f-ca9b-4c1a-9476-3b0ed351f976">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  resultsCount: sizeOf(payload),
+  operations: payload map {
+    operationKey: $.operation_key,
+    displayName: $.display_name,
+    description: $.description,
+    category: $.category,
+    connectorName: $.connector_name,
+    mavenArtifactId: $.maven_artifact_id,
+    connectorVersion: $.connector_version,
+    helpUrl: $.help_url,
+    isActive: $.is_active
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	<flow name="mcp-server-tool-getOperationSchema" doc:id="886f5d64-59fa-4cf9-9c2d-dea6ce14f52d">
+		<mcp:tool-listener doc:name="MCP Server - Tool Listener - getOperationSchema" doc:id="a5974068-6983-413d-a12e-16190532718a" config-ref="MCP_Server_StreamableHttp_MCPG" name="getOperationSchema">
+			<mcp:description><![CDATA[Get the complete parameter schema for a specific operation. Returns all parameters including names, data types, required status, descriptions, default values, and parameter order. Use this after discovering an operation (via searchOperations) to understand what inputs it needs before executing it.
+
+Example utterances:
+  "What parameters does mcp:call-tool need?"
+  "Show me the schema for ms-inference:chat-answer-prompt"
+  "What are the required fields for ms-agentforce:start-agent-conversation?"
+  "Get parameters for mcp:read-resource"
+
+Returns detailed operation schema with all parameter information.]]></mcp:description>
+			<mcp:parameters-schema><![CDATA[{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-getOperationSchema.json",
+  "title": "mcp-server-tool-getOperationSchema",
+  "description": "Get the complete parameter schema for a specific operation",
+  "type": "object",
+  "properties": {
+    "operationKey": {
+      "type": "string",
+      "description": "Operation key to get schema for (e.g., 'mcp:call-tool', 'ms-inference:chat-answer-prompt', 'ms-agentforce:start-agent-conversation')"
+    }
+  },
+  "required": ["operationKey"]
+}]]></mcp:parameters-schema>
+			<mcp:responses>
+				<mcp:text-tool-response-content text="#[payload.^raw]" />
+			</mcp:responses>
+		</mcp:tool-listener>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="JSON for Validation" doc:id="ba027511-13ee-433e-9f62-6a282658a5d8" mimeType="application/json"/>
+		<set-variable value="#[payload]" doc:name="originalPayload" doc:id="ab19f701-4cc0-4894-9b86-200dfe45f2f5" variableName="originalPayload" />
+		<logger level="INFO" doc:name="📋📋📋 Logger" doc:id="eeeddb5e-e08f-4c19-b2c3-f2c5b77d0cca" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📋📋📋 mcp-server-tool-getOperationSchema" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 📋📋📋 mcp-server-tool-getOperationSchema" &#10;++ "\n\n"]' />
+		<json:validate-schema doc:name="Validate schema" doc:id="5005cb8c-c3f7-4476-8e27-57e3f1910636" schema="schemas/mcp-server-tool-getOperationSchema.json" />
+		<db:select doc:name="Get Operation Details" doc:id="fddfffdb-d299-412a-9a0f-76affcf3f45a" config-ref="Database_Config_Postgresql">
+			<db:sql><![CDATA[SELECT 
+    o.id as operation_id,
+    o.operation_key,
+    o.display_name,
+    o.description as operation_description,
+    o.category,
+    c.name as connector_name,
+    c.maven_artifact_id,
+    c.version as connector_version
+FROM operations o
+JOIN connectors c ON o.connector_id = c.id
+WHERE o.operation_key = :operationKey
+  AND o.is_active = true
+  AND c.is_active = true
+LIMIT 1;]]></db:sql>
+			<db:input-parameters><![CDATA[#[output java ---
+{
+  operationKey: (payload.operationKey as String default "")
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Operation Found?" doc:id="1d6f1e3a-7fc9-4fc4-a939-8d62d6a430f9">
+			<when expression="#[sizeOf(payload) == 0]">
+				<ee:transform doc:name="Not Found Error" doc:id="5548653c-41ca-401f-95b6-2ae10383e8eb">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  error: "Operation not found",
+  operationKey: vars.originalPayload.operationKey,
+  message: "No active operation found with the specified operation key. Use searchOperations to find available operations."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<set-variable value="#[payload[0].operation_id]" doc:name="operationId" doc:id="49481442-2ef0-465a-8d1e-2d36d854c975" variableName="operationId" />
+				<set-variable value="#[payload[0].display_name]" doc:name="displayName" doc:id="73603ce6-7cb0-4c16-9d2c-0e07ec1601d7" variableName="displayName" />
+				<set-variable value="#[payload[0].operation_description]" doc:name="operationDescription" doc:id="7d1f5d86-ac5f-478a-a997-bc8a2153429f" variableName="operationDescription" />
+				<set-variable value="#[payload[0].category]" doc:name="category" doc:id="4c4096e4-4ed0-4b54-89e8-8eed50537c98" variableName="category" />
+				<set-variable value="#[payload[0].connector_name]" doc:name="connectorName" doc:id="86339932-a508-4207-8ec2-406e505643df" variableName="connectorName" />
+				<set-variable value="#[payload[0].maven_artifact_id]" doc:name="mavenArtifactId" doc:id="5b04f80d-c216-44fe-828c-2e45f6414856" variableName="mavenArtifactId" />
+				<set-variable value="#[payload[0].connector_version]" doc:name="connectorVersion" doc:id="9d84b85b-4e90-47db-ad1f-7fa4c092a12e" variableName="connectorVersion" />
+				<db:select doc:name="Get Parameters" doc:id="080547f9-b9e5-45ee-8947-202eecf60bd9" config-ref="Database_Config_Postgresql">
+					<db:sql><![CDATA[SELECT 
+    p.api_name,
+    p.display_name,
+    p.data_type,
+    p.is_required,
+    p.description,
+    p.default_value,
+    p.parameter_order
+FROM operation_parameters p
+WHERE p.operation_id = :operationId
+ORDER BY p.parameter_order;]]></db:sql>
+					<db:input-parameters><![CDATA[#[output java ---
+{
+  operationId: vars.operationId
+}]]]></db:input-parameters>
+				</db:select>
+				<ee:transform doc:name="Format Schema" doc:id="8ed9cb7f-3d23-45a3-a541-944a56d788e6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  operationKey: vars.originalPayload.operationKey,
+  displayName: vars.displayName,
+  operationDescription: vars.operationDescription,
+  category: vars.category,
+  connectorName: vars.connectorName,
+  mavenArtifactId: vars.mavenArtifactId,
+  connectorVersion: vars.connectorVersion,
+  parametersCount: sizeOf(payload),
+  parameters: payload map {
+    apiName: $.api_name,
+    displayName: $.display_name,
+    dataType: $.data_type,
+    isRequired: $.is_required,
+    description: $.description,
+    defaultValue: $.default_value,
+    parameterOrder: $.parameter_order
+  },
+  requiredParameters: (payload filter $.is_required == true) map $.api_name,
+  optionalParameters: (payload filter $.is_required == false) map $.api_name
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	
+	<flow name="mcp-server-tool-executeOperation" doc:id="c3824f41-ed4f-411f-89d1-cce8a9ac12ee">
+		<mcp:tool-listener doc:name="MCP Server - Tool Listener - executeOperation" doc:id="539b24e3-b684-47ff-ab56-f5f936aa2e25" config-ref="MCP_Server_StreamableHttp_MCPG" name="executeOperation">
+			<mcp:description><![CDATA[Execute a connector operation with specified parameters and runtime configuration. This is the ACTION tool that completes the discover→understand→execute chain. Returns the operation result or error from the external system.
+
+Use this after:
+1. Finding an operation with searchOperations
+2. Understanding its parameters with getOperationSchema
+3. Having a runtime configuration ready
+
+Example utterances:
+  "Execute mcp:call-tool with config 1 and tool 'get-weather'"
+  "Run the chat operation with my prompt"
+  "Start an Agentforce agent conversation with these parameters"
+  "Ping the MCP server using config 2"
+
+Returns execution results including payload, attributes, and status.]]></mcp:description>
+			<mcp:parameters-schema><![CDATA[{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-executeOperation.json",
+  "title": "mcp-server-tool-executeOperation",
+  "description": "Execute a connector operation with parameters and runtime configuration",
+  "type": "object",
+  "properties": {
+    "operationKey": {
+      "type": "string",
+      "description": "Operation key to execute (e.g., 'mcp:call-tool', 'ms-inference:chat-answer-prompt', 'ms-agentforce:start-agent-conversation')"
+    },
+    "runtimeConfigId": {
+      "type": "integer",
+      "description": "Runtime configuration ID to use for execution"
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Operation parameters as key-value pairs (e.g., {'prompt': 'Hello', 'modelApiName': 'gpt-4'})"
+    }
+  },
+  "required": ["operationKey", "runtimeConfigId"]
+}]]></mcp:parameters-schema>
+			<mcp:responses>
+				<mcp:text-tool-response-content text="#[payload.^raw]" />
+			</mcp:responses>
+		</mcp:tool-listener>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="JSON for Validation" doc:id="e8b033d3-fc0d-4fb5-9789-82e241733093" mimeType="application/json"/>
+		<set-variable value="#[payload]" doc:name="originalPayload" doc:id="401e6ceb-bad2-4334-9f0c-bebfdd68c18a" variableName="originalPayload" />
+		<logger level="INFO" doc:name="📋📋📋 Logger" doc:id="f780dc41-d55a-45f7-a5cc-8f6f02aaf878" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📋📋📋 mcp-server-tool-executeOperation" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 📋📋📋 mcp-server-tool-executeOperation" &#10;++ "\n\n"]' />
+		<json:validate-schema doc:name="Validate schema" doc:id="b4fee8c7-2fc7-435c-b771-affa655289b7" schema="schemas/mcp-server-tool-executeOperation.json" />
+		<db:select doc:name="Get Operation ID" doc:id="6f2f5f7c-a324-425c-88cb-3e2e677947d0" config-ref="Database_Config_Postgresql">
+			<db:sql><![CDATA[SELECT 
+    o.id as operation_id,
+    o.operation_key,
+    o.display_name,
+    c.name as connector_name
+FROM operations o
+JOIN connectors c ON o.connector_id = c.id
+WHERE o.operation_key = :operationKey
+  AND o.is_active = true
+  AND c.is_active = true
+LIMIT 1;]]></db:sql>
+			<db:input-parameters><![CDATA[#[output java ---
+{
+  operationKey: (payload.operationKey as String default "")
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Operation Found?" doc:id="939e0177-b56a-4b30-91d5-ea04c58188af">
+			<when expression="#[sizeOf(payload) == 0]">
+				<ee:transform doc:name="Not Found Error" doc:id="af59cbcc-747c-4d4a-974b-67895cc0f773">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "error",
+  error: "Operation not found",
+  operationKey: vars.originalPayload.operationKey,
+  message: "No active operation found with the specified operation key. Use searchOperations to find available operations."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<set-variable value="#[payload[0].operation_id]" doc:name="operationId" doc:id="cc16f813-c30b-4bb8-b345-eafaad1a2645" variableName="operationId" />
+				<ee:transform doc:name="Build API Request" doc:id="6740031b-a8b4-4cc1-91a0-e0def094d67f">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  operationId: vars.operationId,
+  runtimeConfigId: vars.originalPayload.runtimeConfigId,
+  parameters: vars.originalPayload.parameters default {}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="📤 API Request Logger" doc:id="099d2dc4-abf9-4cc8-8059-81c85d5a34dc" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📤 Calling MCPG API /execute" &#10;++ "\n\n✅ Request: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n"]' />
+				<http:request method="POST" doc:name="POST /execute" doc:id="c4d8a2aa-2ea2-4453-a21a-2594d7b98bb0" url="${mcpg.consumer.endpoint}/execute">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+				</http:request>
+				<logger level="INFO" doc:name="📥 API Response Logger" doc:id="72f71e78-f866-4ca2-84f7-ff8308016d7f" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📥 MCPG API Response" &#10;++ "\n\n✅ Response: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n"]' />
+				<ee:transform doc:name="Format Success Response" doc:id="9493182d-f93c-40de-a336-f9ea863731b5">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "success",
+  operationKey: vars.originalPayload.operationKey,
+  runtimeConfigId: vars.originalPayload.runtimeConfigId,
+  executionResult: payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3eca6574-d378-4dc8-8a09-11faadfde72e" type="ANY">
+				<ee:transform doc:name="Error Response" doc:id="f7733223-ad84-444e-bb7d-433c5075b877">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "error",
+  operationKey: vars.originalPayload.operationKey default "",
+  runtimeConfigId: vars.originalPayload.runtimeConfigId default null,
+  error: error.description default "Execution failed",
+  errorType: error.errorType.identifier default "UNKNOWN",
+  message: "Failed to execute operation. Check that runtime configuration is valid and all required parameters are provided."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	
+	<flow name="mcp-server-resource-listConnectors" doc:id="6ca368c1-85f4-47ac-b55a-3c0d5dda9bab" >
+		<mcp:resource-listener doc:name="Resource: mce-connectors" doc:id="eaf98b17-7f60-4202-8e7f-bbde5526dcfb" config-ref="MCP_Server_StreamableHttp_MCPG" name="listConnectors" uri="file://mce-data/current-connectors.csv" resourceMimeType="application/csv">
+			<mcp:description ><![CDATA[List Connectors]]></mcp:description>
+			<mcp:resource-listener-content >
+				<mcp:blob-resource blob="#[payload]"/>
+			</mcp:resource-listener-content>
+		</mcp:resource-listener>
+		<logger level="INFO" doc:name="📋📋📋 Logger" doc:id="54c7b72a-21bb-4934-9bc2-53f024db7cdf" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 📋📋📋 Resource: mcp-server-resource-listConnectors" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n✅ JSON data: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 📋📋📋 Resource: mcp-server-resource-listConnectors" &#10;++ "\n\n"]' />
+		<db:select doc:name="Select" doc:id="ab270c46-59ac-4dd5-a573-9a5daa82d118" config-ref="Database_Config_Postgresql">
+			<db:sql ><![CDATA[SELECT *
+FROM connectors c
+ORDER BY c.name;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="b20c96b9-665e-423a-8316-b65e46529b92" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

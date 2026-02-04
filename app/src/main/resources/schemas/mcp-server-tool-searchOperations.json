@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-searchOperations.json",
+  "title": "mcp-server-tool-searchOperations",
+  "description": "Search for connector operations by keyword, category, or connector name",
+  "type": "object",
+  "properties": {
+    "searchTerm": {
+      "type": "string",
+      "description": "Keyword to search in operation names and descriptions (e.g., 'chat', 'image', 'tool', 'agent')"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["Chat", "Agent", "Tools", "Vision", "Image", "Moderation", "General", "Resources"],
+      "description": "Optional: Filter by operation category"
+    },
+    "connectorName": {
+      "type": "string",
+      "description": "Optional: Filter by connector name (e.g., 'MCP', 'Einstein AI', 'Agentforce', 'MuleSoft Inference')"
+    }
+  },
+  "required": ["searchTerm"]
+}

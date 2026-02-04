@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_a12b7825_c8cd_4c59_87f1_32852be85271_Input_Variables_operation = {|
+  connector_active?: Boolean, 
+  connector_id?: Number, 
+  execution_id?: Any, 
+  id?: Number, 
+  maven_artifact_id?: String, 
+  operation_active?: Boolean, 
+  operation_key?: String, 
+  required_config_type_id?: Number
+|}
+

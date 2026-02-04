@@ -1,0 +1,35 @@
+%dw 2.0
+output application/java 
+---
+[{
+    execution_id : {},
+    operation_id : 11,
+    operation_key : "consequuntur",
+    connector_id : 27,
+    connector_name : "cupidatat",
+    maven_artifact_id : "ae3d5f44b6894524906",
+    runtime_config_id : 45,
+    runtime_config_name : "cillum",
+    status : "nesciunt.",
+    execution_started_at : |2013-10-03|,
+    execution_completed_at : |2016-09-22|,
+    duration_ms : 18,
+    http_status_code : 7,
+    source_ip : "voluptate",
+  },
+{
+    execution_id : {},
+    operation_id : 80,
+    operation_key : "nostrud",
+    connector_id : 57,
+    connector_name : "in",
+    maven_artifact_id : "031ccb7b583d4328b01",
+    runtime_config_id : 14,
+    runtime_config_name : "nulla",
+    status : "occaecat",
+    execution_started_at : |2005-03-19|,
+    execution_completed_at : |2011-04-14|,
+    duration_ms : 43,
+    http_status_code : 90,
+    source_ip : "accusantium",
+  }]

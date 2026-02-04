@@ -1,0 +1,471 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mulesoft.com/schemas/mce/execution-request-universal.json",
+  "type": "object",
+  "title": "ExecutionRequest - Universal Schema",
+  "description": "Comprehensive schema for executing any MuleSoft AI connector operation. All operation parameters are optional to accommodate different connector requirements.",
+  "required": [
+    "operationId",
+    "runtimeConfigId",
+    "parameters"
+  ],
+  "properties": {
+    "operationId": {
+      "type": "integer",
+      "description": "ID of the operation to execute",
+      "minimum": 1,
+      "examples": [1, 23, 45]
+    },
+    "runtimeConfigId": {
+      "type": "integer",
+      "description": "ID of the runtime configuration to use for credentials",
+      "minimum": 1,
+      "examples": [1, 5, 12]
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Operation-specific input parameters as key-value pairs. Values can be strings, numbers, booleans, arrays, or objects. All fields are optional to support any connector.",
+      "additionalProperties": true,
+      "properties": {
+        "_comment_agentforce": {
+          "type": "string",
+          "description": "========== AGENTFORCE CONNECTOR =========="
+        },
+        "agentList": {
+          "type": "string",
+          "description": "[Agentforce] Select the Agentforce agent to interact with. Agents are dynamically loaded from your Salesforce org.",
+          "examples": ["0XxKa0000007qzVKAQ"]
+        },
+        "bypassUser": {
+          "type": "boolean",
+          "description": "[Agentforce] Bypasses current user's permissions when the agent needs to access Data Cloud assets.",
+          "default": false
+        },
+        "message": {
+          "type": "string",
+          "description": "[Agentforce] Plain text instructions or JSON string containing message object (for A2A).",
+          "examples": [
+            "What's the status of order #12345?",
+            "{\"role\":\"user\",\"content\":\"Hello\"}"
+          ]
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "[Agentforce] Session ID returned from Start Agent Conversation operation.",
+          "examples": ["abc123-def456-ghi789"]
+        },
+        "messageSequenceNumber": {
+          "type": "number",
+          "description": "[Agentforce] Increase this number for each subsequent message in a session.",
+          "minimum": 1,
+          "examples": [1, 2, 3]
+        },
+
+        "_comment_einstein": {
+          "type": "string",
+          "description": "========== EINSTEIN AI CONNECTOR =========="
+        },
+        "template": {
+          "type": "string",
+          "description": "[Einstein AI / Inference] Prompt template for the operation.",
+          "examples": ["You are a customer satisfaction agent who analyses feedback."]
+        },
+        "instructions": {
+          "type": "string",
+          "description": "[Einstein AI / Inference] Instructions for the LLM, outlining the goals of the task.",
+          "examples": ["If feedback is negative, open a case. If positive, thank the customer."]
+        },
+        "dataset": {
+          "type": "string",
+          "description": "[Einstein AI] Dataset for the LLM to evaluate using the template and instructions.",
+          "examples": ["The training was amazing, we learned so much."]
+        },
+        "data": {
+          "type": "string",
+          "description": "[Inference] Primary user input for tool execution or agent processing.",
+          "examples": ["Process this sales order for customer #12345"]
+        },
+        "modelApiName": {
+          "type": "string",
+          "description": "[Einstein AI] API model name that interacts with the LLM.",
+          "enum": [
+            "sfdc_ai__DefaultGPT4Omni",
+            "sfdc_ai__DefaultGPT4OmniMini",
+            "sfdc_ai__DefaultGPT41",
+            "sfdc_ai__DefaultGPT41Mini",
+            "sfdc_ai__DefaultGPT5",
+            "sfdc_ai__DefaultGPT5Mini",
+            "sfdc_ai__DefaultBedrockAnthropicClaude45Sonnet",
+            "sfdc_ai__DefaultVertexAIGemini25Flash001"
+          ],
+          "examples": ["sfdc_ai__DefaultGPT4Omni"]
+        },
+        "probability": {
+          "type": "number",
+          "description": "[Einstein AI] Probability of the model API staying accurate (0-1).",
+          "minimum": 0,
+          "maximum": 1,
+          "examples": [0.8, 0.9]
+        },
+        "locale": {
+          "type": "string",
+          "description": "[Einstein AI] Localization information (default locale, input/output locales).",
+          "examples": ["en_US", "de_DE", "es_ES"]
+        },
+        "prompt": {
+          "type": "string",
+          "description": "[Einstein AI / Inference] Plain text prompt to send to the LLM.",
+          "examples": ["What are the benefits of API-led connectivity?"]
+        },
+        "messages": {
+          "type": "string",
+          "description": "[Einstein AI / Inference] JSON string containing conversation messages array with role and content.",
+          "examples": [
+            "[{\"role\":\"user\",\"content\":\"Can you give me a recipe for cherry pie?\"},{\"role\":\"assistant\",\"content\":\"Certainly! I have a great recipe.\"}]"
+          ]
+        },
+        "inputStream": {
+          "type": "string",
+          "description": "[Einstein AI] Base64 encoded file data or URL string (depending on fileType).",
+          "examples": ["JVBERi0xLjQKJeLjz9MK...", "https://example.com/document.pdf"]
+        },
+        "fileType": {
+          "type": "string",
+          "description": "[Einstein AI] Type of document to ingest.",
+          "enum": ["CSV", "PDF", "TEXT", "URL"],
+          "examples": ["PDF"]
+        },
+        "optionType": {
+          "type": "string",
+          "description": "[Einstein AI] How to split the document prior to ingestion.",
+          "enum": ["FULL", "PARAGRAPH"],
+          "examples": ["FULL"]
+        },
+        "text": {
+          "type": "string",
+          "description": "[Einstein AI / Vectors / Inference] Text to generate embeddings from or to analyze.",
+          "examples": ["In the modern world, technological advancements are essential."]
+        },
+        "embeddingName": {
+          "type": "string",
+          "description": "[Einstein AI] Name of the embedding model to use.",
+          "enum": [
+            "sfdc_ai__DefaultOpenAITextEmbeddingAda_002",
+            "sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002"
+          ],
+          "examples": ["sfdc_ai__DefaultOpenAITextEmbeddingAda_002"]
+        },
+
+        "_comment_vectors": {
+          "type": "string",
+          "description": "========== VECTORS CONNECTOR =========="
+        },
+        "texts": {
+          "type": "string",
+          "description": "[Vectors] JSON string containing array of texts to generate embeddings from.",
+          "examples": [
+            "[\"In the modern world, technological advancements have become essential.\"]"
+          ]
+        },
+        "modelName": {
+          "type": "string",
+          "description": "[Vectors] Embedding model (deployment) name to use.",
+          "examples": ["text-embedding-3-large", "text-embedding-ada-002"]
+        },
+        "maxSegmentSize": {
+          "type": "number",
+          "description": "[Vectors] Maximum size of a segment in characters.",
+          "minimum": 100,
+          "examples": [1000, 2000]
+        },
+        "maxOverlapSize": {
+          "type": "number",
+          "description": "[Vectors] Maximum overlap between segments in characters.",
+          "minimum": 0,
+          "examples": [100, 200]
+        },
+        "textSegmentsAndEmbeddings": {
+          "type": "string",
+          "description": "[Vectors] JSON string containing text segments and embeddings to add/query. Can be array or single object.",
+          "examples": [
+            "[{\"text\":\"Sample text\",\"embedding\":[0.1,0.2,0.3]}]"
+          ]
+        },
+        "metadataEntries": {
+          "type": "string",
+          "description": "[Vectors] JSON string containing custom metadata key-value pairs to add to the vector store.",
+          "examples": ["{\"source\":\"sales_data\",\"year\":\"2024\"}"]
+        },
+        "maxResults": {
+          "type": "number",
+          "description": "[Vectors] Maximum number of results to retrieve.",
+          "minimum": 1,
+          "default": 5,
+          "examples": [5, 10, 20]
+        },
+        "minScore": {
+          "type": "number",
+          "description": "[Vectors] Minimum score used to filter retrieved results (0-1).",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.7,
+          "examples": [0.7, 0.8, 0.9]
+        },
+        "metadataConditions": {
+          "type": "string",
+          "description": "[Vectors] SQL-like condition for filtering results.",
+          "examples": ["index=1 AND CONTAINS(file_name,'example.pdf')"]
+        },
+        "metadataCondition": {
+          "type": "string",
+          "description": "[Vectors] SQL-like condition for filtering embeddings to remove.",
+          "examples": ["file_name='example.pdf'"]
+        },
+        "retrieveEmbeddings": {
+          "type": "boolean",
+          "description": "[Vectors] Flag to indicate whether embeddings should be retrieved.",
+          "default": false
+        },
+        "pageSize": {
+          "type": "number",
+          "description": "[Vectors] Page size used when querying the vector store.",
+          "minimum": 1,
+          "default": 5000,
+          "examples": [1000, 5000, 10000]
+        },
+        "ids": {
+          "type": "string",
+          "description": "[Vectors] JSON string containing array of embedding IDs to remove.",
+          "examples": ["[\"id1\",\"id2\",\"id3\"]"]
+        },
+        "document": {
+          "type": "string",
+          "description": "[Vectors] Raw binary or Base64-encoded content of document to parse.",
+          "examples": ["JVBERi0xLjQKJeLjz9MK..."]
+        },
+        "documentParser": {
+          "type": "string",
+          "description": "[Vectors] Document parser type to use.",
+          "enum": ["multiformat", "text"],
+          "examples": ["multiformat"]
+        },
+
+        "_comment_inference": {
+          "type": "string",
+          "description": "========== INFERENCE CONNECTOR =========="
+        },
+        "additionalRequestAttributes": {
+          "type": "string",
+          "description": "[Inference] JSON string containing optional request attributes to fine-tune the inference request.",
+          "examples": ["{\"temperature\":0.7,\"top_p\":0.9}"]
+        },
+        "tools": {
+          "type": "string",
+          "description": "[Inference] JSON string containing tools configuration array.",
+          "examples": [
+            "[{\"type\":\"function\",\"function\":{\"name\":\"get_weather\",\"description\":\"Get weather for a location\",\"parameters\":{\"type\":\"object\",\"properties\":{\"location\":{\"type\":\"string\"}}}}}]"
+          ]
+        },
+        "image": {
+          "type": "string",
+          "description": "[Inference] Image URL or Base64 string for vision operations.",
+          "examples": ["https://example.com/image.png", "data:image/png;base64,..."]
+        },
+
+        "_comment_a2a": {
+          "type": "string",
+          "description": "========== A2A CONNECTOR =========="
+        },
+        "useExtendedCard": {
+          "type": "boolean",
+          "description": "[A2A] When true, fetches the authenticated extended agent card.",
+          "default": false
+        },
+        "additionalProperties": {
+          "type": "string",
+          "description": "[A2A / MCP] JSON string containing additional properties to include with the request.",
+          "examples": ["{\"auth_token\":\"abc123\",\"custom_header\":\"value\"}"]
+        },
+        "taskQuery": {
+          "type": "string",
+          "description": "[A2A] Query parameter to identify the task (typically task ID).",
+          "examples": ["task-123-abc"]
+        },
+        "taskId": {
+          "type": "string",
+          "description": "[A2A] Unique identifier for the task to cancel.",
+          "examples": ["task-456-def"]
+        },
+        "taskPushNotificationConfig": {
+          "type": "string",
+          "description": "[A2A] JSON string containing push notification configuration to associate with a task.",
+          "examples": [
+            "{\"url\":\"https://webhook.example.com/notify\",\"events\":[\"completed\",\"failed\"]}"
+          ]
+        },
+        "getPushConfigParams": {
+          "type": "string",
+          "description": "[A2A] JSON string containing object for fetching push notification configuration.",
+          "examples": [
+            "{\"id\":\"task-789\",\"pushNotificationConfigId\":\"config-123\"}"
+          ]
+        },
+
+        "_comment_idp": {
+          "type": "string",
+          "description": "========== IDP CONNECTOR =========="
+        },
+        "actionId": {
+          "type": "string",
+          "description": "[IDP] The unique identifier (UUID) of the published Document Action.",
+          "format": "uuid",
+          "examples": ["90c3e286-72b5-42ca-92d0-22f86ea8d766"]
+        },
+        "versionSemantic": {
+          "type": "string",
+          "description": "[IDP] The semantic version of the action.",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "examples": ["1.2.0", "2.0.1"]
+        },
+        "fileContent": {
+          "type": "string",
+          "description": "[IDP] Base64-encoded file content to process.",
+          "examples": ["JVBERi0xLjQKJeLjz9MK..."]
+        },
+        "fileName": {
+          "type": "string",
+          "description": "[IDP] Name of the file being submitted, including extension.",
+          "examples": ["invoice.pdf", "contract.docx"]
+        },
+        "callbackUrl": {
+          "type": "string",
+          "description": "[IDP] Optional callback URL to notify upon completion.",
+          "format": "uri",
+          "examples": ["https://webhook.example.com/idp-callback"]
+        },
+        "headerXSfdcCoreTenantId": {
+          "type": "string",
+          "description": "[IDP] Optional: Use a different Salesforce Org to execute document actions.",
+          "examples": ["00D000000000062"]
+        },
+        "executionId": {
+          "type": "string",
+          "description": "[IDP] The unique identifier (UUID) for a document processing execution.",
+          "format": "uuid",
+          "examples": ["c3e98654-4f2a-4b3c-8d1e-9a7b6c5d4e3f"]
+        },
+        "valueOnly": {
+          "type": "boolean",
+          "description": "[IDP] Only keep the extracted value, remove confidenceScore and geometry.",
+          "default": true
+        },
+        "page": {
+          "type": "number",
+          "description": "[IDP] Zero-based page index for pagination.",
+          "minimum": 0,
+          "default": 0,
+          "examples": [0, 1, 2]
+        },
+        "size": {
+          "type": "number",
+          "description": "[IDP] Number of items per page.",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20,
+          "examples": [10, 20, 50]
+        },
+        "sort": {
+          "type": "string",
+          "description": "[IDP] Sorting criteria (field,direction).",
+          "enum": [
+            "UPDATED_AT_DESC",
+            "UPDATED_AT_ASC",
+            "NAME_DESC",
+            "NAME_ASC",
+            "TYPE_DESC",
+            "TYPE_ASC",
+            "VERSION_DESC"
+          ],
+          "examples": ["UPDATED_AT_DESC", "NAME_ASC"]
+        },
+        "contents": {
+          "type": "string",
+          "description": "[IDP] JSON string containing updated data for review tasks or reviewers.",
+          "examples": ["{\"reviewers\":[\"user1\",\"user2\"]}"]
+        },
+
+        "_comment_mcp": {
+          "type": "string",
+          "description": "========== MCP CONNECTOR =========="
+        },
+        "toolName": {
+          "type": "string",
+          "description": "[MCP] Name of the tool to invoke in the remote MCP server.",
+          "examples": ["get-weather", "create-ticket", "search-database"]
+        },
+        "arguments": {
+          "type": "string",
+          "description": "[MCP] JSON string containing the tool's input arguments.",
+          "examples": [
+            "{\"location\":\"San Francisco\",\"units\":\"celsius\"}",
+            "{\"query\":\"sales data\",\"limit\":10}"
+          ]
+        },
+        "uri": {
+          "type": "string",
+          "description": "[MCP] The URI of the resource to read.",
+          "examples": ["file://data/sales.csv", "db://inventory", "custom://live-feed"]
+        }
+      }
+    },
+    "enableLogging": {
+      "type": "boolean",
+      "description": "Enable execution logging to database. When false, skips all database logging for faster execution.",
+      "default": true
+    },
+    "enableValidation": {
+      "type": "boolean",
+      "description": "Enable input parameter validation. When false, skips validation checks for faster execution.",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "operationId": 1,
+      "runtimeConfigId": 3,
+      "parameters": {
+        "agentList": "0XxKa0000007qzVKAQ",
+        "bypassUser": false
+      },
+      "enableLogging": true,
+      "enableValidation": true
+    },
+    {
+      "operationId": 15,
+      "runtimeConfigId": 7,
+      "parameters": {
+        "prompt": "What are the benefits of MuleSoft?",
+        "modelApiName": "sfdc_ai__DefaultGPT4Omni",
+        "temperature": 0.8
+      }
+    },
+    {
+      "operationId": 42,
+      "runtimeConfigId": 12,
+      "parameters": {
+        "texts": "[\"Sample text for embedding generation\"]",
+        "modelName": "text-embedding-3-large",
+        "maxSegmentSize": 1000
+      }
+    },
+    {
+      "operationId": 88,
+      "runtimeConfigId": 5,
+      "parameters": {
+        "toolName": "get-customer-orders",
+        "arguments": "{\"customerId\":\"CUST-12345\",\"includeHistory\":true}"
+      }
+    }
+  ]
+}

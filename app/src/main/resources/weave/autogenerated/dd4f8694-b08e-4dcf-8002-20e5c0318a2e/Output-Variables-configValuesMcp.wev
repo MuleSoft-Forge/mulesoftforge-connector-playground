@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_dd4f8694_b08e_4dcf_8002_20e5c0318a2e_Output_Variables_configValuesMcp = Array<{|  api_name: String,   is_required: Boolean,   data_type: String|}>
+

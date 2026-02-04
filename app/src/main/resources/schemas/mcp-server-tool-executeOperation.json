@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/mcp-server-tool-executeOperation.json",
+  "title": "mcp-server-tool-executeOperation",
+  "description": "Execute a connector operation with parameters and runtime configuration",
+  "type": "object",
+  "properties": {
+    "operationKey": {
+      "type": "string",
+      "description": "Operation key to execute (e.g., 'mcp:call-tool', 'ms-inference:chat-answer-prompt', 'agentforce:run-agent')"
+    },
+    "runtimeConfigId": {
+      "type": "integer",
+      "description": "Runtime configuration ID to use for execution"
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Operation parameters as key-value pairs (e.g., {'prompt': 'Hello', 'modelApiName': 'gpt-4'})"
+    }
+  },
+  "required": ["operationKey", "runtimeConfigId"]
+}

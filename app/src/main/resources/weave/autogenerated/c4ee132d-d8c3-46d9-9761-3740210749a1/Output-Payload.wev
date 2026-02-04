@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_c4ee132d_d8c3_46d9_9761_3740210749a1_Output_Payload = {
+  executionId*: String, 
+  result*: {
+    payload: { _?: Any } {"description": "Primary response data from the connector"}, 
+    attributes?: { _?: Any } {"description": "Additional metadata from the connector"}, 
+    _?: Any
+  } {"description": "Result from the connector operation"}, 
+  status*: "success" | "error", 
+  timestamp*: String, 
+  _?: Any
+}
+

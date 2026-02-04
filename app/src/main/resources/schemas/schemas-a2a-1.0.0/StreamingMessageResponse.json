@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StreamingMessageResponse",
+  "description": "Union type for message/stream events: Task, TaskStatusUpdateEvent & TaskArtifactUpdateEvent",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Task identifier (for Task events)"
+    },
+    "taskId": {
+      "type": "string",
+      "description": "Task identifier (for status/artifact update events)"
+    },
+    "contextId": {
+      "type": "string",
+      "description": "The context the task is associated with"
+    },
+    "kind": {
+      "type": "string",
+      "description": "Type discriminator"
+    },
+    "status": {
+      "$ref": "#/definitions/TaskStatus",
+      "description": "Current status of the task"
+    },
+    "final": {
+      "type": "boolean",
+      "description": "Indicates the end of the event stream"
+    },
+    "artifact": {
+      "$ref": "#/definitions/Artifact",
+      "description": "Generated artifact"
+    },
+    "append": {
+      "type": "boolean",
+      "description": "Indicates if this artifact appends to a previous one"
+    },
+    "lastChunk": {
+      "type": "boolean",
+      "description": "Indicates if this is the last chunk of the artifact"
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "Generated artifacts (for Task events)",
+      "items": {
+        "$ref": "#/definitions/Artifact"
+      }
+    },
+    "history": {
+      "type": "array",
+      "description": "Message history (for Task events)",
+      "items": {
+        "$ref": "#/definitions/Message"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Extension metadata",
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "TaskStatus": {
+      "title": "TaskStatus",
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/TaskState"
+        },
+        "message": {
+          "$ref": "#/definitions/Message",
+          "description": "Additional status updates for client"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      }
+    },
+    "TaskState": {
+      "description": "An enumeration.",
+      "enum": [
+        "submitted",
+        "working",
+        "input-required",
+        "completed",
+        "canceled",
+        "failed",
+        "rejected",
+        "auth-required",
+        "unknown"
+      ],
+      "title": "TaskState",
+      "type": "string"
+    },
+    "Artifact": {
+      "title": "Artifact",
+      "type": "object",
+      "required": ["artifactId", "parts"],
+      "properties": {
+        "artifactId": {
+          "type": "string",
+          "description": "Unique identifier for the artifact"
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional name for the artifact"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description for the artifact"
+        },
+        "parts": {
+          "$ref": "#/definitions/Parts"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Extension metadata",
+          "additionalProperties": true
+        },
+        "extensions": {
+          "type": "array",
+          "description": "The URIs of extensions that are present or contributed to this Artifact",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "description": "Message containing task content",
+      "required": ["role", "parts", "messageId", "kind"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["user", "agent"]
+        },
+        "parts": {
+          "$ref": "#/definitions/Parts"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "message"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Parts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Part"
+      }
+    },
+    "Part": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["text", "file", "data"]
+        },
+        "text": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "file": {
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "type": "string",
+              "contentEncoding": "base64"
+            },
+            "name": {
+              "type": "string"
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "uri": {
+              "type": "string"
+            }
+          }
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+} 

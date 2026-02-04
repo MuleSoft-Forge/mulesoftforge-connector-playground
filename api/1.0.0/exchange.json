@@ -1,0 +1,13 @@
+{"main":"mulesoftforge-connector-playground.yaml",
+"name":"MuleSoftForge Connector🔌 Playground",
+"groupId":"eca25329-9592-4ff1-9054-1b08d103b991",
+"assetId":"mulesoft-connector-playground",
+"version":"1.0.0",
+"classifier":"oas",
+"tags":[],
+"descriptorVersion":"1.0.0",
+"organizationId":"eca25329-9592-4ff1-9054-1b08d103b991",
+"apiVersion":"v1",
+"originalFormatVersion":"3.0",
+"metadata":{"projectId":"26f8b989-485a-4591-af09-d4591a2d0fdf",
+"branchId":"master","commitId":"b93d30c8231e57539b11ccae94edc570c50d9920"}}

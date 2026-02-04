@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="0af7d88d-b6a4-4cdd-8efc-4a2ac56bc766" file="configuration.properties" />
+	<db:config name="Database_Config_Postgresql" doc:name="Database Config" doc:id="8971d210-120a-4da3-bfd4-efcd090329e4" >
+		<db:generic-connection url="${postgresql.url}" user="${postgresql.user}" password="${postgresql.password}" driverClassName="org.postgresql.Driver"/>
+	</db:config>
+	<configuration doc:name="Configuration" doc:id="7053b314-9ca1-462e-ad82-29094fce1d65" defaultErrorHandler-ref="global_Error_Handler" />
+	<error-handler name="global_Error_Handler" doc:id="d6c6d543-c827-4f34-9ea5-e80f3fc8db87" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="220364c1-fb7b-4e2d-b5d7-f8a2460a0cee" type="ANY" >
+			<ee:transform doc:name="RFC94" doc:id="0dd86fee-a7b6-49e6-9ab3-e1ad170bc034" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	// RFC 9457 required field: URI identifier for the problem type
+	// Use "about:blank" as default when no specific type URI is available
+	"type": "about:blank",
+	// RFC 9457 required field: Short, human-readable summary of the problem type
+	// Use the Mule error type identifier (e.g., "HTTP:CONNECTIVITY", "VALIDATION:INVALID_EMAIL")
+	title: error.errorType.identifier,
+	// RFC 9457 required field: HTTP status code
+	status: vars.httpStatus default 500,
+	// RFC 9457 optional field: Detailed explanation specific to this occurrence
+	detail: error.description default "An unexpected error occurred processing your request.",
+	// RFC 9457 optional field: URI reference identifying this specific occurrence
+	// Using correlationId as part of the instance identifier
+	instance: "/error/" ++ (correlationId default "" as String)
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

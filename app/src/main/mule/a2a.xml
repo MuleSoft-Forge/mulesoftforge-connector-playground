@@ -1,0 +1,1181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:websocket="http://www.mulesoft.org/schema/mule/websocket"
+	xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+	xmlns:ms-inference="http://www.mulesoft.org/schema/mule/ms-inference"
+	xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:a2a="http://www.mulesoft.org/schema/mule/a2a" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/a2a http://www.mulesoft.org/schema/mule/a2a/current/mule-a2a.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd
+http://www.mulesoft.org/schema/mule/ms-inference http://www.mulesoft.org/schema/mule/ms-inference/current/mule-ms-inference.xsd
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd
+http://www.mulesoft.org/schema/mule/websocket http://www.mulesoft.org/schema/mule/websocket/current/mule-websocket.xsd">
+
+
+	<!-- A2A Client Configs - One per Auth Type -->
+	
+	<!-- No Authentication -->
+	<a2a:client-config name="A2A_Client_None"
+		doc:name="A2A Client (No Auth)" doc:id="9630e63f-47b1-4d0f-83cd-b7dee275b45e">
+		<a2a:client-connection
+			serverUrl="#[((vars.runtimeConfigForConnector.serverUrl ++ vars.runtimeConfigForConnector.agentPath) default (p('mcpg.a2a.serverUrl') ++ p('mcpg.a2a.agentPath')))]"
+			requestTimeout="5" requestTimeoutUnit="MINUTES">
+		</a2a:client-connection>
+	</a2a:client-config>
+	
+	<!-- Basic Authentication -->
+	<a2a:client-config name="A2A_Client_Basic"
+		doc:name="A2A Client (Basic Auth)" doc:id="e7a8f601-ca2c-45bf-aa1a-8abd836c03a7">
+		<a2a:client-connection
+			serverUrl="#[((vars.runtimeConfigForConnector.serverUrl ++ vars.runtimeConfigForConnector.agentPath) default (p('mcpg.a2a.serverUrl') ++ p('mcpg.a2a.agentPath')))]"
+			requestTimeout="5" requestTimeoutUnit="MINUTES">
+			<a2a:authentication>
+				<http:basic-authentication 
+					username="#[vars.runtimeConfigForConnector.basicUsername]" 
+					password="#[vars.runtimeConfigForConnector.basicPassword]"/>
+			</a2a:authentication>
+		</a2a:client-connection>
+	</a2a:client-config>
+	
+	<!-- OAuth 2.0 Client Credentials -->
+	<a2a:client-config name="A2A_Client_OAuth2"
+		doc:name="A2A Client (OAuth2)" doc:id="03150a5a-50ac-4a5c-8e45-5d7383c34b70">
+		<a2a:client-connection
+			serverUrl="#[((vars.runtimeConfigForConnector.serverUrl ++ vars.runtimeConfigForConnector.agentPath) default (p('mcpg.a2a.serverUrl') ++ p('mcpg.a2a.agentPath')))]"
+			requestTimeout="5" requestTimeoutUnit="MINUTES">
+			<a2a:authentication>
+				<oauth:client-credentials-grant-type
+					clientId="#[vars.runtimeConfigForConnector.oauthClientId]"
+					clientSecret="#[vars.runtimeConfigForConnector.oauthClientSecret]"
+					tokenUrl="#[vars.runtimeConfigForConnector.oauthTokenUrl]"
+					scopes="#[vars.runtimeConfigForConnector.oauthScopes]"/>
+			</a2a:authentication>
+		</a2a:client-connection>
+	</a2a:client-config>
+
+	<a2a:client-config name="A2A_Client_MCPG"
+		doc:name="A2A Client" doc:id="cb8d6148-a123-4c15-8fa6-e0dbc2a8ab7c">
+		<a2a:client-connection
+			requestTimeout="5" requestTimeoutUnit="MINUTES" serverUrl="${mcpg.a2a.serverUrl}${mcpg.a2a.agentPath}">
+		</a2a:client-connection>
+	</a2a:client-config>
+	
+	<a2a:server-config name="A2A_Server_MCPG"
+		doc:name="A2A Server MCPG"
+		doc:id="ed75f7c2-889c-4c19-b6ed-439a7fd1dd45">
+		<a2a:connection
+			listenerConfig="mulesoftforge-connector-playground-httpListenerConfig"
+			agentPath="${mcpg.a2a.agentPath}" />
+		<a2a:agent-card >
+			<a2a:json ><![CDATA[${mcpg.a2a.card}]]></a2a:json>
+		</a2a:agent-card>
+		<a2a:history taskRepositoryObjectStore="Object_store_tasks" defaultMaxHistoryLength="10"/>
+	</a2a:server-config>
+	<os:object-store name="Object_store_tasks"
+		doc:name="Object store" doc:id="b3b83d92-200d-4910-83f3-d70b79c09653" />
+	<sub-flow name="execute-a2a" doc:id="5071738b-f826-4167-b81e-79035116394f" >
+		<choice doc:name="Choice" doc:id="8cfa617c-efa6-44f1-aaa3-41af7daeea21">
+				<when expression='#["a2a:get-card" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="db45fa12-b769-476b-9bce-df175d07a00d">
+					<choice doc:name="Auth Router" doc:id="2851c732-b782-4f9c-b5ed-be27df6e1b8d">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:get-card doc:name="A2A Client - Get Card" doc:id="c87fefa3-bde9-4e24-9943-7a5cfb20885c" useExtendedCard="#[payload.parameters.useExtendedCard default false]" config-ref="A2A_Client_Basic">
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-card>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:get-card doc:name="A2A Client - Get Card" useExtendedCard="#[payload.parameters.useExtendedCard default false]" config-ref="A2A_Client_OAuth2">
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-card>
+						</when>
+						<otherwise>
+							<a2a:get-card doc:name="A2A Client - Get Card" useExtendedCard="#[payload.parameters.useExtendedCard default false]" config-ref="A2A_Client_None">
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-card>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:send-message" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="3cb77576-a164-4891-b470-3e023061fd0f" >
+					<ee:transform doc:name="Transform Message" doc:id="2a032647-2ccd-4cda-99a8-cabc525ea326">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.message default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="2f182615-404a-40a6-a5c3-90a799f20b4f">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:send-message doc:name="A2A Client - Send Message" doc:id="1252052c-c5fc-424d-85e1-c787c7bff027" config-ref="A2A_Client_Basic">
+								<a2a:message><![CDATA[#[payload]]]></a2a:message>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:send-message>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:send-message doc:name="A2A Client - Send Message" config-ref="A2A_Client_OAuth2">
+								<a2a:message><![CDATA[#[payload]]]></a2a:message>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:send-message>
+						</when>
+						<otherwise>
+							<a2a:send-message doc:name="A2A Client - Send Message" config-ref="A2A_Client_None">
+								<a2a:message><![CDATA[#[payload]]]></a2a:message>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:send-message>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+
+			<when expression='#["a2a:send-stream-message" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="0c428106-a751-4b58-9873-b45c40db4549" >
+					<ee:transform doc:name="Transform Message" doc:id="0aeb8cd1-5c9b-4b0b-9991-164f8421dba9">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.streamMessage default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="52d8c589-882f-46bc-ada2-e17284564092" >
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]' >
+							<a2a:send-stream-message doc:name="A2A Client - Send Stream Message" doc:id="b335b450-d3bc-4181-9a72-7370001d0130" config-ref="A2A_Client_Basic" >
+								<a2a:stream-message ><![CDATA[#[payload]]]></a2a:stream-message>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="1️⃣1️⃣1️⃣ A2A Client - Send Stream Message - On Update Task Status" doc:id="c0dd43b6-6f6d-4a50-b0c8-696dc5ab15b0" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n1️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n1️⃣️ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="19491c47-935a-4324-bc09-514723b06f0b" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="2️⃣2️⃣2️⃣ A2A Client - Send Stream Message - On Update Artifact Status" doc:id="db6a0b79-e440-4649-a609-af0c04213764" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n2️️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n2️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="abd89a9a-4a86-4539-b5e5-d1d7230471e4" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:send-stream-message>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]' >
+							<a2a:send-stream-message doc:name="A2A Client - Send Stream Message" doc:id="b9532a8b-e9f5-4aa4-8725-8ab80f8e9c5f" config-ref="A2A_Client_OAuth2" >
+								<a2a:stream-message ><![CDATA[#[payload]]]></a2a:stream-message>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="1️⃣1️⃣1️⃣ A2A Client - Send Stream Message - On Update Task Status" doc:id="f568f2f1-2307-4985-869d-e02e339a3555" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n1️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n1️⃣️ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="72095ced-bc00-458d-9751-de780d4d5911" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="2️⃣2️⃣2️⃣ A2A Client - Send Stream Message - On Update Artifact Status" doc:id="655fd281-be30-4719-8b48-e9200058be82" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n2️️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n2️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="cbbbbd65-8ebb-4cf5-8b86-4657d9c3f16e" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:send-stream-message>
+						</when>
+						<otherwise >
+							<a2a:send-stream-message doc:name="A2A Client - Send Stream Message" doc:id="7c2c35e1-197c-4bb4-9f99-119fcce325c4" config-ref="A2A_Client_None" >
+								<a2a:stream-message ><![CDATA[#[payload]]]></a2a:stream-message>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="1️⃣1️⃣1️⃣ A2A Client - Send Stream Message - On Update Task Status" doc:id="f81835b5-06d3-4d50-b00d-cae1a0e63194" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n1️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n1️⃣️ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 1️⃣1️⃣1️⃣️ A2A Client - Send Stream Message - On Update Task Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="29d8abc8-8470-4340-adcb-a1ff5fa3a5bb" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="2️⃣2️⃣2️⃣ A2A Client - Send Stream Message - On Update Artifact Status" doc:id="45ad0b43-f399-4157-8c6b-1e5d8af63fc8" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n2️️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n2️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 2️⃣2️⃣2️⃣️ A2A Client - Send Stream Message - On Update Artifact Status" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="b9fdffee-b477-4e99-ba76-75ab3ab1161b" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:send-stream-message>
+						</otherwise>
+					</choice>
+				</try>
+			</when>
+
+				<when expression='#["a2a:get-task" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="bf1eb283-1878-4c48-9a76-c8706b306372" >
+					<ee:transform doc:name="Transform Message" doc:id="b3d9eefc-ffa2-46a1-a31c-5dbc558b02a7">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.taskQuery default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="6c60e261-6a09-4ae7-83dd-3859f99ab822">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:get-task doc:name="A2A Client - Get Task" doc:id="7a5ee14e-a18c-4bcc-a298-2d0c7604059f" config-ref="A2A_Client_Basic">
+								<a2a:task-query><![CDATA[#[payload]]]></a2a:task-query>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-task>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:get-task doc:name="A2A Client - Get Task" config-ref="A2A_Client_OAuth2">
+								<a2a:task-query><![CDATA[#[payload]]]></a2a:task-query>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-task>
+						</when>
+						<otherwise>
+							<a2a:get-task doc:name="A2A Client - Get Task" config-ref="A2A_Client_None">
+								<a2a:task-query><![CDATA[#[payload]]]></a2a:task-query>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-task>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:cancel-task" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="b418f7cf-83c2-4ee7-9deb-bde456b72cab" >
+					<ee:transform doc:name="Transform Message" doc:id="5ea81184-58b7-45d1-9b96-424c96cff208">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.taskId default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="2c2576a0-19e9-4606-9e39-fb285eb661fa">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:cancel-task doc:name="A2A Client - Cancel Task" doc:id="d1828f0f-ca6f-4374-9741-cf3ad9b7f5ea" config-ref="A2A_Client_Basic">
+								<a2a:task-id><![CDATA[#[payload]]]></a2a:task-id>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:cancel-task>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:cancel-task doc:name="A2A Client - Cancel Task" config-ref="A2A_Client_OAuth2">
+								<a2a:task-id><![CDATA[#[payload]]]></a2a:task-id>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:cancel-task>
+						</when>
+						<otherwise>
+							<a2a:cancel-task doc:name="A2A Client - Cancel Task" config-ref="A2A_Client_None">
+								<a2a:task-id><![CDATA[#[payload]]]></a2a:task-id>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:cancel-task>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:set-push-notification-config" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="0c1a9a09-6f87-4bcb-a2c9-4b607376fa8a" >
+					<ee:transform doc:name="Transform Message" doc:id="21548e64-6493-4565-a2a9-db758108d8d3">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.taskPushNotificationConfig default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="10dac33e-f299-4060-813b-601a1ce6757f">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:set-push-notification-config doc:name="A2A Client - Set Push Notification Config" doc:id="73210f15-0d4d-434b-8638-3209f835f21b" config-ref="A2A_Client_Basic">
+								<a2a:task-push-notification-config><![CDATA[#[payload]]]></a2a:task-push-notification-config>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:set-push-notification-config>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:set-push-notification-config doc:name="A2A Client - Set Push Notification Config" config-ref="A2A_Client_OAuth2">
+								<a2a:task-push-notification-config><![CDATA[#[payload]]]></a2a:task-push-notification-config>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:set-push-notification-config>
+						</when>
+						<otherwise>
+							<a2a:set-push-notification-config doc:name="A2A Client - Set Push Notification Config" config-ref="A2A_Client_None">
+								<a2a:task-push-notification-config><![CDATA[#[payload]]]></a2a:task-push-notification-config>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:set-push-notification-config>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:get-push-notification-config" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="29cb5a27-c994-476c-ac64-e8b6da5d5312" >
+					<ee:transform doc:name="Transform Message" doc:id="8dde80a9-b1cd-4483-95e5-86cc098c1e89">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.getPushConfigParams default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="5ea73f83-1dc4-4166-a71b-3a9b1a75c665">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:get-push-notification-config doc:name="A2A Client - Get Push Notification Config" doc:id="6f803716-a2ac-4b3a-b155-d843443d83b5" config-ref="A2A_Client_Basic">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-push-notification-config>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:get-push-notification-config doc:name="A2A Client - Get Push Notification Config" config-ref="A2A_Client_OAuth2">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-push-notification-config>
+						</when>
+						<otherwise>
+							<a2a:get-push-notification-config doc:name="A2A Client - Get Push Notification Config" config-ref="A2A_Client_None">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:get-push-notification-config>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:list-push-notification-configs" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="ebe4409c-4ba6-4db3-96e7-a5223bc697f8" >
+					<ee:transform doc:name="Transform Message" doc:id="b4dcba2c-38c3-42ab-8326-dcc1c9b07c5d">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.getPushConfigParams default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="3e7fcf25-2364-4c20-b08a-2139bb66b55f">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:list-push-notification-configs doc:name="A2A Client - List Push Notification Configs" doc:id="412451eb-1b46-4376-a687-5175277945c3" config-ref="A2A_Client_Basic">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:list-push-notification-configs>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:list-push-notification-configs doc:name="A2A Client - List Push Notification Configs" config-ref="A2A_Client_OAuth2">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:list-push-notification-configs>
+						</when>
+						<otherwise>
+							<a2a:list-push-notification-configs doc:name="A2A Client - List Push Notification Configs" config-ref="A2A_Client_None">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:list-push-notification-configs>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+				<when expression='#["a2a:delete-push-notification-config" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="94716cc3-d1bc-498a-be03-e1fa3e4ce001" >
+					<ee:transform doc:name="Transform Message" doc:id="6835f173-7b50-4738-a52d-3eb8aba05b5c">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.deletePushConfigParams default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="f49a4638-0042-46dd-9dca-5af92cc99d10">
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]'>
+							<a2a:delete-push-notification-config doc:name="A2A Client - Delete Push Notification Config" doc:id="d0a11c12-f349-48cb-964e-5d439f1cb4d2" config-ref="A2A_Client_Basic">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:delete-push-notification-config>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]'>
+							<a2a:delete-push-notification-config doc:name="A2A Client - Delete Push Notification Config" config-ref="A2A_Client_OAuth2">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:delete-push-notification-config>
+						</when>
+						<otherwise>
+							<a2a:delete-push-notification-config doc:name="A2A Client - Delete Push Notification Config" config-ref="A2A_Client_None">
+								<a2a:get-push-config-params><![CDATA[#[payload]]]></a2a:get-push-config-params>
+								<a2a:additional-properties><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+							</a2a:delete-push-notification-config>
+						</otherwise>
+					</choice>
+				</try>
+				</when>
+			<when expression='#["a2a:task-resubscribe" == vars.operation.operation_key]'>
+				<try doc:name="Try" doc:id="f2a88360-098e-4d14-a6a4-8fc6c7128e8c" >
+					<ee:transform doc:name="Transform Message" doc:id="50461eaa-2483-4c41-9c46-9d047ed4e073">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parameters.taskIdParams default "{}", "application/json")]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<choice doc:name="Auth Router" doc:id="b917074f-3776-4c74-9554-aae9fc38b072" >
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "basic"]' >
+							<a2a:task-resubscribe doc:name="A2A Client - Task Resubscribe" doc:id="6a6c9971-1d01-40e6-b513-61185f6d6a0a" config-ref="A2A_Client_Basic" >
+								<a2a:task-id-params ><![CDATA[#[payload]]]></a2a:task-id-params>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" doc:id="5af9039b-f364-4579-9634-cde931721687" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n️ 3️⃣Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 3️⃣Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 3️⃣3️⃣3️⃣️️ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="51d9a995-163b-4522-9532-e36e5d28d8c4" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" doc:id="e8acc50c-16e0-4f1c-ac59-b35f19f22e21" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n 4️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 4️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 4️⃣4️⃣4️️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="83e673c2-bfc9-4cac-9231-226797b66e42" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:task-resubscribe>
+						</when>
+						<when expression='#[(vars.runtimeConfigForConnector.authType default "none") == "oauth2-client-credentials"]' >
+							<a2a:task-resubscribe doc:name="A2A Client - Task Resubscribe" doc:id="74cb23f7-bf6f-462d-9917-af69ee458708" config-ref="A2A_Client_OAuth2" >
+								<a2a:task-id-params ><![CDATA[#[payload]]]></a2a:task-id-params>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" doc:id="d4ec758c-c4b5-4527-b4d7-7b3493cedc1a" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n️ 3️⃣Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 3️⃣Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 3️⃣3️⃣3️⃣️️ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="d9a40aa1-9b04-4596-b1ed-c00f3e33a3e6" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" doc:id="fe0d5c2c-a84d-45a9-96ab-5bc083c071f9" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n 4️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 4️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 4️⃣4️⃣4️️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="7d3e4c9c-dbdb-4c81-81af-85ae290d0bc1" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:task-resubscribe>
+						</when>
+						<otherwise >
+							<a2a:task-resubscribe doc:name="A2A Client - Task Resubscribe" doc:id="affadf71-1afb-48d8-8f75-fdb42ee49954" config-ref="A2A_Client_None" >
+								<a2a:task-id-params ><![CDATA[#[payload]]]></a2a:task-id-params>
+								<a2a:additional-properties ><![CDATA[#[if (!isEmpty(payload.parameters.additionalProperties)) read(payload.parameters.additionalProperties, "application/json") else {}]]]></a2a:additional-properties>
+								<a2a:on-task-status-update >
+									<logger level="INFO" doc:name="3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" doc:id="83c9f588-3fb6-494d-a9cc-c65d16d1bba3" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 3️⃣3️⃣3️⃣ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n️ 3️⃣Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 3️⃣Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 3️⃣3️⃣3️⃣️️ A2A Client - Task Resubscribe - On task Status Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="71ea227d-4977-4c60-a91c-806eebfceafd" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-status-update>
+								<a2a:on-task-artifact-update >
+									<logger level="INFO" doc:name="4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" doc:id="2b19219d-9ec2-4156-a0bb-e39deedd7a49" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 4️⃣4️⃣4️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n 4️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n 4️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 4️⃣4️⃣4️️⃣ A2A Client - Task Resubscribe - On Task Artifact Update" &#10;++ "\n\n"]' />
+									<websocket:send doc:name="Send" doc:id="9adc9a0f-bf20-448b-a06a-e15d8f1bd534" config-ref="WebSockets_Config" socketId="#[vars.socketId]" />
+								</a2a:on-task-artifact-update>
+							</a2a:task-resubscribe>
+						</otherwise>
+					</choice>
+				</try>
+			</when>
+			<otherwise>
+							<raise-error doc:name="Raise error" doc:id="e965af35-02a9-4dbd-8982-b1d45f6905e5" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported" />
+						</otherwise>
+					</choice>
+		<ee:transform doc:name="Transform to ExecutionResponse" doc:id="d98baa6f-cb08-45b4-bc34-be39294ea24b">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+	</sub-flow>
+	<flow name="mcpg-a2a-server-push-notification-listener" doc:id="99a8c5a2-37ed-46a0-88b7-ff29916b53da">
+		<a2a:push-notification-config-listener doc:name="A2A Server - On Push Notification Set Listener" doc:id="86a53571-cf38-470b-a716-d8c73fa9e022" config-ref="A2A_Server_MCPG" />
+		<logger level="INFO" doc:name="🫸🫸🫸 A2A Server - On Push Notification Set Listener" doc:id="9619f5a2-f42e-4b07-842a-efdfbc3198f3" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 🫸🫸🫸  A2A Server - On Push Notification Set Listener" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n🫸 Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n🫸 Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🫸🫸🫸 A A2A Server - On Push Notification Set Listener" &#10;++ "\n\n"]' />
+		<ee:transform doc:name="Transform Message" doc:id="50fd91f6-8837-4325-b842-72b92d56656c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    payload: payload,
+    attributes: attributes default {}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mcpg-a2a-server-on-task-stream-listener" doc:id="9ac3331c-9f95-4449-a9c6-3c87a955d82f">
+		<a2a:task-stream-listener doc:name="A2A Server - On Task Stream Listener" doc:id="4e55c862-0c83-4903-a178-75493516b91b" config-ref="A2A_Server_MCPG" />
+		<logger level="INFO" doc:name="🏞️🏞️🏞️ A2A Server - On Task Stream Listener" doc:id="948bc7ea-ab43-4d0c-8883-db8f0b33bf59" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 🏞️🏞️🏞️ A2A Server - On Task Stream Listener" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n🏞️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n🏞️ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🏞️🏞️🏞️ A2A Server - On Task Stream Listener" &#10;++ "\n\n"]' />
+		<set-variable value="${mcpg.a2a.card}" doc:name="agentCard" doc:id="bda6fc50-bed6-48d8-a15f-cc869c2d270a" variableName="agentCard" mimeType="application/json" />
+		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;payload.configuration.blocking default true]" doc:name="isBlocking [default true]" doc:id="d7b96154-5ad7-4c3c-9164-ad293dd65f7a" variableName="isBlocking" />
+		<set-variable value="#[true]" doc:name="isStream" doc:id="eab83c78-7f24-4d1a-95c3-0755219b2b37" variableName="isStream" />
+		<set-variable value="#[now()]" doc:name="startTime" doc:id="2877a662-da0e-44f2-a7df-72e22cf487c8" variableName="startTime" />
+		<flow-ref doc:name="a2a-server-logic" doc:id="7dcde45b-9813-41e6-8dd1-8fdace7459d9" name="mcpg-a2a-server-logic" />
+	</flow>
+	<flow name="mcpg-a2a-server-listener" doc:id="a54438e4-b05d-41ae-b2a6-fa66aa70c7de" >
+
+		<a2a:task-listener doc:name='A2A Server - Task Listener' 
+		doc:id="4e182a04-32d1-4bd5-8539-97a8c9c63763" 
+		config-ref="A2A_Server_MCPG"/>
+		<logger level="INFO" doc:name="🔄🔄🔄 A2A Server - Task Listener" doc:id="1e9908dd-0c5e-4aa0-8e41-343115ca8b97" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 🔄🔄🔄 A2A Server - Task Listener" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n🔄 Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n🔄 Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 🔄🔄🔄 A2A Server - Task Listener" &#10;++ "\n\n"]' />
+		<set-variable value="${mcpg.a2a.card}" doc:name="agentCard" doc:id="345cf1e1-0667-4f81-836c-109ed3ee7130" variableName="agentCard" mimeType="application/json"/>
+		<set-variable value="#[%dw 2.0&#10;output application/java&#10;---&#10;payload.configuration.blocking default true]" doc:name="isBlocking [default true]" doc:id="9b502085-2e99-41cb-8b06-94eafe79f2e7" variableName="isBlocking"/>
+		<set-variable value="#[false]" doc:name="isStream" doc:id="04ca0960-05b1-479b-86bc-51a9def60bfa" variableName="isStream"/>
+		<set-variable value="#[now()]" doc:name="startTime" doc:id="86586216-61e6-4134-a93f-751535501049" variableName="startTime" />
+		<flow-ref doc:name="a2a-request-attributes" doc:id="35c0427c-9ccf-4fcc-b424-98397f565a16" name="mcpg-a2a-server-logic" />
+	</flow>
+	<sub-flow name="mcpg-a2a-server-logic" doc:id="5d1029c9-4c8f-453f-8581-83ef2a36feb2">
+		<choice doc:name="Choice" doc:id="16e44fee-90ad-4d03-b3a6-48c9655c5a1b">
+			<when expression="#[vars.isBlocking == false and vars.isStream == false]">
+				<logger level="INFO" doc:name="1️⃣1️⃣1️⃣ message/send - BlockingFalse" doc:id="aa3a79d0-c505-4dc7-b91d-ad71a6f391e9" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 1️⃣1️⃣1️⃣️ message/send - BlockingFalse" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n1️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n1️⃣️ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n 1️⃣1️⃣1️⃣️ message/send - BlockingFalse" &#10;++ "\n\n"]' />
+				<mcp:list-tools doc:name="MCP Client - List Tools" doc:id="79d0dcc8-d0ef-4430-89a4-2f12785df5f1" config-ref="MCP_Client_StreamableHttp_MCPG" target="listMcpTools" />
+				<ee:transform doc:name="MCP List Tools / OpenAI Function  Calling" doc:id="91d49e9f-1d64-4ccb-a383-1309b0727ad4" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="functionCalling" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.listMcpTools map {
+  "type": "function",
+  "function": {
+    "name": $.name,
+    "description": $.description,
+    "parameters": read($.inputSchema, "application/json")
+  }
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="472497f7-f372-4ff9-971e-4c91a3910f37" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="reason" >
+					<ms-inference:template ><![CDATA[You are an AI assistant that matches user requests to available skills.
+
+IMPORTANT: When extracting parameters, use the EXACT text provided by the user.
+Do not correct, modify, or interpret technical identifiers like Maven artifact IDs.]]></ms-inference:template>
+					<ms-inference:instructions ><![CDATA[Analyze the user's request and determine:
+1. Does it match one of the available skills/tools?
+2. If yes, which one is the best match?
+3. Extract all relevant parameters from the request
+4. If no match, do not call any tool
+5. Critical If no match found respond with only "NO_TOOL_MATCH"
+
+
+CRITICAL RULES FOR PARAMETER EXTRACTION:
+- Extract parameters EXACTLY as provided by the user
+- DO NOT correct spelling, grammar, or format
+- DO NOT interpret or invent data
+- DO NOT autocomplete partial values
+- Preserve exact case, hyphens, underscores, and special characters
+- If user provides "ule4-agentforce-connector", use "ule4-agentforce-connector" NOT "mule4-agentforce-connector"
+- Use raw data verbatim - do not standardize or normalize
+
+Guidelines:
+- Match intent based on skill descriptions
+- Be precise - only select a tool if there's a clear match
+- Extract technical IDs, Maven artifact names, and codes character-for-character
+
+PARAMETER EXTRACTION RULES:
+- User says: "ule4-agentforce-connector" → Extract: "ule4-agentforce-connector" 
+- User says: "mule4-agentforce-connector" → Extract: "mule4-agentforce-connector"
+- DO NOT fix typos or autocomplete
+- DO NOT standardize formats
+- Copy values character-by-character as-is]]></ms-inference:instructions>
+					<ms-inference:data ><![CDATA[#[%dw 2.0
+output application/json
+---
+((payload.message.parts default []) map ((p) -> p.text default "") joinBy " ")]]]></ms-inference:data>
+					<ms-inference:tools ><![CDATA[#[vars.functionCalling]]]></ms-inference:tools>
+				</ms-inference:tools-native-template>
+				<choice doc:name="Choice" doc:id="5535937f-5e48-469c-ab9b-2e68ba401c88" >
+					<when expression='#[vars.reason.response == "NO_TOOL_MATCH"]' doc:id="e4d9dfbd-ca38-478a-a734-0d8ab382d4f5" >
+						<ee:transform doc:name="Create Message Response" doc:id="1cab6d93-a8d6-47c1-9323-616ee530dbf0" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var userSaid = (payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " "
+var startTime = now()
+---
+{
+  kind: "message",
+  messageId: "msg-error-" ++ uuid(), //Server generates NEW messageId for responses
+  role: "agent",
+  contextId: attributes.contextId,
+  taskId: attributes.taskId,
+  referenceTaskIds: [],
+  parts: [
+    {
+      kind: "text",
+      text: "❌ I don't have a skill for that request.\n\n🎯 I specialize in MuleSoftForge Connector Playground operations.\n\n✅ My available skills are:\n\n1️⃣ **List Connectors** - View all available connectors\n2️⃣ **Search Operations** - Find connector operations\n3️⃣ **Get Operation Schema** - View operation parameters\n4️⃣ **Execute Operation** - Run a connector operation\n5️⃣ **Update Connector Status** - Enable/disable connectors\n\n💡 Please ask me about connector management instead.",
+      metadata: {
+        formatting: "markdown",
+        sentiment: "helpful",
+        errorCategory: "NO_MATCHING_SKILL"
+      }
+    },
+    {
+      kind: "data",
+      data: {
+        errorCode: "SKILL_NOT_FOUND",
+        errorType: "CLIENT_ERROR",
+        requestedAction: userSaid,
+        availableSkills: [
+          {id: "list-connectors", name: "List Connectors"},
+          {id: "search-operations", name: "Search Operations"},
+          {id: "get-operation-schema", name: "Get Operation Schema"},
+          {id: "execute-operation", name: "Execute Operation"},
+          {id: "update-connector-status", name: "Update Connector Status"}
+        ],
+        timestamp: now(),
+        responseTime: "5ms"
+      },
+      metadata: {
+        partType: "structured-error-details",
+        machineReadable: true
+      }
+    }
+  ],
+  metadata: {
+    agent: {
+      name: "MuleSoftForge Connector Playground Agent",
+      version: "1.0.0"
+    },
+    request: {
+      originalText: userSaid,
+      language: "en"
+    },
+    response: {
+      "type": "error",
+      errorCode: "SKILL_NOT_FOUND",
+      retryable: false
+    },
+    processing: {
+      startTime: vars.startTime,
+      endTime: now(),
+      durationMs: now() - vars.startTime
+    },
+    observability: {
+      traceId: "trace-" ++ uuid(),
+      correlationId: correlationId
+    }
+  },
+  extensions: [
+    "https://mulesoft.com/a2a/extensions/rich-formatting/v1",
+    "https://mulesoft.com/a2a/extensions/structured-errors/v1"
+  ]
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<otherwise >
+						<ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="f06d6ef6-abf0-4e83-af6a-71ead5774575" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="mcp" >
+							<ms-inference:mcp-config-references >
+								<ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_MCPG" />
+							</ms-inference:mcp-config-references>
+							<ms-inference:template ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:template>
+							<ms-inference:instructions ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:instructions>
+							<ms-inference:data ><![CDATA[#[%dw 2.0
+output text
+---
+write(vars.reason.tools[0].function)]]]></ms-inference:data>
+						</ms-inference:mcp-tools-native-template>
+						<ee:transform doc:name="Message Response" doc:id="f8fc0dbf-41d7-4f3e-9268-ef56953febcc" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var generatedId = "response-" ++ uuid()
+
+var userSaid = ((payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " ") as String
+                 
+var agentResponse = (vars.mcp.toolsExecutionReport[0].result.contents[0].text default "No response") as String
+
+---
+{
+    kind: "message",
+    messageId: generatedId,
+    role: "agent",
+    parts: [
+      {
+        kind: "text",
+        text: "You asked: " ++ userSaid ++ "\n\nAgent response: " ++ agentResponse
+      }
+    ]
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			</when>
+			<when expression="#[vars.isBlocking == true and vars.isStream == false]">
+				<logger level="INFO" doc:name="2️⃣2️⃣2️⃣ message/send - BlockingTrue" doc:id="aa8d47ca-02cd-4dd6-904b-2f3ad50f7b2a" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n 2️⃣2️⃣2️⃣ message/send - BlockingTrue" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n2️️⃣️ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n2️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n2️⃣2️⃣2️⃣ message/send - BlockingTrue" &#10;++ "\n\n"]' />
+				<mcp:list-tools doc:name="MCP Client - List Tools" doc:id="1edab251-a77d-4c9b-9c62-d130dc1a5c01" config-ref="MCP_Client_StreamableHttp_MCPG" target="listMcpTools" />
+				<ee:transform doc:name="MCP List Tools / OpenAI Function  Calling" doc:id="5f31e69a-cc92-4469-b484-26690bf8cfa3">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="functionCalling"><![CDATA[%dw 2.0
+output application/json
+---
+vars.listMcpTools map {
+  "type": "function",
+  "function": {
+    "name": $.name,
+    "description": $.description,
+    "parameters": read($.inputSchema, "application/json")
+  }
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="50fb700b-f10d-40af-b7f6-48febefbd1b8" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="reason">
+			<ms-inference:template><![CDATA[You are an AI assistant that matches user requests to available skills.
+
+IMPORTANT: When extracting parameters, use the EXACT text provided by the user.
+Do not correct, modify, or interpret technical identifiers like Maven artifact IDs.]]></ms-inference:template>
+			<ms-inference:instructions><![CDATA[Analyze the user's request and determine:
+1. Does it match one of the available skills/tools?
+2. If yes, which one is the best match?
+3. Extract all relevant parameters from the request
+4. If no match, do not call any tool
+5. Critical If no match found respond with only "NO_TOOL_MATCH"
+
+
+CRITICAL RULES FOR PARAMETER EXTRACTION:
+- Extract parameters EXACTLY as provided by the user
+- DO NOT correct spelling, grammar, or format
+- DO NOT interpret or invent data
+- DO NOT autocomplete partial values
+- Preserve exact case, hyphens, underscores, and special characters
+- If user provides "ule4-agentforce-connector", use "ule4-agentforce-connector" NOT "mule4-agentforce-connector"
+- Use raw data verbatim - do not standardize or normalize
+
+Guidelines:
+- Match intent based on skill descriptions
+- Be precise - only select a tool if there's a clear match
+- Extract technical IDs, Maven artifact names, and codes character-for-character
+
+PARAMETER EXTRACTION RULES:
+- User says: "ule4-agentforce-connector" → Extract: "ule4-agentforce-connector" 
+- User says: "mule4-agentforce-connector" → Extract: "mule4-agentforce-connector"
+- DO NOT fix typos or autocomplete
+- DO NOT standardize formats
+- Copy values character-by-character as-is]]></ms-inference:instructions>
+			<ms-inference:data><![CDATA[#[%dw 2.0
+output application/json
+---
+((payload.message.parts default []) map ((p) -> p.text default "") joinBy " ")]]]></ms-inference:data>
+			<ms-inference:tools><![CDATA[#[vars.functionCalling]]]></ms-inference:tools>
+		</ms-inference:tools-native-template>
+				<choice doc:name="Choice" doc:id="a7917cd1-25e1-4163-9c2d-b8ad0b98f94b">
+					<when expression='#[vars.reason.response == "NO_TOOL_MATCH"]' doc:id="e4d9dfbd-ca38-478a-a734-0d8ab382d4f5">
+						<ee:transform doc:name="Create Message Response" doc:id="c0e139d0-c4c6-4a08-aafd-293f964db92c" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var userSaid = (payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " "
+var startTime = now()
+---
+{
+  kind: "message",
+  messageId: "msg-error-" ++ uuid(), //Server generates NEW messageId for responses
+  role: "agent",
+  contextId: attributes.contextId,
+  taskId: attributes.taskId,
+  referenceTaskIds: [],
+  parts: [
+    {
+      kind: "text",
+      text: "❌ I don't have a skill for that request.\n\n🎯 I specialize in MuleSoftForge Connector Playground operations.\n\n✅ My available skills are:\n\n1️⃣ **List Connectors** - View all available connectors\n2️⃣ **Search Operations** - Find connector operations\n3️⃣ **Get Operation Schema** - View operation parameters\n4️⃣ **Execute Operation** - Run a connector operation\n5️⃣ **Update Connector Status** - Enable/disable connectors\n\n💡 Please ask me about connector management instead.",
+      metadata: {
+        formatting: "markdown",
+        sentiment: "helpful",
+        errorCategory: "NO_MATCHING_SKILL"
+      }
+    },
+    {
+      kind: "data",
+      data: {
+        errorCode: "SKILL_NOT_FOUND",
+        errorType: "CLIENT_ERROR",
+        requestedAction: userSaid,
+        availableSkills: [
+          {id: "list-connectors", name: "List Connectors"},
+          {id: "search-operations", name: "Search Operations"},
+          {id: "get-operation-schema", name: "Get Operation Schema"},
+          {id: "execute-operation", name: "Execute Operation"},
+          {id: "update-connector-status", name: "Update Connector Status"}
+        ],
+        timestamp: now(),
+        responseTime: "5ms"
+      },
+      metadata: {
+        partType: "structured-error-details",
+        machineReadable: true
+      }
+    }
+  ],
+  metadata: {
+    agent: {
+      name: "MuleSoftForge Connector Playground Agent",
+      version: "1.0.0"
+    },
+    request: {
+      originalText: userSaid,
+      language: "en"
+    },
+    response: {
+      "type": "error",
+      errorCode: "SKILL_NOT_FOUND",
+      retryable: false
+    },
+    processing: {
+      startTime: vars.startTime,
+      endTime: now(),
+      durationMs: now() - vars.startTime
+    },
+    observability: {
+      traceId: "trace-" ++ uuid(),
+      correlationId: correlationId
+    }
+  },
+  extensions: [
+    "https://mulesoft.com/a2a/extensions/rich-formatting/v1",
+    "https://mulesoft.com/a2a/extensions/structured-errors/v1"
+  ]
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</when>
+					<otherwise>
+						<ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="da5dd578-1b3b-4e85-8a1e-0dd0b2e93cf2" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="mcp" >
+							<ms-inference:mcp-config-references >
+								<ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_MCPG" />
+							</ms-inference:mcp-config-references>
+							<ms-inference:template ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:template>
+							<ms-inference:instructions ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:instructions>
+							<ms-inference:data ><![CDATA[#[%dw 2.0
+output text
+---
+write(vars.reason.tools[0].function)]]]></ms-inference:data>
+						</ms-inference:mcp-tools-native-template>
+						<ee:transform doc:name="Message Response" doc:id="99da00af-2b7c-470a-afd1-ba0d2624768c" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var generatedId = "response-" ++ uuid()
+
+var userSaid = ((payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " ") as String
+                 
+var agentResponse = (vars.mcp.toolsExecutionReport[0].result.contents[0].text default "No response") as String
+
+---
+{
+    kind: "message",
+    messageId: generatedId,
+    role: "agent",
+    parts: [
+      {
+        kind: "text",
+        text: "You asked: " ++ userSaid ++ "\n\nAgent response: " ++ agentResponse
+      }
+    ]
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</otherwise>
+				</choice>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="3️⃣3️⃣3️⃣ message/stream - BlockingIsIgnored" doc:id="1ac98e39-3e81-4155-adc7-fa42851b01ea" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n3️⃣3️⃣3️⃣ message/stream - BlockingIsIgnored" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\n3️⃣ Attributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\n3️⃣ Payload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n3️⃣3️⃣3️️⃣️ message/stream - BlockingIsIgnored" &#10;++ "\n\n"]' />
+				<try doc:name="Try" doc:id="c47df8c8-c9c8-4132-b9ee-dcd383c2e0cf">
+					<ee:transform doc:name="Minimum A2A Server - Update Task Status" doc:id="8cfe7e66-42fc-4cff-b180-0db5128e237f">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="update"><![CDATA[%dw 2.0
+output application/json
+var userSaid = (payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " "
+---
+{
+  kind: "status-update",
+  final: false,
+  taskId: attributes.taskId,
+  contextId: attributes.contextId,
+  status: {
+    state: "submitted",
+    message: {
+      kind: "message",
+      messageId: uuid(),
+      role: "agent",
+      parts: [
+        {
+          kind: "text",
+          text: "✅ Task received: " ++ userSaid
+        }
+      ]
+    },
+    timestamp: now()
+  }
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+					<a2a:update-task-status doc:name="A2A Server - Update Task Status" doc:id="8470ae24-7736-4fbc-863b-7f48761bad27" config-ref="A2A_Server_MCPG">
+					<a2a:status-content><![CDATA[#[vars.update]]]></a2a:status-content>
+				</a2a:update-task-status>
+					<scripting:execute engine="Groovy" doc:name="Demo - Sleep for 5 Seconds" doc:id="c2cf82cb-5d88-45c7-a671-de148a8b2477" target="sleep">
+						<scripting:code><![CDATA[Thread.sleep(5000)]]></scripting:code>
+					</scripting:execute>
+				</try>
+				<mcp:list-tools doc:name="MCP Client - List Tools" doc:id="9ba97c5c-fb3b-470f-b33b-b100d50bdb99" config-ref="MCP_Client_StreamableHttp_MCPG" target="listMcpTools" />
+				<ee:transform doc:name="MCP List Tools / OpenAI Function  Calling" doc:id="92cfa63a-bf87-4030-8075-ec6fbf228ed2" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="functionCalling" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.listMcpTools map {
+  "type": "function",
+  "function": {
+    "name": $.name,
+    "description": $.description,
+    "parameters": read($.inputSchema, "application/json")
+  }
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ms-inference:tools-native-template doc:name="[Tools] Native Template (Reasoning only)" doc:id="c859b0c7-31ab-4ed8-bfcc-ecb6317d181f" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="reason" >
+					<ms-inference:template ><![CDATA[You are an AI assistant that matches user requests to available skills.
+
+IMPORTANT: When extracting parameters, use the EXACT text provided by the user.
+Do not correct, modify, or interpret technical identifiers like Maven artifact IDs.]]></ms-inference:template>
+					<ms-inference:instructions ><![CDATA[Analyze the user's request and determine:
+1. Does it match one of the available skills/tools?
+2. If yes, which one is the best match?
+3. Extract all relevant parameters from the request
+4. If no match, do not call any tool
+5. Critical If no match found respond with only "NO_TOOL_MATCH"
+
+
+CRITICAL RULES FOR PARAMETER EXTRACTION:
+- Extract parameters EXACTLY as provided by the user
+- DO NOT correct spelling, grammar, or format
+- DO NOT interpret or invent data
+- DO NOT autocomplete partial values
+- Preserve exact case, hyphens, underscores, and special characters
+- If user provides "ule4-agentforce-connector", use "ule4-agentforce-connector" NOT "mule4-agentforce-connector"
+- Use raw data verbatim - do not standardize or normalize
+
+Guidelines:
+- Match intent based on skill descriptions
+- Be precise - only select a tool if there's a clear match
+- Extract technical IDs, Maven artifact names, and codes character-for-character
+
+PARAMETER EXTRACTION RULES:
+- User says: "ule4-agentforce-connector" → Extract: "ule4-agentforce-connector" 
+- User says: "mule4-agentforce-connector" → Extract: "mule4-agentforce-connector"
+- DO NOT fix typos or autocomplete
+- DO NOT standardize formats
+- Copy values character-by-character as-is]]></ms-inference:instructions>
+					<ms-inference:data ><![CDATA[#[%dw 2.0
+output application/json
+---
+((payload.message.parts default []) map ((p) -> p.text default "") joinBy " ")]]]></ms-inference:data>
+					<ms-inference:tools ><![CDATA[#[vars.functionCalling]]]></ms-inference:tools>
+				</ms-inference:tools-native-template>
+				<try doc:name="Try1" doc:id="9622e613-16b6-42d2-95ae-bfc908419cf4">
+					<ee:transform doc:name="Minimum A2A Server - Update Task Status" doc:id="6ee5e6dd-8467-4375-a91f-8c89dd27c3a1">
+						<ee:message />
+						<ee:variables>
+							<ee:set-variable variableName="update"><![CDATA[%dw 2.0
+output application/json
+---
+{
+  kind: "status-update",
+  final: false,
+  taskId: attributes.taskId,
+  contextId: attributes.contextId,
+  status: {
+    state: "working",
+    message: {
+      kind: "message",
+      messageId: uuid(),
+      role: "agent",
+      parts: [
+        {
+          kind: "text",
+          text: "🔄 Processing your request..."
+        }
+      ]
+    },
+    timestamp: now()
+  }
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<a2a:update-task-status doc:name="A2A Server - Update Task Status" doc:id="7c7b8372-7427-42a5-bcc0-2cf90d2cf00b" config-ref="A2A_Server_MCPG">
+						<a2a:status-content><![CDATA[#[vars.update]]]></a2a:status-content>
+					</a2a:update-task-status>
+					<scripting:execute engine="Groovy" doc:name="Demo - Sleep for 5 Seconds" doc:id="ecdbb5a7-d9b9-44c0-8436-5ad206434d23" target="sleep">
+						<scripting:code><![CDATA[Thread.sleep(5000)]]></scripting:code>
+					</scripting:execute>
+				</try>
+				<choice doc:name="Choice" doc:id="8233a44f-d1a5-4b6e-b2bf-9068f600b807" >
+					<when expression='#[vars.reason.response == "NO_TOOL_MATCH"]' doc:id="e4d9dfbd-ca38-478a-a734-0d8ab382d4f5" >
+						<!-- [STUDIO:"Create Message Response"]<ee:transform doc:name="Create Message Response" doc:id="7291f4d3-07ab-44ec-9c9d-95546b4a0a8f" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var userSaid = (payload.message.parts default [&#93;) 
+                 map ((p) -> p.text default "") 
+                 joinBy " "
+var startTime = now()
+&#45;&#45;-
+{
+  kind: "message",
+  messageId: "msg-error-" ++ uuid(), //Server generates NEW messageId for responses
+  role: "agent",
+  contextId: attributes.contextId,
+  taskId: attributes.taskId,
+  referenceTaskIds: [&#93;,
+  parts: [
+    {
+      kind: "text",
+      text: "❌ I don't have a skill for that request.\n\n🎯 I specialize in MuleSoftForge Connector Playground operations.\n\n✅ My available skills are:\n\n1️⃣ **List Connectors** - View all available connectors\n2️⃣ **Search Operations** - Find connector operations\n3️⃣ **Get Operation Schema** - View operation parameters\n4️⃣ **Execute Operation** - Run a connector operation\n5️⃣ **Update Connector Status** - Enable/disable connectors\n\n💡 Please ask me about connector management instead.",
+      metadata: {
+        formatting: "markdown",
+        sentiment: "helpful",
+        errorCategory: "NO_MATCHING_SKILL"
+      }
+    },
+    {
+      kind: "data",
+      data: {
+        errorCode: "SKILL_NOT_FOUND",
+        errorType: "CLIENT_ERROR",
+        requestedAction: userSaid,
+        availableSkills: [
+          {id: "list-connectors", name: "List Connectors"},
+          {id: "search-operations", name: "Search Operations"},
+          {id: "get-operation-schema", name: "Get Operation Schema"},
+          {id: "execute-operation", name: "Execute Operation"},
+          {id: "update-connector-status", name: "Update Connector Status"}
+        &#93;,
+        timestamp: now(),
+        responseTime: "5ms"
+      },
+      metadata: {
+        partType: "structured-error-details",
+        machineReadable: true
+      }
+    }
+  &#93;,
+  metadata: {
+    agent: {
+      name: "MuleSoftForge Connector Playground Agent",
+      version: "1.0.0"
+    },
+    request: {
+      originalText: userSaid,
+      language: "en"
+    },
+    response: {
+      "type": "error",
+      errorCode: "SKILL_NOT_FOUND",
+      retryable: false
+    },
+    processing: {
+      startTime: vars.startTime,
+      endTime: now(),
+      durationMs: now() - vars.startTime
+    },
+    observability: {
+      traceId: "trace-" ++ uuid(),
+      correlationId: correlationId
+    }
+  },
+  extensions: [
+    "https://mulesoft.com/a2a/extensions/rich-formatting/v1",
+    "https://mulesoft.com/a2a/extensions/structured-errors/v1"
+  &#93;
+}&#93;&#93;></ee:set-payload>
+							</ee:message>
+						</ee:transform> [STUDIO] -->
+						<ee:transform doc:name="Task Rejected" doc:id="825b1802-357c-404b-85ff-b2dd191aa80c">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+  kind: "task",  // ← Use "task" for final rejected state
+  final: true,   // ← This IS final
+  id: attributes.taskId,
+  contextId: attributes.contextId,
+  status: {
+    state: "rejected",  // ← Changed from "submitted"
+    message: {
+      kind: "message",
+      messageId: uuid(),
+      role: "agent",
+      parts: [
+        {
+          kind: "text",
+          text: "❌ I don't have a skill for that request. Please ask about connector management."
+        }
+      ]
+    },
+    timestamp: now()
+  },
+  artifacts: [],
+  history: [
+    payload.message
+  ]
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<a2a:update-task-status doc:name="A2A Server - Update Task Status" doc:id="870d3a2f-22c4-4d80-8232-e58c91a8d477" config-ref="A2A_Server_MCPG" >
+						</a2a:update-task-status>
+					</when>
+					<otherwise >
+						<ms-inference:mcp-tools-native-template doc:name="[MCP] Tooling" doc:id="e794e87e-8b15-45d5-b592-e1b7b1e5574c" config-ref="MuleSoft_Inference_Text_Generation_Config_OpenAI" target="mcp" >
+							<ms-inference:mcp-config-references >
+								<ms-inference:mcp-config mcpClientConfigRef="MCP_Client_StreamableHttp_MCPG" />
+							</ms-inference:mcp-config-references>
+							<ms-inference:template ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:template>
+							<ms-inference:instructions ><![CDATA[You are an AI assistant that call requested tool]]></ms-inference:instructions>
+							<ms-inference:data ><![CDATA[#[%dw 2.0
+output text
+---
+write(vars.reason.tools[0].function)]]]></ms-inference:data>
+						</ms-inference:mcp-tools-native-template>
+						<ee:transform doc:name="Task Completed" doc:id="78ac1daa-04f1-4778-8c8c-ea9a995bfae2" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var generatedId = "response-" ++ uuid()
+
+var userSaid = ((payload.message.parts default []) 
+                 map ((p) -> p.text default "") 
+                 joinBy " ") as String
+                 
+var agentResponse = (vars.mcp.toolsExecutionReport[0].result.contents[0].text default "No response") as String
+
+---
+{
+  kind: "status-update",
+  final: true,
+  taskId: attributes.taskId,
+  contextId: attributes.contextId,
+  status: {
+    state: "completed",
+    message: {
+      kind: "message",
+      messageId: uuid(),
+      role: "agent",
+      parts: [
+        {
+          kind: "text",
+          text: "You asked: " ++ userSaid ++ "\n\nAgent response: " ++ agentResponse
+        }
+      ]
+    },
+    timestamp: now()
+  }
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="message/stream - TaskCompleted" doc:id="769a0bde-5029-4da2-b0d4-ddf48723a0ff" message='#[%dw 2.0&#10;output text&#10;---&#10;"\n\n message/stream - TaskCompleted" &#10;++ "\n\n⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄"&#10;++ "\n\nAttributes: " ++ (write(attributes, "application/json")) as String&#10;++ "\n\nPayload: " ++ (write(payload, "application/json")) as String&#10;++ "\n\n^^^^^^^^^^^^^^^^^^^^"&#10;++ "\n\n message/stream - TaskCompleted" &#10;++ "\n\n"]' />
+						<a2a:update-task-status doc:name="A2A Server - Update Task Status" doc:id="6b9b2c39-915a-40df-bcf5-918ef36404d2" config-ref="A2A_Server_MCPG" >
+						</a2a:update-task-status>
+					</otherwise>
+				</choice>
+			</otherwise>
+		</choice>
+	</sub-flow>
+		
+		
+		
+</mule>

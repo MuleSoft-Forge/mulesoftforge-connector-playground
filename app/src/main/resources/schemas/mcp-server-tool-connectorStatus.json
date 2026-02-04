@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/rfc9457-problem-details.json",
+  "title": "mcp-server-tool-connectorStatus",
+  "description": "A JSON schema for MuleSoft Connector Explorer MCP tool called mcp-server-tool-connectorStatus",
+  "type": "object",
+  "properties": {
+    "mavenArtifactId": {
+      "type": "string",
+      "description": "Identify connector record by its Maven Artifact Id like: mule4-agentforce-connector"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Boolean flag recording if a connector is active or not"
+    }
+  },
+  "required": [
+    "mavenArtifactId",
+    "isActive"
+  ]
+}

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCPG Help Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 50%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to bottom right, #eff6ff, #ffffff, #ecfeff);
+            padding: 3rem 1.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 160, 223, 0.1);
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: pulse 3s infinite;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            width: 120px;
+            height: 120px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            filter: blur(50px);
+            animation: pulse 4s infinite 1s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #00a0df, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        
+        /* Navigation Grid */
+        .nav-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Card Styles */
+        .nav-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, #00a0df, #2563eb);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #00a0df;
+        }
+        
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-card:hover .card-title {
+            color: #00a0df;
+        }
+        
+        .card-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            color: #00a0df;
+            font-weight: 500;
+            font-size: 0.875rem;
+            gap: 0.5rem;
+            transition: gap 0.3s ease;
+        }
+        
+        .nav-card:hover .card-link {
+            gap: 0.75rem;
+        }
+        
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-card:hover .arrow {
+            transform: translateX(4px);
+        }
+        
+        /* Connector Cards - Special Styling */
+        .connector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .connector-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .connector-card:hover {
+            border-color: #00a0df;
+            transform: translateX(4px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .connector-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .connector-name {
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+        
+        .connector-card:hover .connector-name {
+            color: #00a0df;
+        }
+        
+        /* Coming Soon Badge */
+        .coming-soon {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(to right, #00a0df, #2563eb);
+            color: white;
+            padding: 2rem 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .footer h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: background 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .connector-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container" style="text-align: center;">
+            <div class="hero-badge">
+                <span class="status-dot"></span>
+                <span>MCPG Help Center</span>
+            </div>
+            <h1>
+                How Can We <span class="gradient-text">Help You?</span>
+            </h1>
+            <p class="hero-subtitle">
+                Find guides, tutorials, and resources to get the most out of MuleSoftForge Connector Playground
+            </p>
+        </div>
+    </div>
+
+    <!-- Getting Started Section -->
+    <div class="nav-section">
+        <div class="container">
+            <h2 class="section-title">🚀 Getting Started</h2>
+            <div class="nav-grid">
+                <a href="why-and-what.html" class="nav-card">
+                    <div class="card-icon">🎯</div>
+                    <h3 class="card-title">Why and What is MCPG</h3>
+                    <p class="card-description">
+                        Understand what MuleSoftForge Connector Playground is, why it exists, and how it can help you explore AI connectors
+                    </p>
+                    <span class="card-link">
+                        Learn more
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="quick-start.html" class="nav-card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">Quick Start Guide</h3>
+                    <p class="card-description">
+                        Get up and running in minutes. Setup, configuration, and your first operation execution
+                    </p>
+                    <span class="card-link">
+                        Get started
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="runtime-configs.html" class="nav-card">
+                    <div class="card-icon">🔑</div>
+                    <h3 class="card-title">Runtime Configuration Help</h3>
+                    <p class="card-description">
+                        Learn how to create and manage runtime configurations, API keys, and property placeholders
+                    </p>
+                    <span class="card-link">
+                        Configure now
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="lab-usage.html" class="nav-card">
+                    <div class="card-icon">🧪</div>
+                    <h3 class="card-title">Lab Usage Guide</h3>
+                    <p class="card-description">
+                        Master the Playground Lab: select operations, fill parameters, execute, and read responses
+                    </p>
+                    <span class="card-link">
+                        Explore the lab
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="common-errors.html" class="nav-card">
+                    <div class="card-icon">🔍</div>
+                    <h3 class="card-title">Common Errors & Solutions</h3>
+                    <p class="card-description">
+                        Troubleshoot issues quickly with solutions to the most common errors and problems
+                    </p>
+                    <span class="card-link">
+                        Find solutions
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="tips-best-practices.html" class="nav-card">
+                    <div class="card-icon">💡</div>
+                    <h3 class="card-title">Tips & Best Practices</h3>
+                    <p class="card-description">
+                        Pro tips for naming configs, managing costs, security considerations, and productivity hacks
+                    </p>
+                    <span class="card-link">
+                        Learn tips
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connector Guides Section -->
+    <div class="nav-section" style="background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);">
+        <div class="container">
+            <h2 class="section-title">📚 Connector Guides</h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 2rem;">
+                Detailed documentation for each AI connector
+            </p>
+            
+            <div class="connector-grid">
+                <a href="connector-idp.html" class="connector-card">
+                    <div class="connector-icon">📄</div>
+                    <span class="connector-name">IDP Connector (Intelligent Document Processing)</span>
+                </a>
+                
+                <a href="connector-agentforce.html" class="connector-card">
+                    <div class="connector-icon">🤖</div>
+                    <span class="connector-name">Agentforce Connector</span>
+                </a>
+                
+                <a href="connector-inference.html" class="connector-card">
+                    <div class="connector-icon">🧠</div>
+                    <span class="connector-name">MuleSoft Inference Connector</span>
+                </a>
+                
+                <a href="connector-mcp.html" class="connector-card">
+                    <div class="connector-icon">🔗</div>
+                    <span class="connector-name">MCP Connector (Model Context Protocol)</span>
+                </a>
+                
+                <a href="connector-vectors.html" class="connector-card">
+                    <div class="connector-icon">📊</div>
+                    <span class="connector-name">Vectors Connector (RAG)</span>
+                </a>
+                
+                <a href="connector-einstein.html" class="connector-card">
+                    <div class="connector-icon">⚡</div>
+                    <span class="connector-name">Einstein AI Connector</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Resources Section -->
+    <div class="nav-section">
+        <div class="container">
+            <h2 class="section-title">📋 Additional Resources</h2>
+            <div class="nav-grid">
+                <a href="recent-updates.html" class="nav-card">
+                    <div class="card-icon">🆕</div>
+                    <h3 class="card-title">Recent Updates</h3>
+                    <p class="card-description">
+                        Stay up to date with the latest features, fixes, and improvements to MCPG
+                    </p>
+                    <span class="card-link">
+                        See what's new
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="known-issues.html" class="nav-card">
+                    <div class="card-icon">⚠️</div>
+                    <h3 class="card-title">Known Issues</h3>
+                    <p class="card-description">
+                        Real-time tracking of current issues, their status, and available workarounds
+                    </p>
+                    <span class="card-link">
+                        Check status
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+
+                <a href="faq.html" class="nav-card">
+                    <div class="card-icon">❓</div>
+                    <h3 class="card-title">FAQ</h3>
+                    <p class="card-description">
+                        Frequently asked questions about connectors, costs, production use, and more
+                    </p>
+                    <span class="card-link">
+                        Find answers
+                        <span class="arrow">→</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer CTA -->
+    <div class="footer">
+        <h2>📞 Still Need Help?</h2>
+        <p>Check out these additional resources or get in touch with the community</p>
+        
+        <div class="footer-links">
+            <a href="https://docs.mulesoft.com" target="_blank" class="footer-link">MuleSoft Documentation</a>
+            <a href="https://help.mulesoft.com" target="_blank" class="footer-link">Community Forums</a>
+            <a href="https://github.com/MuleSoft-Forge/mule-connector-playground-help" target="_blank" class="footer-link">Report an Issue</a>
+        </div>
+    </div>
+</body>
+</html>

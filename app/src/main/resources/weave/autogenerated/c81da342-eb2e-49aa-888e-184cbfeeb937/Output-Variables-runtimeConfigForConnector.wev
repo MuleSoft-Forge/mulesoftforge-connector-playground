@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_c81da342_eb2e_49aa_888e_184cbfeeb937_Output_Variables_runtimeConfigForConnector = { _?: Null }
+

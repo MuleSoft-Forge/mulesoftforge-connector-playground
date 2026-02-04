@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>mulesoft-connector-playground-app · Anypoint Studio Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/bootstrap.css" rel="stylesheet">
+    <link href="assets/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/docs.css" rel="stylesheet">
+    <link href="assets/prettify.css" rel="stylesheet">
+    <link href="assets/scroller.css" rel="stylesheet">
+
+  </head>
+
+  <body data-twttr-rendered="true" data-spy="scroll" data-target=".bs-docs-sidebar"><iframe style="display: none;" id="rufous-sandbox" name="uid13460061790411"></iframe>
+
+    <!-- Navbar
+    ================================================== -->
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <p class="navbar-text pull-right">
+              <a href="https://www.mulesoft.com" class="navbar-link">
+                <img src="./assets/images/mulesoft-logo-final.png" alt="MuleSoft" id="mulesoftlogo">
+              </a>
+          </p>
+          <div class="scroller scroller-left"><img src="./assets/icons/glyphicons_chevron-left.png" alt="scrollLeft"></div>
+          <div class="scroller scroller-right"><img src="./assets/icons/glyphicons_chevron-right.png" alt="scrollRight"></div>
+          <div class="wrapper">
+            <ul class="nav nav-tabs list" id="myTab">
+                    <li><a href="./index.html">vectors</a></li>
+                      <li class="active"><a href="./einsteinai.html">einsteinai</a></li>
+                      <li><a href="./gemini.html">gemini</a></li>
+                      <li><a href="./a2a.html">a2a</a></li>
+                      <li><a href="./openai.html">openai</a></li>
+                      <li><a href="./mcp.html">mcp</a></li>
+                      <li><a href="./global-elements.html">global-elements</a></li>
+                      <li><a href="./agentforce.html">agentforce</a></li>
+                      <li><a href="./idp.html">idp</a></li>
+                      <li><a href="./bedrock.html">bedrock</a></li>
+                      <li><a href="./mulesoft-connector-playground.html">mulesoft-connector-playground</a></li>
+                      <li><a href="./inference.html">inference</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+  <header class="jumbotron subhead" id="overview">
+    <div class="container">
+      <h1>mulesoft-connector-playground-app</h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav affix">
+          <li class="nav-header">Flows</li>
+            <li data-toggle="collapse" data-target="#_execute_einsteinaiNav"><a href="#_execute_einsteinai"><i class="icon-chevron-right"></i> execute-einsteinai</a>
+            </li>
+            <div id="_execute_einsteinaiNav" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <ul>
+                </ul>
+              </div>
+            </div>
+        </ul>
+      </div>
+      <div class="span9">
+
+        <!-- Elements and their descriptions
+        ================================================== -->
+        <div style="max-height: 640px;width:100%;overflow:auto;">
+            <img src="img/einsteinai.png" usemap="#mFlowMap" alt="Mule Configuration Image">
+            <map name="mFlowMap">
+          </map>
+        </div>
+        <!--Mule configuration xml code-->
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" href="#collapseMuleConfiguration">
+            Show Mule Configuration XML code...
+          </a>
+        </div>
+        <div id="collapseMuleConfiguration" class="accordion-body collapse" style="height: 0px;">
+          <div class="accordion-inner">
+              <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-einstein-ai="http://www.mulesoft.org/schema/mule/ms-einstein-ai" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-einstein-ai http://www.mulesoft.org/schema/mule/ms-einstein-ai/current/mule-ms-einstein-ai.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"&gt;
+    &lt;ms-einstein-ai:config name="Einstein_AI_Configuration" doc:name="Einstein AI Configuration" doc:id="b3b7c43f-206a-46c9-9fd3-b0a1b1cb022c"&gt; 
+        &lt;ms-einstein-ai:oauth-client-credentials-connection connectionTimeout="180"&gt; 
+            &lt;ms-einstein-ai:oauth-client-credentials clientId="#[(vars.runtimeConfigForConnector.clientId default p('salesforce.einstein.clientId'))]" clientSecret="#[(vars.runtimeConfigForConnector.clientSecret default p('salesforce.einstein.clientSecret'))]" tokenUrl="#[(vars.runtimeConfigForConnector.tokenUrl default p('salesforce.einstein.tokenUrl'))]" scopes="#[(vars.runtimeConfigForConnector.scopes default p('salesforce.einstein.scopes'))]"/&gt; 
+        &lt;/ms-einstein-ai:oauth-client-credentials-connection&gt; 
+    &lt;/ms-einstein-ai:config&gt;  
+    &lt;sub-flow name="execute-einsteinai" doc:id="a12b7825-c8cd-4c59-87f1-32852be85271"&gt; 
+        &lt;logger level="INFO" doc:name="Logger" doc:id="73bffe6a-1801-48e7-bd8b-f5cbecdf3621"/&gt;  
+        &lt;choice doc:name="Choice" doc:id="a32d014c-ced8-4f39-8d60-a52979ecc871"&gt; 
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:agent-define-prompt-template&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;ms-einstein-ai:agent-define-prompt-template doc:name="Agent define prompt template" doc:id="83881dcd-2f02-4f9a-8cc0-9dd17562c6f6" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt;   &lt;/ms-einstein-ai:template&gt;  
+                    &lt;ms-einstein-ai:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt;   &lt;/ms-einstein-ai:instructions&gt;  
+                    &lt;ms-einstein-ai:dataset&gt;&lt;![CDATA[#[payload.parameters.dataset as String]]]&gt; &lt;/ms-einstein-ai:dataset&gt; 
+                &lt;/ms-einstein-ai:agent-define-prompt-template&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:chat-answer-prompt&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;ms-einstein-ai:chat-answer-prompt doc:name="Chat answer prompt" doc:id="17e45a9c-4be1-4768-bd38-c155734345e9" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt; 
+                &lt;/ms-einstein-ai:chat-answer-prompt&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:chat-generate-from-messages&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;ms-einstein-ai:chat-generate-from-messages doc:name="Chat generate from messages" doc:id="e7ad220d-306d-46c7-9148-05ad2b1dcf89" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:messages&gt;&lt;![CDATA[#[payload.parameters.messages]]]&gt; &lt;/ms-einstein-ai:messages&gt; 
+                &lt;/ms-einstein-ai:chat-generate-from-messages&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-adhoc-file-query&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;choice doc:name="Choice" doc:id="22421568-e6ff-496c-9447-e6e38ea662a6"&gt; 
+                    &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                        &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="20ba0eb7-e5b2-4825-9d43-b55361dc3836" variableName="inputStream"/&gt;
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="b31b91e8-e673-4f3c-9e8b-4b47a2280b5e" variableName="inputStream"/&gt;
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt;  
+                &lt;ms-einstein-ai:embedding-adhoc-file-query doc:name="Embedding adhoc file query" doc:id="3de24d73-f476-4e59-b8fe-2d7386ff0a12" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt;  
+                    &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+                &lt;/ms-einstein-ai:embedding-adhoc-file-query&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-generate-from-file&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;choice doc:name="Choice" doc:id="805f16df-4dba-4c92-be7b-6287c6960858"&gt; 
+                    &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                        &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="cb81187f-ad42-4c3d-84a8-901dd0d56128" variableName="inputStream"/&gt;
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="7d45cb7c-d58d-41e0-8935-7e6f04b28db8" variableName="inputStream"/&gt;
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt;  
+                &lt;ms-einstein-ai:embedding-generate-from-file doc:name="Embedding generate from file" doc:id="64094a31-79c0-4c84-b586-52778c172e6f" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+                &lt;/ms-einstein-ai:embedding-generate-from-file&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-generate-from-text&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;ms-einstein-ai:embedding-generate-from-text doc:name="Embedding generate from text" doc:id="a026693e-0a67-4a04-a26a-597fa3937278" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:text&gt;&lt;![CDATA[#[payload.parameters.text as String]]]&gt;   &lt;/ms-einstein-ai:text&gt; 
+                &lt;/ms-einstein-ai:embedding-generate-from-text&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:rag-adhoc-load-document&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;choice doc:name="Choice" doc:id="745a99f4-376a-4fd5-b048-8b45c3e0a85b"&gt; 
+                    &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                        &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="88e16dfb-9398-4aef-870d-5759313ab1c0" variableName="inputStream"/&gt;
+                    &lt;/when&gt;  
+                    &lt;otherwise&gt; 
+                        &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="5e16e8d9-caa2-4061-95ab-8c8136486ed6" variableName="inputStream"/&gt;
+                    &lt;/otherwise&gt; 
+                &lt;/choice&gt;  
+                &lt;ms-einstein-ai:rag-adhoc-load-document doc:name="Rag adhoc load document" doc:id="290544b7-300f-4e01-b3da-8f37d2343439" config-ref="Einstein_AI_Configuration" embeddingName="#[payload.parameters.embeddingName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt;  
+                    &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+                &lt;/ms-einstein-ai:rag-adhoc-load-document&gt; 
+            &lt;/when&gt;  
+            &lt;when expression="#[&amp;quot;ms-einstein-ai:tools-use-ai-service&amp;quot; == vars.operation.operation_key]"&gt; 
+                &lt;set-variable value="#[output java
+---
+payload.parameters.inputStream]" doc:name="inputStream Binary" doc:id="2585a54a-654d-47dc-bf5f-e6da03851e79" variableName="inputStream"/&gt;
+                &lt;ms-einstein-ai:tools-use-ai-service doc:name="Tools use ai service" doc:id="942af626-ff24-4a2c-a29d-feb0875fcc85" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot;  as String]" probability="#[payload.parameters.probability default 0.8  as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt; 
+                    &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt  as String]]]&gt;  &lt;/ms-einstein-ai:prompt&gt;  
+                    &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+                &lt;/ms-einstein-ai:tools-use-ai-service&gt; 
+            &lt;/when&gt;  
+            &lt;otherwise&gt; 
+                &lt;raise-error doc:name="Raise error" doc:id="cf4f065e-210b-4caa-a335-7bc4bbc3a408" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+            &lt;/otherwise&gt; 
+        &lt;/choice&gt;  
+        &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="76aad90c-0073-4e50-a64f-6c786c09613a"&gt; 
+            &lt;ee:message&gt; 
+                &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+            &lt;/ee:message&gt; 
+        &lt;/ee:transform&gt; 
+    &lt;/sub-flow&gt; 
+&lt;/mule&gt;
+</code></pre>
+
+          </div>
+        </div>
+
+          <section id="_execute_einsteinai">
+            <div class="page-header">
+                <h1>execute-einsteinai <img src="./assets/icons/flow.png"></h1>
+            </div>
+            <div class="documentation-indented" style="height:100%;width:100%;overflow:auto;">
+                <img src="img/execute_einsteinai.png" usemap="#flowMapexecute_einsteinai" alt="execute_einsteinai image">
+                <map name="flowMapexecute_einsteinai">
+                </map>
+            </div>
+            <div class="documentation-indented">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#_execute_einsteinaixml_code">
+                  Show configuration XML code of the flow execute-einsteinai...
+                </a>
+              </div>
+              <div id="_execute_einsteinaixml_code" class="accordion-body collapse" style="height: 0px;">
+                <div class="accordion-inner">
+                    <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;sub-flow name="execute-einsteinai" doc:id="a12b7825-c8cd-4c59-87f1-32852be85271"&gt;  
+    &lt;logger level="INFO" doc:name="Logger" doc:id="73bffe6a-1801-48e7-bd8b-f5cbecdf3621"/&gt;  
+    &lt;choice doc:name="Choice" doc:id="a32d014c-ced8-4f39-8d60-a52979ecc871"&gt; 
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:agent-define-prompt-template&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;ms-einstein-ai:agent-define-prompt-template doc:name="Agent define prompt template" doc:id="83881dcd-2f02-4f9a-8cc0-9dd17562c6f6" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:template&gt;&lt;![CDATA[#[payload.parameters.template as String]]]&gt;   &lt;/ms-einstein-ai:template&gt;  
+                &lt;ms-einstein-ai:instructions&gt;&lt;![CDATA[#[payload.parameters.instructions as String]]]&gt;   &lt;/ms-einstein-ai:instructions&gt;  
+                &lt;ms-einstein-ai:dataset&gt;&lt;![CDATA[#[payload.parameters.dataset as String]]]&gt; &lt;/ms-einstein-ai:dataset&gt; 
+            &lt;/ms-einstein-ai:agent-define-prompt-template&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:chat-answer-prompt&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;ms-einstein-ai:chat-answer-prompt doc:name="Chat answer prompt" doc:id="17e45a9c-4be1-4768-bd38-c155734345e9" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt; 
+            &lt;/ms-einstein-ai:chat-answer-prompt&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:chat-generate-from-messages&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;ms-einstein-ai:chat-generate-from-messages doc:name="Chat generate from messages" doc:id="e7ad220d-306d-46c7-9148-05ad2b1dcf89" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:messages&gt;&lt;![CDATA[#[payload.parameters.messages]]]&gt; &lt;/ms-einstein-ai:messages&gt; 
+            &lt;/ms-einstein-ai:chat-generate-from-messages&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-adhoc-file-query&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;choice doc:name="Choice" doc:id="22421568-e6ff-496c-9447-e6e38ea662a6"&gt; 
+                &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                    &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="20ba0eb7-e5b2-4825-9d43-b55361dc3836" variableName="inputStream"/&gt;
+                &lt;/when&gt;  
+                &lt;otherwise&gt; 
+                    &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="b31b91e8-e673-4f3c-9e8b-4b47a2280b5e" variableName="inputStream"/&gt;
+                &lt;/otherwise&gt; 
+            &lt;/choice&gt;  
+            &lt;ms-einstein-ai:embedding-adhoc-file-query doc:name="Embedding adhoc file query" doc:id="3de24d73-f476-4e59-b8fe-2d7386ff0a12" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt;  
+                &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+            &lt;/ms-einstein-ai:embedding-adhoc-file-query&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-generate-from-file&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;choice doc:name="Choice" doc:id="805f16df-4dba-4c92-be7b-6287c6960858"&gt; 
+                &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                    &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="cb81187f-ad42-4c3d-84a8-901dd0d56128" variableName="inputStream"/&gt;
+                &lt;/when&gt;  
+                &lt;otherwise&gt; 
+                    &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="7d45cb7c-d58d-41e0-8935-7e6f04b28db8" variableName="inputStream"/&gt;
+                &lt;/otherwise&gt; 
+            &lt;/choice&gt;  
+            &lt;ms-einstein-ai:embedding-generate-from-file doc:name="Embedding generate from file" doc:id="64094a31-79c0-4c84-b586-52778c172e6f" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+            &lt;/ms-einstein-ai:embedding-generate-from-file&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:embedding-generate-from-text&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;ms-einstein-ai:embedding-generate-from-text doc:name="Embedding generate from text" doc:id="a026693e-0a67-4a04-a26a-597fa3937278" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:text&gt;&lt;![CDATA[#[payload.parameters.text as String]]]&gt;   &lt;/ms-einstein-ai:text&gt; 
+            &lt;/ms-einstein-ai:embedding-generate-from-text&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:rag-adhoc-load-document&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;choice doc:name="Choice" doc:id="745a99f4-376a-4fd5-b048-8b45c3e0a85b"&gt; 
+                &lt;when expression="#[&amp;quot;URL&amp;quot; == payload.parameters.fileType]"&gt; 
+                    &lt;set-variable value="#[output text
+---
+payload.parameters.inputStream]" doc:name="inputStream URL" doc:id="88e16dfb-9398-4aef-870d-5759313ab1c0" variableName="inputStream"/&gt;
+                &lt;/when&gt;  
+                &lt;otherwise&gt; 
+                    &lt;set-variable value="#[import * from dw::core::Binaries
+output java
+---
+fromBase64(payload.parameters.inputStream default &amp;quot;&amp;quot;)]" doc:name="inputStream Binary" doc:id="5e16e8d9-caa2-4061-95ab-8c8136486ed6" variableName="inputStream"/&gt;
+                &lt;/otherwise&gt; 
+            &lt;/choice&gt;  
+            &lt;ms-einstein-ai:rag-adhoc-load-document doc:name="Rag adhoc load document" doc:id="290544b7-300f-4e01-b3da-8f37d2343439" config-ref="Einstein_AI_Configuration" embeddingName="#[payload.parameters.embeddingName default &amp;quot;sfdc_ai__DefaultOpenAITextEmbeddingAda_002&amp;quot; as String]" fileType="#[payload.parameters.fileType default &amp;quot;PDF&amp;quot; as String]" optionType="#[payload.parameters.optionType default &amp;quot;FULL&amp;quot; as String]" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot; as String]" probability="#[payload.parameters.probability default 0.8 as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt as String]]]&gt;   &lt;/ms-einstein-ai:prompt&gt;  
+                &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+            &lt;/ms-einstein-ai:rag-adhoc-load-document&gt; 
+        &lt;/when&gt;  
+        &lt;when expression="#[&amp;quot;ms-einstein-ai:tools-use-ai-service&amp;quot; == vars.operation.operation_key]"&gt; 
+            &lt;set-variable value="#[output java
+---
+payload.parameters.inputStream]" doc:name="inputStream Binary" doc:id="2585a54a-654d-47dc-bf5f-e6da03851e79" variableName="inputStream"/&gt;
+            &lt;ms-einstein-ai:tools-use-ai-service doc:name="Tools use ai service" doc:id="942af626-ff24-4a2c-a29d-feb0875fcc85" config-ref="Einstein_AI_Configuration" modelApiName="#[payload.parameters.modelApiName default &amp;quot;sfdc_ai__DefaultOpenAIGPT35Turbo&amp;quot;  as String]" probability="#[payload.parameters.probability default 0.8  as Number]" locale="#[payload.parameters.locale default &amp;quot;en_US&amp;quot; as String]"&gt;  
+                &lt;ms-einstein-ai:prompt&gt;&lt;![CDATA[#[payload.parameters.prompt  as String]]]&gt;  &lt;/ms-einstein-ai:prompt&gt;  
+                &lt;ms-einstein-ai:input-stream&gt;&lt;![CDATA[#[vars.inputStream]]]&gt;    &lt;/ms-einstein-ai:input-stream&gt; 
+            &lt;/ms-einstein-ai:tools-use-ai-service&gt; 
+        &lt;/when&gt;  
+        &lt;otherwise&gt; 
+            &lt;raise-error doc:name="Raise error" doc:id="cf4f065e-210b-4caa-a335-7bc4bbc3a408" type="CUSTOM:CUSTOM_ERROR" description="operationId Not Supported"/&gt; 
+        &lt;/otherwise&gt; 
+    &lt;/choice&gt;  
+    &lt;ee:transform doc:name="Transform to ExecutionResponse" doc:id="76aad90c-0073-4e50-a64f-6c786c09613a"&gt;  
+        &lt;ee:message&gt; 
+            &lt;ee:set-payload&gt;&lt;![CDATA[%dw 2.0
+output application/json
+---
+{
+  executionId: vars.executionId default uuid(),
+  status: "success",
+  result: {
+    payload: payload default {},
+    attributes: attributes default {}
+  },
+  timestamp: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]&gt;    &lt;/ee:set-payload&gt;
+        &lt;/ee:message&gt; 
+    &lt;/ee:transform&gt; 
+&lt;/sub-flow&gt;
+</code></pre>
+
+                </div>
+              </div>
+              <p></p>
+            </div>
+          </section>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>Designed and built with <a href="https://www.mulesoft.com/platform/studio" target="_blank">Anypoint Studio</a>.</p>
+        <p>Code licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>. Documentation licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <p>Icons from <a href="https://glyphicons.com/">Glyphicons Free</a>, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links">
+          <li><a href="https://blogs.mulesoft.com/bloghome/">Read the blog</a></li>
+          <li><a href="https://www.mulesoft.org/jira/issues/">Submit issues</a></li>
+        </ul>
+      </div>
+    </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/widgets.js"></script>
+    <script src="assets/jquery.js"></script>
+    <script src="assets/prettify.js"></script>
+    <script src="assets/bootstrap-transition.js"></script>
+    <script src="assets/bootstrap-alert.js"></script>
+    <script src="assets/bootstrap-modal.js"></script>
+    <script src="assets/bootstrap-dropdown.js"></script>
+    <script src="assets/bootstrap-scrollspy.js"></script>
+    <script src="assets/bootstrap-tab.js"></script>
+    <script src="assets/bootstrap-tooltip.js"></script>
+    <script src="assets/bootstrap-popover.js"></script>
+    <script src="assets/bootstrap-button.js"></script>
+    <script src="assets/bootstrap-collapse.js"></script>
+    <script src="assets/bootstrap-carousel.js"></script>
+    <script src="assets/bootstrap-typeahead.js"></script>
+    <script src="assets/bootstrap-affix.js"></script>
+    <script src="assets/scroller.js"></script>
+    <script src="assets/application.js"></script>
+
+</body>
+</html>

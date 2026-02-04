@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_1e6c52e4_35c0_4da5_9f22_ba9ab6ec38eb_Output_Variables_operation = {|
+  connector_active?: Boolean, 
+  connector_id?: Number, 
+  execution_id?: Any, 
+  id?: Number, 
+  maven_artifact_id?: String, 
+  operation_active?: Boolean, 
+  operation_key?: String, 
+  required_config_type_id?: Number
+|}
+
